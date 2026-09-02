@@ -40,8 +40,8 @@ export default async function BookingsPage() {
             const revealed = new Date(booking.event.venueRevealAt) <= new Date();
             return (
               <li key={booking.id} className="surface-card flex flex-col gap-5 p-6 sm:flex-row sm:items-center">
-                <div className="flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-2xl border border-pearl/12 bg-noir-600 text-pearl">
-                  <span className="text-[10px] uppercase tracking-widest text-pearl/60">
+                <div className="flex h-20 w-20 shrink-0 flex-col items-center justify-center rounded-2xl border border-content/12 bg-canvas-600 text-content">
+                  <span className="text-[10px] uppercase tracking-widest text-content/60">
                     {new Date(booking.event.startsAt).toLocaleDateString('en-GB', { month: 'short' })}
                   </span>
                   <span className="font-display text-3xl font-semibold leading-none">
@@ -59,7 +59,7 @@ export default async function BookingsPage() {
                     </Badge>
                   </div>
 
-                  <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-pearl/60">
+                  <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-content/60">
                     <span className="flex items-center gap-1.5">
                       <CalendarClock size={14} />
                       {formatDateTime(booking.event.startsAt)}
@@ -74,13 +74,13 @@ export default async function BookingsPage() {
                     </span>
                   </p>
 
-                  <p className="mt-2 text-sm text-pearl/55">Seat fee {formatMoneyForCity(booking.event.priceCents, booking.event.city)}</p>
+                  <p className="mt-2 text-sm text-content/55">Seat fee {formatMoneyForCity(booking.event.priceCents, booking.event.city)}</p>
                 </div>
 
                 <div className="flex shrink-0 gap-2">
                   <Link
                     href={`/dinners/${booking.eventId}`}
-                    className="inline-flex h-11 items-center rounded-full border border-pearl/20 px-5 text-sm font-semibold hover:border-pearl/45"
+                    className="inline-flex h-11 items-center rounded-full border border-content/20 px-5 text-sm font-semibold hover:border-content/45"
                   >
                     View table
                   </Link>

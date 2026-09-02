@@ -1,9 +1,6 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
-const ROUGE = '#F43F5E';
-const BLUSH = '#FF8FA3';
-
 /**
  * Six people seated around a round table, seen from above: each is a head with
  * a shoulder cap curving behind it, facing in.
@@ -23,12 +20,20 @@ const SEATS = [0, 60, 120, 180, 240, 300];
 
 function Seat({ angle, index }: { angle: number; index: number }) {
   const gathered = index % 2 === 1;
-  const fill = gathered ? BLUSH : ROUGE;
+  // Palette utilities rather than literal hexes, so the mark re-colours with
+  // the theme instead of staying at its dark-mode values on a light page.
+  const tone = gathered ? 'text-blush' : 'text-rouge';
   return (
-    <g transform={`rotate(${angle} 20 20)`}>
-      <path d="M16.5 6 A3.5 3.5 0 0 1 23.5 6" fill="none" stroke={fill} strokeWidth="1.9" strokeLinecap="round" />
-      {gathered && <circle cx="20" cy="2.9" r="1.1" fill={fill} />}
-      <circle cx="20" cy="6" r="2" fill={fill} />
+    <g transform={`rotate(${angle} 20 20)`} className={tone}>
+      <path
+        d="M16.5 6 A3.5 3.5 0 0 1 23.5 6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+      />
+      {gathered && <circle cx="20" cy="2.9" r="1.1" fill="currentColor" />}
+      <circle cx="20" cy="6" r="2" fill="currentColor" />
     </g>
   );
 }
@@ -36,8 +41,8 @@ function Seat({ angle, index }: { angle: number; index: number }) {
 function TableMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" aria-hidden className={cn('h-9 w-9', className)}>
-      <circle cx="20" cy="20" r="8.6" fill={ROUGE} opacity="0.22" />
-      <circle cx="20" cy="20" r="8.6" fill="none" stroke={ROUGE} strokeWidth="1.9" />
+      <circle cx="20" cy="20" r="8.6" className="fill-rouge/20" />
+      <circle cx="20" cy="20" r="8.6" fill="none" strokeWidth="1.9" className="stroke-rouge" />
       {SEATS.map((angle, i) => (
         <Seat key={angle} angle={angle} index={i} />
       ))}
@@ -51,7 +56,7 @@ export function Logo({ className }: { className?: string }) {
       href="/"
       aria-label="SitNext home"
       className={cn(
-        'group inline-flex items-center gap-2.5 font-display text-[1.35rem] font-semibold tracking-[-0.03em] text-pearl',
+        'group inline-flex items-center gap-2.5 font-display text-[1.35rem] font-semibold tracking-[-0.03em] text-content',
         className,
       )}
     >

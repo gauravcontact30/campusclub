@@ -24,11 +24,11 @@ const TRUST = [
 export default function HowItWorksPage() {
   return (
     <>
-      <section className="bg-noir py-16 text-pearl sm:py-24">
+      <section className="bg-canvas py-16 text-content sm:py-24">
         <div className="container-page max-w-3xl">
           <p className="eyebrow">How it works</p>
-          <h1 className="display-lg mt-3 text-pearl">A directory people trust, and a table worth turning up to.</h1>
-          <p className="lede mt-5 text-pearl/70">
+          <h1 className="display-lg mt-3 text-content">A directory people trust, and a table worth turning up to.</h1>
+          <p className="lede mt-5 text-content/70">
             One product, two halves. The reviews decide where the dinners happen; the dinners produce the people who
             write the reviews. Here is the full loop.
           </p>
@@ -42,21 +42,21 @@ export default function HowItWorksPage() {
             <div key={step.title} className="surface-card p-7">
               <step.icon size={24} className="text-rouge" />
               <h3 className="mt-4 font-display text-xl font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-pearl/65">{step.body}</p>
+              <p className="mt-2 text-sm leading-relaxed text-content/65">{step.body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="bg-noir-600/60 py-20">
+      <section className="bg-canvas-600/60 py-20">
         <div className="container-page">
           <h2 className="display-lg max-w-2xl">Why the reviews are worth reading</h2>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {TRUST.map((item) => (
-              <div key={item.title} className="rounded-3xl bg-noir-700 p-7">
+              <div key={item.title} className="rounded-3xl bg-canvas-700 p-7">
                 <item.icon size={24} className="text-rouge" />
                 <h3 className="mt-4 font-display text-xl font-semibold">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-pearl/65">{item.body}</p>
+                <p className="mt-2 text-sm leading-relaxed text-content/65">{item.body}</p>
               </div>
             ))}
           </div>

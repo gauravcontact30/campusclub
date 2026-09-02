@@ -5,12 +5,12 @@ import { useState } from 'react';
 import { cn, hashIndex } from '@/lib/utils';
 
 const GRADIENTS = [
-  'from-noir to-noir-500',
+  'from-canvas to-canvas-500',
   'from-rouge to-petal',
-  'from-noir-600 to-blush',
+  'from-canvas-600 to-blush',
   'from-petal to-rouge-600',
-  'from-blush to-noir',
-  'from-noir-700 to-rouge',
+  'from-blush to-canvas',
+  'from-canvas-700 to-rouge',
 ];
 
 /**

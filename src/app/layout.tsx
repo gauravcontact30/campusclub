@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { Providers } from './providers';
 import { SITE } from '@/lib/constants';
+import { THEME_INIT_SCRIPT } from '@/lib/theme';
 import './globals.css';
 
 const display = Bricolage_Grotesque({
@@ -44,7 +45,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0D080A',
+  // One per theme, so the browser chrome matches the page it frames.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FDF7F8' },
+    { media: '(prefers-color-scheme: dark)', color: '#0D080A' },
+  ],
   width: 'device-width',
   initialScale: 1,
 };
@@ -57,12 +62,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       // back in, so route changes land instantly while in-page anchors glide.
       data-scroll-behavior="smooth"
       className={`${display.variable} ${sans.variable}`}
+      // The blocking script below sets this before paint; `suppressHydrationWarning`
+      // stops React complaining that the attribute it finds is not the one the
+      // server rendered, which is the entire point of setting it early.
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="flex min-h-dvh flex-col">
         <Providers>
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-rouge focus:px-5 focus:py-3 focus:text-pearl"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-rouge focus:px-5 focus:py-3 focus:text-content"
           >
             Skip to content
           </a>

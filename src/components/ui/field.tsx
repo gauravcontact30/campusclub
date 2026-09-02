@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import type { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes, ReactNode } from 'react';
 
 const control =
-  'w-full rounded-2xl border border-pearl/15 bg-noir-700 px-4 py-3 text-sm text-pearl placeholder:text-pearl/50 transition-colors focus:border-rouge focus:outline-none focus:ring-2 focus:ring-rouge/40';
+  'w-full rounded-2xl border border-content/15 bg-canvas-700 px-4 py-3 text-sm text-content placeholder:text-content/50 transition-colors focus:border-rouge focus:outline-none focus:ring-2 focus:ring-rouge/40';
 
 export function Field({
   label,
@@ -19,10 +19,10 @@ export function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={htmlFor} className="block text-sm font-semibold text-pearl">
+      <label htmlFor={htmlFor} className="block text-sm font-semibold text-content">
         {label}
       </label>
-      {hint && <p className="text-xs text-pearl/55">{hint}</p>}
+      {hint && <p className="text-xs text-content/55">{hint}</p>}
       {children}
       {error && (
         <p role="alert" className="text-xs font-medium text-rouge-700">

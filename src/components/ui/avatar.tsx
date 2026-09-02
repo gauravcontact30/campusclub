@@ -15,7 +15,7 @@ export function Avatar({
   return (
     <span
       className={cn(
-        'relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-noir-600 text-pearl',
+        'relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-canvas-600 text-content',
         className,
       )}
       style={{ width: size, height: size }}

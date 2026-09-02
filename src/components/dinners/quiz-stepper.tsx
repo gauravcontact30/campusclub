@@ -50,7 +50,7 @@ export function QuizStepper({ signedIn, initialAnswers }: { signedIn: boolean; i
   if (done) {
     return (
       <div className="surface-card p-8 text-center sm:p-12">
-        <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blush/25 text-pearl">
+        <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blush/25 text-content">
           <Check size={30} />
         </span>
         <h2 className="display-md mt-6">You are match-ready.</h2>
@@ -73,19 +73,19 @@ export function QuizStepper({ signedIn, initialAnswers }: { signedIn: boolean; i
 
   return (
     <div>
-      <div className="flex items-center justify-between text-sm text-pearl/60">
+      <div className="flex items-center justify-between text-sm text-content/60">
         <span>
           Question {index + 1} of {total}
         </span>
         <span>{progress}% complete</span>
       </div>
-      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-pearl/10">
+      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-content/10">
         <div className="h-full rounded-full bg-rouge transition-all duration-300" style={{ width: `${progress}%` }} />
       </div>
 
       <div key={question.id} className="mt-9 animate-fade-up">
         <h2 className="display-md">{question.prompt}</h2>
-        <p className="mt-2 text-sm text-pearl/60">{question.help}</p>
+        <p className="mt-2 text-sm text-content/60">{question.help}</p>
 
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
           {question.options.map((option) => {
@@ -97,7 +97,7 @@ export function QuizStepper({ signedIn, initialAnswers }: { signedIn: boolean; i
                 aria-pressed={active}
                 className={cn(
                   'group rounded-3xl border p-5 text-left transition-all hover:-translate-y-0.5',
-                  active ? 'border-rouge bg-rouge text-pearl' : 'border-pearl/15 bg-noir-700 hover:border-pearl/40',
+                  active ? 'border-rouge bg-rouge text-content' : 'border-content/15 bg-canvas-700 hover:border-content/40',
                 )}
               >
                 <span className="flex items-center justify-between gap-3">
@@ -105,14 +105,14 @@ export function QuizStepper({ signedIn, initialAnswers }: { signedIn: boolean; i
                   <span
                     className={cn(
                       'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border',
-                      active ? 'border-rouge bg-rouge text-pearl' : 'border-pearl/25',
+                      active ? 'border-rouge bg-rouge text-content' : 'border-content/25',
                     )}
                   >
                     {active && <Check size={14} />}
                   </span>
                 </span>
                 {'hint' in option && option.hint && (
-                  <span className={cn('mt-1.5 block text-sm', active ? 'text-pearl/60' : 'text-pearl/60')}>
+                  <span className={cn('mt-1.5 block text-sm', active ? 'text-content/60' : 'text-content/60')}>
                     {option.hint}
                   </span>
                 )}
@@ -138,7 +138,7 @@ export function QuizStepper({ signedIn, initialAnswers }: { signedIn: boolean; i
         ) : (
           <Link
             href="/signup?next=/dinners/quiz"
-            className="inline-flex h-14 items-center rounded-full bg-rouge px-8 font-semibold text-pearl hover:bg-rouge-600"
+            className="inline-flex h-14 items-center rounded-full bg-rouge px-8 font-semibold text-content hover:bg-rouge-600"
           >
             Create an account to save
           </Link>
@@ -153,7 +153,7 @@ export function QuizStepper({ signedIn, initialAnswers }: { signedIn: boolean; i
             aria-label={`Go to question ${i + 1}`}
             className={cn(
               'h-1.5 rounded-full transition-all',
-              i === index ? 'w-8 bg-pearl' : (answers[q.id] ?? merged[q.id]) ? 'w-4 bg-rouge' : 'w-4 bg-pearl/15',
+              i === index ? 'w-8 bg-content' : (answers[q.id] ?? merged[q.id]) ? 'w-4 bg-rouge' : 'w-4 bg-content/15',
             )}
           />
         ))}

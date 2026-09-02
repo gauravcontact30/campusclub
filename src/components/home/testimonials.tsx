@@ -40,12 +40,12 @@ export function Testimonials() {
         {QUOTES.map((quote) => (
           <figure key={quote.name} className="surface-card flex h-full flex-col p-6">
             <Quote size={22} className="text-rouge" />
-            <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-pearl/75">“{quote.text}”</blockquote>
-            <figcaption className="mt-5 flex items-center gap-3 border-t border-pearl/10 pt-4">
+            <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-content/75">“{quote.text}”</blockquote>
+            <figcaption className="mt-5 flex items-center gap-3 border-t border-content/10 pt-4">
               <Avatar name={quote.name} src={quote.avatar} size={36} />
               <div>
                 <p className="text-sm font-semibold">{quote.name}</p>
-                <p className="text-xs text-pearl/55">{quote.city}</p>
+                <p className="text-xs text-content/55">{quote.city}</p>
               </div>
             </figcaption>
           </figure>

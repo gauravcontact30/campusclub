@@ -135,8 +135,8 @@ export function BusinessSearch({
         </div>
 
         <div className="flex w-full gap-2 lg:w-auto">
-          <div className="flex flex-1 items-center gap-2 rounded-2xl border border-pearl/15 bg-noir-700 px-4 py-3 lg:w-96">
-            <Search size={18} className="shrink-0 text-pearl/50" />
+          <div className="flex flex-1 items-center gap-2 rounded-2xl border border-content/15 bg-canvas-700 px-4 py-3 lg:w-96">
+            <Search size={18} className="shrink-0 text-content/50" />
             <input
               value={termDraft}
               onChange={(e) => setTermDraft(e.target.value)}
@@ -146,7 +146,7 @@ export function BusinessSearch({
             />
             {termDraft && (
               <button onClick={() => setTermDraft('')} aria-label="Clear search">
-                <X size={16} className="text-pearl/50 hover:text-pearl" />
+                <X size={16} className="text-content/50 hover:text-content" />
               </button>
             )}
           </div>
@@ -225,7 +225,7 @@ export function BusinessSearch({
                     aria-current={results.page === i + 1}
                     className={cn(
                       'h-9 w-9 rounded-full text-sm font-semibold transition-colors',
-                      results.page === i + 1 ? 'bg-rouge text-pearl' : 'text-pearl/60 hover:bg-pearl/5',
+                      results.page === i + 1 ? 'bg-rouge text-content' : 'text-content/60 hover:bg-content/5',
                     )}
                   >
                     {i + 1}

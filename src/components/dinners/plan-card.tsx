@@ -42,30 +42,30 @@ export function PlanCard({
     <div
       className={cn(
         'flex flex-col rounded-4xl border p-7 transition-transform hover:-translate-y-1',
-        plan.highlight ? 'border-rouge/60 bg-noir-600 text-pearl shadow-lift' : 'border-pearl/12 bg-noir-700',
+        plan.highlight ? 'border-rouge/60 bg-canvas-600 text-content shadow-lift' : 'border-content/12 bg-canvas-700',
       )}
     >
       {plan.highlight && (
-        <span className="mb-4 w-fit rounded-full bg-rouge px-3 py-1 text-xs font-semibold text-pearl">
+        <span className="mb-4 w-fit rounded-full bg-rouge px-3 py-1 text-xs font-semibold text-content">
           Most popular
         </span>
       )}
 
       <h3 className="font-display text-2xl font-semibold">{plan.name}</h3>
-      <p className={cn('mt-1.5 text-sm', plan.highlight ? 'text-pearl/65' : 'text-pearl/60')}>{plan.tagline}</p>
+      <p className={cn('mt-1.5 text-sm', plan.highlight ? 'text-content/65' : 'text-content/60')}>{plan.tagline}</p>
 
       <p className="mt-6">
         <span className="font-display text-4xl font-semibold">
           {plan.priceCents === 0 ? 'Free' : formatMoney(plan.priceCents)}
         </span>
-        <span className={cn('ml-1.5 text-sm', plan.highlight ? 'text-pearl/60' : 'text-pearl/55')}>{plan.cadence}</span>
+        <span className={cn('ml-1.5 text-sm', plan.highlight ? 'text-content/60' : 'text-content/55')}>{plan.cadence}</span>
       </p>
 
       <ul className="mt-6 flex-1 space-y-3">
         {plan.perks.map((perk) => (
           <li key={perk} className="flex items-start gap-2.5 text-sm">
             <Check size={16} className={cn('mt-0.5 shrink-0', plan.highlight ? 'text-rouge' : 'text-blush-600')} />
-            <span className={plan.highlight ? 'text-pearl/85' : 'text-pearl/75'}>{perk}</span>
+            <span className={plan.highlight ? 'text-content/85' : 'text-content/75'}>{perk}</span>
           </li>
         ))}
       </ul>

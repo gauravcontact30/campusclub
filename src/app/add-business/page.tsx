@@ -36,10 +36,10 @@ export default async function AddBusinessPage() {
             <div key={perk.title} className="surface-card p-6">
               <perk.icon size={22} className="text-rouge" />
               <h2 className="mt-3 font-display text-lg font-semibold">{perk.title}</h2>
-              <p className="mt-1.5 text-sm leading-relaxed text-pearl/65">{perk.body}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-content/65">{perk.body}</p>
             </div>
           ))}
-          <p className="px-2 text-xs leading-relaxed text-pearl/55">
+          <p className="px-2 text-xs leading-relaxed text-content/55">
             By listing you confirm you are authorised to represent the business. Owner tools unlock straight away; we
             spot-check by phone afterwards and reverse a disputed claim within one working day.
           </p>

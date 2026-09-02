@@ -22,12 +22,12 @@ export function CategoryGrid() {
             <Link
               key={category.slug}
               href={`/businesses?category=${category.slug}`}
-              className="group flex flex-col justify-between rounded-3xl border border-pearl/10 bg-noir-700 p-5 transition-all hover:-translate-y-1 hover:border-pearl/45 hover:bg-noir hover:text-pearl"
+              className="group flex flex-col justify-between rounded-3xl border border-content/10 bg-canvas-700 p-5 transition-all hover:-translate-y-1 hover:border-content/45 hover:bg-canvas hover:text-content"
             >
               <Icon size={24} className="text-rouge" />
               <div className="mt-8">
                 <h3 className="font-display text-lg font-semibold">{category.name}</h3>
-                <p className="mt-1 text-xs leading-relaxed text-pearl/60 group-hover:text-pearl/60">{category.blurb}</p>
+                <p className="mt-1 text-xs leading-relaxed text-content/60 group-hover:text-content/60">{category.blurb}</p>
               </div>
             </Link>
           );

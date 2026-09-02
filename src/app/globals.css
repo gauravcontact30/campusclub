@@ -3,9 +3,90 @@
 @tailwind utilities;
 
 @layer base {
+  /* ---------------------------------------------------------------- themes --
+     Two palettes, one attribute. `data-theme` on <html> is set by a blocking
+     script in layout.tsx before first paint, so there is no flash of the wrong
+     theme. Dark is the default: it is what the brand was designed in, and it is
+     what renders if the script never runs.
+
+     Values are space-separated RGB channels rather than hex, because Tailwind
+     composes them with its `/opacity` modifiers as `rgb(var(--x) / 0.6)`. */
   :root {
     --font-display: 'Bricolage Grotesque', Georgia, serif;
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+    color-scheme: dark;
+
+    --canvas: 13 8 10;
+    --canvas-900: 7 4 5;
+    --canvas-800: 13 8 10;
+    --canvas-700: 23 15 19;
+    --canvas-600: 35 22 28;
+    --canvas-500: 52 33 42;
+
+    --content: 251 241 244;
+    --content-100: 255 250 251;
+    --content-200: 235 213 220;
+    --content-300: 195 163 174;
+
+    /* On black, emphasis means more light: 700 is the lightest step. */
+    --rouge: 244 63 94;
+    --rouge-600: 255 100 120;
+    --rouge-700: 255 176 192;
+    --rouge-200: 74 18 32;
+
+    --blush: 255 143 163;
+    --blush-600: 255 194 206;
+
+    --petal: 255 217 224;
+
+    --page-wash:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(244, 63, 94, 0.18), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(255, 143, 163, 0.10), transparent 60%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 14px 34px -14px rgba(0, 0, 0, 0.85);
+    --shadow-lift: 0 26px 64px -26px rgba(244, 63, 94, 0.55);
+    --shadow-glow: 0 0 0 1px rgba(244, 63, 94, 0.28), 0 14px 44px -14px rgba(244, 63, 94, 0.55);
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+
+    /* The canvas ramp keeps its meaning, not its direction: 700 is still the
+       raised card, which on paper means brighter than the page rather than
+       darker, and 900 is still the band that sets the footer apart. */
+    --canvas: 253 247 248;
+    --canvas-900: 241 227 231;
+    --canvas-800: 253 247 248;
+    --canvas-700: 255 255 255;
+    --canvas-600: 247 234 238;
+    --canvas-500: 235 217 222;
+
+    --content: 43 18 25;
+    --content-100: 24 10 14;
+    --content-200: 94 58 69;
+    --content-300: 142 107 118;
+
+    /* And here the ramp genuinely reverses: on paper emphasis is darker ink,
+       so 700 — the step used for emphatic text — becomes the deepest rose
+       rather than the palest. */
+    --rouge: 225 29 72;
+    --rouge-600: 190 18 60;
+    --rouge-700: 159 18 57;
+    --rouge-200: 255 228 233;
+
+    --blush: 176 58 91;
+    --blush-600: 140 44 71;
+
+    --petal: 240 86 123;
+
+    --page-wash:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(244, 63, 94, 0.10), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(255, 143, 163, 0.12), transparent 60%);
+
+    --shadow-card: 0 1px 2px rgba(43, 18, 25, 0.06), 0 14px 34px -18px rgba(43, 18, 25, 0.22);
+    --shadow-lift: 0 26px 64px -30px rgba(159, 18, 57, 0.35);
+    --shadow-glow: 0 0 0 1px rgba(225, 29, 72, 0.22), 0 14px 44px -18px rgba(225, 29, 72, 0.30);
   }
 
   html {
@@ -13,15 +94,13 @@
   }
 
   body {
-    @apply bg-noir text-pearl antialiased;
+    @apply bg-canvas text-content antialiased;
     font-family: var(--font-sans);
-    /* Pure black goes dead. Two very low-opacity blooms — deep rose left, pale
-       blush right — sit behind the top of the page so it has a floor to stand
-       on. Deliberately NOT background-attachment: fixed, which repaints the
-       whole viewport on every scroll frame. */
-    background-image:
-      radial-gradient(58rem 40rem at 8% -6%, rgba(244, 63, 94, 0.18), transparent 65%),
-      radial-gradient(46rem 34rem at 96% 4%, rgba(255, 143, 163, 0.10), transparent 60%);
+    /* A flat ground goes dead either way, so both themes get two very
+       low-opacity rose blooms behind the top of the page. Deliberately NOT
+       background-attachment: fixed, which repaints the whole viewport on every
+       scroll frame. */
+    background-image: var(--page-wash);
     background-repeat: no-repeat;
   }
 
@@ -31,12 +110,22 @@
   }
 
   ::selection {
-    @apply bg-rouge text-pearl;
+    @apply bg-rouge text-canvas;
   }
 
   /* Keyboard focus stays visible everywhere — pointer focus does not shout. */
   :focus-visible {
-    @apply outline-none ring-2 ring-rouge ring-offset-2 ring-offset-noir;
+    @apply outline-none ring-2 ring-rouge ring-offset-2 ring-offset-canvas;
+  }
+
+  /* The theme toggle swaps its icon and its accessible name with no JS state,
+     so there is nothing to hydrate and nothing to mismatch. Anything without
+     `data-theme` is treated as dark, which matches the :root default above. */
+  :root[data-theme='light'] .when-dark {
+    display: none;
+  }
+  :root:not([data-theme='light']) .when-light {
+    display: none;
   }
 }
 
@@ -62,15 +151,15 @@
   }
 
   .lede {
-    @apply text-base sm:text-lg leading-relaxed text-pearl/70;
+    @apply text-base sm:text-lg leading-relaxed text-content/70;
   }
 
   .surface-card {
-    @apply rounded-3xl border border-pearl/10 bg-noir-700 shadow-card;
+    @apply rounded-3xl border border-content/10 bg-canvas-700 shadow-card;
   }
 
   .link-underline {
-    @apply underline decoration-rouge decoration-2 underline-offset-4 hover:decoration-pearl;
+    @apply underline decoration-rouge decoration-2 underline-offset-4 hover:decoration-content;
   }
 
   /* Hides scrollbars on the horizontal chip rails without killing scroll */

@@ -25,7 +25,7 @@ export function BusinessCard({
   // across the whole page.
   return (
     <article className="group surface-card relative overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
-      <div className="relative aspect-[4/3] overflow-hidden bg-pearl/5">
+      <div className="relative aspect-[4/3] overflow-hidden bg-content/5">
         {/* The title link below is stretched across the card, so the image
             needs no anchor of its own. */}
         <ImageWithFallback
@@ -56,25 +56,25 @@ export function BusinessCard({
               {business.name}
             </Link>
           </h3>
-          <span className="shrink-0 text-sm font-semibold text-pearl/55">{priceLabel(business.priceLevel, business.city)}</span>
+          <span className="shrink-0 text-sm font-semibold text-content/55">{priceLabel(business.priceLevel, business.city)}</span>
         </div>
 
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <RatingStars value={business.rating} />
           <span className="text-sm font-semibold">{business.rating.toFixed(1)}</span>
-          <span className="text-sm text-pearl/55">
+          <span className="text-sm text-content/55">
             ({formatCount(business.reviewCount)} {business.reviewCount === 1 ? 'review' : 'reviews'})
           </span>
         </div>
 
-        <p className="mt-2 flex items-center gap-1.5 text-sm text-pearl/60">
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-content/60">
           <MapPin size={14} className="shrink-0" />
           <span className="truncate">
             {business.neighborhood}, {business.city} · {category?.name}
           </span>
         </p>
 
-        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-pearl/65">{business.description}</p>
+        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-content/65">{business.description}</p>
 
         <div className="mt-4 flex items-center justify-between gap-2">
           <OpenNowBadge hours={business.hours} />

@@ -38,13 +38,13 @@ export default async function DinnerPage({ params }: { params: Promise<{ id: str
 
   return (
     <div className="container-page py-8 sm:py-10">
-      <Link href="/dinners" className="inline-flex items-center gap-2 text-sm text-pearl/60 hover:text-pearl">
+      <Link href="/dinners" className="inline-flex items-center gap-2 text-sm text-content/60 hover:text-content">
         <ArrowLeft size={16} /> All dinners
       </Link>
 
       <div className="mt-6 grid gap-10 lg:grid-cols-[1.6fr_1fr]">
         <div>
-          <div className="relative aspect-[16/9] overflow-hidden rounded-4xl bg-pearl/5">
+          <div className="relative aspect-[16/9] overflow-hidden rounded-4xl bg-content/5">
             <ImageWithFallback
               src={event.coverImage}
               alt={`Dinner in ${event.city}`}
@@ -54,9 +54,9 @@ export default async function DinnerPage({ params }: { params: Promise<{ id: str
               seed={event.id}
               className="object-cover"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-noir/90 to-transparent p-6 text-pearl">
-              <p className="text-sm font-medium text-pearl/80">{event.vibe}</p>
-              <h1 className="display-md mt-1 text-pearl">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canvas/90 to-transparent p-6 text-content">
+              <p className="text-sm font-medium text-content/80">{event.vibe}</p>
+              <h1 className="display-md mt-1 text-content">
                 Dinner in {event.city}
               </h1>
             </div>
@@ -70,7 +70,7 @@ export default async function DinnerPage({ params }: { params: Promise<{ id: str
             ].map((item) => (
               <div key={item.label} className="surface-card p-5">
                 <item.icon size={18} className="text-rouge" />
-                <dt className="mt-3 text-xs font-semibold uppercase tracking-widest text-pearl/55">{item.label}</dt>
+                <dt className="mt-3 text-xs font-semibold uppercase tracking-widest text-content/55">{item.label}</dt>
                 <dd className="mt-1 text-sm font-medium">{item.value}</dd>
               </div>
             ))}
@@ -92,7 +92,7 @@ export default async function DinnerPage({ params }: { params: Promise<{ id: str
               ].map(([time, text]) => (
                 <li key={time} className="flex gap-4">
                   <span className="w-14 shrink-0 font-display text-lg font-semibold text-rouge">{time}</span>
-                  <span className="text-sm leading-relaxed text-pearl/70">{text}</span>
+                  <span className="text-sm leading-relaxed text-content/70">{text}</span>
                 </li>
               ))}
             </ol>
@@ -109,7 +109,7 @@ export default async function DinnerPage({ params }: { params: Promise<{ id: str
       </div>
 
       {upcoming.length > 0 && (
-        <section className="mt-16 border-t border-pearl/10 pt-10">
+        <section className="mt-16 border-t border-content/10 pt-10">
           <h2 className="display-md">Other tables in {event.city}</h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {upcoming.map((item) => (

@@ -13,7 +13,7 @@ const FACES = [
 
 export function Hero({ businessCount, cityCount }: { businessCount: number; cityCount: number }) {
   return (
-    <section className="relative overflow-hidden bg-noir text-pearl">
+    <section className="relative overflow-hidden bg-canvas text-content">
       {/* soft light bloom behind the headline */}
       <div
         aria-hidden
@@ -26,18 +26,18 @@ export function Hero({ businessCount, cityCount }: { businessCount: number; city
 
       <div className="container-page relative grid gap-14 py-16 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-28">
         <div className="animate-fade-up">
-          <span className="inline-flex items-center gap-2 rounded-full border border-pearl/20 px-3.5 py-1.5 text-xs font-medium text-pearl/80">
+          <span className="inline-flex items-center gap-2 rounded-full border border-content/20 px-3.5 py-1.5 text-xs font-medium text-content/80">
             <Sparkles size={14} className="text-rouge" />
             Every Wednesday, 8:00 PM — in {cityCount} cities
           </span>
 
-          <h1 className="display-xl mt-6 text-pearl">
+          <h1 className="display-xl mt-6 text-content">
             Meet five strangers.
             <br />
             <span className="text-rouge">Find your city.</span>
           </h1>
 
-          <p className="lede mt-6 max-w-xl text-pearl/70">
+          <p className="lede mt-6 max-w-xl text-content/70">
             SitNext does two things properly. It tells you which local places are actually worth your money — reviewed
             by people who went — and it seats you at a table with five strangers you would probably like.
           </p>
@@ -55,11 +55,11 @@ export function Hero({ businessCount, cityCount }: { businessCount: number; city
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <div className="flex -space-x-3">
               {FACES.map((f) => (
-                <Avatar key={f.name} name={f.name} src={f.src} size={38} className="ring-2 ring-noir" />
+                <Avatar key={f.name} name={f.name} src={f.src} size={38} className="ring-2 ring-canvas" />
               ))}
             </div>
-            <p className="text-sm text-pearl/60">
-              <span className="font-semibold text-pearl">18,400+ seats</span> filled since we started.
+            <p className="text-sm text-content/60">
+              <span className="font-semibold text-content">18,400+ seats</span> filled since we started.
             </p>
           </div>
         </div>

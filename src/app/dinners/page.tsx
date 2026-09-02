@@ -33,13 +33,13 @@ export default async function DinnersPage({
 
   return (
     <>
-      <section className="bg-noir py-14 text-pearl sm:py-20">
+      <section className="bg-canvas py-14 text-content sm:py-20">
         <div className="container-page">
           <p className="eyebrow">Every Wednesday, 8:00 PM</p>
-          <h1 className="display-lg mt-3 max-w-2xl text-pearl">
+          <h1 className="display-lg mt-3 max-w-2xl text-content">
             Pick a Wednesday. We will handle the other five people.
           </h1>
-          <p className="lede mt-5 max-w-2xl text-pearl/70">
+          <p className="lede mt-5 max-w-2xl text-content/70">
             Six seats per table. Venue revealed 36 hours before. If the table fills, you go on the waitlist and get first
             call on a drop-out.
           </p>

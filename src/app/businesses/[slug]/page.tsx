@@ -72,16 +72,16 @@ export default async function BusinessPage({
 
   return (
     <div className="container-page py-8 sm:py-10">
-      <nav aria-label="Breadcrumb" className="mb-5 flex flex-wrap items-center gap-2 text-sm text-pearl/55">
-        <Link href="/businesses" className="hover:text-pearl">
+      <nav aria-label="Breadcrumb" className="mb-5 flex flex-wrap items-center gap-2 text-sm text-content/55">
+        <Link href="/businesses" className="hover:text-content">
           Directory
         </Link>
         <span>/</span>
-        <Link href={`/businesses?city=${business.city.toLowerCase().replace(/\s+/g, '-')}`} className="hover:text-pearl">
+        <Link href={`/businesses?city=${business.city.toLowerCase().replace(/\s+/g, '-')}`} className="hover:text-content">
           {business.city}
         </Link>
         <span>/</span>
-        <span className="text-pearl">{business.name}</span>
+        <span className="text-content">{business.name}</span>
       </nav>
 
       {isOwner && (
@@ -90,7 +90,7 @@ export default async function BusinessPage({
             <ShieldCheck size={18} className="text-blush-600" />
             {claimed === '1' ? `Claimed — ${business.name} is yours to manage.` : 'You manage this listing.'}
             {unanswered > 0 && (
-              <span className="text-pearl/60">
+              <span className="text-content/60">
                 {unanswered} review{unanswered === 1 ? '' : 's'} without a reply.
               </span>
             )}
@@ -111,11 +111,11 @@ export default async function BusinessPage({
               <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
                 <RatingStars value={business.rating} size={18} />
                 <span className="font-semibold">{business.rating.toFixed(1)}</span>
-                <span className="text-pearl/60">({pluralize(business.reviewCount, 'review')})</span>
-                <span className="text-pearl/40">·</span>
-                <span className="text-pearl/70">{priceLabel(business.priceLevel, business.city)}</span>
-                <span className="text-pearl/40">·</span>
-                <Link href={`/businesses?category=${business.categorySlug}`} className="text-pearl/70 hover:text-rouge">
+                <span className="text-content/60">({pluralize(business.reviewCount, 'review')})</span>
+                <span className="text-content/40">·</span>
+                <span className="text-content/70">{priceLabel(business.priceLevel, business.city)}</span>
+                <span className="text-content/40">·</span>
+                <Link href={`/businesses?category=${business.categorySlug}`} className="text-content/70 hover:text-rouge">
                   {category?.name}
                 </Link>
               </div>
@@ -127,7 +127,7 @@ export default async function BusinessPage({
             <div className="flex flex-wrap gap-2">
               <Link
                 href={`/businesses/${slug}/review`}
-                className="inline-flex h-11 items-center gap-2 rounded-full bg-rouge px-5 text-sm font-semibold text-pearl hover:bg-rouge-600"
+                className="inline-flex h-11 items-center gap-2 rounded-full bg-rouge px-5 text-sm font-semibold text-content hover:bg-rouge-600"
               >
                 <Star size={16} /> Write a review
               </Link>
@@ -146,11 +146,11 @@ export default async function BusinessPage({
             {business.isClaimed && <Badge tone="dark">Owner verified</Badge>}
           </div>
 
-          <section className="mt-12 border-t border-pearl/10 pt-8">
+          <section className="mt-12 border-t border-content/10 pt-8">
             <h2 className="display-md">What you get</h2>
             <ul className="mt-5 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
               {business.amenities.map((amenity) => (
-                <li key={amenity} className="flex items-center gap-2.5 text-sm text-pearl/75">
+                <li key={amenity} className="flex items-center gap-2.5 text-sm text-content/75">
                   <span className="h-1.5 w-1.5 rounded-full bg-rouge" />
                   {amenity}
                 </li>
@@ -158,7 +158,7 @@ export default async function BusinessPage({
             </ul>
           </section>
 
-          <section id="reviews" className="mt-12 border-t border-pearl/10 pt-8">
+          <section id="reviews" className="mt-12 border-t border-content/10 pt-8">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <h2 className="display-md">Reviews</h2>
               <div className="flex flex-wrap gap-1.5">
@@ -169,8 +169,8 @@ export default async function BusinessPage({
                     scroll={false}
                     className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                       reviewSort === option.value
-                        ? 'border-rouge bg-rouge text-pearl'
-                        : 'border-pearl/15 text-pearl/60 hover:border-pearl/40'
+                        ? 'border-rouge bg-rouge text-content'
+                        : 'border-content/15 text-content/60 hover:border-content/40'
                     }`}
                   >
                     {option.label}
@@ -194,7 +194,7 @@ export default async function BusinessPage({
 
             <div className="mt-4">
               {reviews.length === 0 ? (
-                <p className="py-10 text-center text-sm text-pearl/60">
+                <p className="py-10 text-center text-sm text-content/60">
                   No reviews yet — yours would be the first.
                 </p>
               ) : (
@@ -220,7 +220,7 @@ export default async function BusinessPage({
             <h2 className="font-display text-lg font-semibold">Contact</h2>
             <div className="mt-4 space-y-3 text-sm">
               <a href={`tel:${business.phone.replace(/\s+/g, '')}`} className="flex items-center gap-3 hover:text-rouge">
-                <Phone size={16} className="text-pearl/50" />
+                <Phone size={16} className="text-content/50" />
                 {business.phone}
               </a>
               {business.website && (
@@ -230,12 +230,12 @@ export default async function BusinessPage({
                   rel="noreferrer noopener"
                   className="flex items-center gap-3 break-all hover:text-rouge"
                 >
-                  <Globe size={16} className="shrink-0 text-pearl/50" />
+                  <Globe size={16} className="shrink-0 text-content/50" />
                   {business.website.replace(/^https?:\/\//, '')}
                 </a>
               )}
-              <p className="flex items-center gap-3 text-pearl/60">
-                <Share2 size={16} className="text-pearl/50" />
+              <p className="flex items-center gap-3 text-content/60">
+                <Share2 size={16} className="text-content/50" />
                 {business.neighborhood}, {business.city}
               </p>
             </div>
@@ -249,9 +249,9 @@ export default async function BusinessPage({
           </div>
 
           {!business.ownerId && (
-            <div className="rounded-3xl border border-dashed border-pearl/25 p-6">
+            <div className="rounded-3xl border border-dashed border-content/25 p-6">
               <h2 className="font-display text-lg font-semibold">Is this your business?</h2>
-              <p className="mt-2 text-sm text-pearl/65">
+              <p className="mt-2 text-sm text-content/65">
                 Claim the listing to respond to reviews, fix your hours and add photos.
               </p>
               <Link
@@ -266,7 +266,7 @@ export default async function BusinessPage({
       </div>
 
       {related.length > 0 && (
-        <section className="mt-16 border-t border-pearl/10 pt-10">
+        <section className="mt-16 border-t border-content/10 pt-10">
           <h2 className="display-md">More {category?.name.toLowerCase()} nearby</h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (

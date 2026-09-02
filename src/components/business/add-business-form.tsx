@@ -106,7 +106,7 @@ export function AddBusinessForm() {
           {AMENITIES.map((amenity) => (
             <label
               key={amenity}
-              className="cursor-pointer rounded-full border border-pearl/15 px-3.5 py-2 text-xs font-medium transition-colors has-[:checked]:border-rouge has-[:checked]:bg-rouge has-[:checked]:text-pearl"
+              className="cursor-pointer rounded-full border border-content/15 px-3.5 py-2 text-xs font-medium transition-colors has-[:checked]:border-rouge has-[:checked]:bg-rouge has-[:checked]:text-content"
             >
               <input type="checkbox" name="amenities" value={amenity} className="sr-only" />
               {amenity}

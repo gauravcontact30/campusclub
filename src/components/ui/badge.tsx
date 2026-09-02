@@ -11,11 +11,11 @@ export function Badge({
   className?: string;
 }) {
   const tones = {
-    neutral: 'bg-pearl/8 text-pearl/70 border-pearl/15',
+    neutral: 'bg-content/8 text-content/70 border-content/15',
     rouge: 'bg-rouge/15 text-rouge-700 border-rouge/35',
     blush: 'bg-blush/15 text-blush-600 border-blush/35',
     petal: 'bg-petal/15 text-petal border-petal/35',
-    dark: 'bg-noir-600 text-pearl border-pearl/20',
+    dark: 'bg-canvas-600 text-content border-content/20',
   };
   return (
     <span

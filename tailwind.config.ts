@@ -1,45 +1,43 @@
 import type { Config } from 'tailwindcss';
 
+/** Reads a channel-triplet custom property while preserving `/opacity` support. */
+const withAlpha = (variable: string) => `rgb(var(${variable}) / <alpha-value>)`;
+
 const config: Config = {
   content: ['./src/**/*.{ts,tsx,mdx}'],
   theme: {
     extend: {
       colors: {
-        /* The canvas: black warmed with rose, so it never reads as flat #000 */
-        noir: {
-          DEFAULT: '#0D080A',
-          900: '#070405',
-          800: '#0D080A',
-          700: '#170F13',
-          600: '#23161C',
-          500: '#34212A',
+        /* Colours live as CSS custom properties in globals.css, one set per
+           theme, so the light/dark switch is a single attribute on <html>
+           rather than a `dark:` variant on 700-odd class names. Values are
+           space-separated RGB channels, which is what lets Tailwind's opacity
+           modifiers (`text-content/60`) keep working. */
+        canvas: {
+          DEFAULT: withAlpha('--canvas'),
+          900: withAlpha('--canvas-900'),
+          800: withAlpha('--canvas-800'),
+          700: withAlpha('--canvas-700'),
+          600: withAlpha('--canvas-600'),
+          500: withAlpha('--canvas-500'),
         },
-        /* Light foreground. Warmed toward rose so text belongs to the palette
-           instead of sitting on top of it as clinical white. */
-        pearl: {
-          DEFAULT: '#FBF1F4',
-          100: '#FFFAFB',
-          200: '#EBD5DC',
-          300: '#C3A3AE',
+        content: {
+          DEFAULT: withAlpha('--content'),
+          100: withAlpha('--content-100'),
+          200: withAlpha('--content-200'),
+          300: withAlpha('--content-300'),
         },
-        /* Signature rose. Named `rouge` rather than `rose` on purpose: Tailwind
-           ships a `rose` scale, and `extend` deep-merges, so a token called
-           `rose` would leave `rose-500` meaning Tailwind's and `rose-600`
-           meaning ours. The ramp runs BRIGHTER as the number rises — on a black
-           canvas emphasis means more light, not less. */
         rouge: {
-          DEFAULT: '#F43F5E',
-          600: '#FF6478',
-          700: '#FFB0C0',
-          200: '#4A1220',
+          DEFAULT: withAlpha('--rouge'),
+          600: withAlpha('--rouge-600'),
+          700: withAlpha('--rouge-700'),
+          200: withAlpha('--rouge-200'),
         },
-        /* Lighter rose. Carries the affirmative signal — open now, confirmed. */
         blush: {
-          DEFAULT: '#FF8FA3',
-          600: '#FFC2CE',
+          DEFAULT: withAlpha('--blush'),
+          600: withAlpha('--blush-600'),
         },
-        /* The palest tint, for ratings and small flourishes */
-        petal: '#FFD9E0',
+        petal: withAlpha('--petal'),
       },
       fontFamily: {
         display: ['var(--font-display)', 'Georgia', 'serif'],
@@ -50,10 +48,11 @@ const config: Config = {
         '5xl': '2.75rem',
       },
       boxShadow: {
-        /* Black drops nothing on black — depth has to come from a rose bloom */
-        card: '0 1px 2px rgba(0,0,0,0.6), 0 14px 34px -14px rgba(0,0,0,0.85)',
-        lift: '0 26px 64px -26px rgba(244,63,94,0.55)',
-        glow: '0 0 0 1px rgba(244,63,94,0.28), 0 14px 44px -14px rgba(244,63,94,0.55)',
+        /* Also per-theme: a shadow tuned for black is invisible on paper and a
+           shadow tuned for paper is mud on black. */
+        card: 'var(--shadow-card)',
+        lift: 'var(--shadow-lift)',
+        glow: 'var(--shadow-glow)',
       },
       maxWidth: {
         page: '1240px',

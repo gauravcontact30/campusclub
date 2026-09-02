@@ -68,7 +68,7 @@ export function BookingPanel({
       <div className="flex items-baseline justify-between">
         <p>
           <span className="font-display text-3xl font-semibold">{formatMoneyForCity(event.priceCents, event.city)}</span>
-          <span className="text-sm text-pearl/55"> / seat</span>
+          <span className="text-sm text-content/55"> / seat</span>
         </p>
         {current ? (
           <Badge tone={current.status === 'confirmed' ? 'blush' : 'petal'}>
@@ -81,19 +81,19 @@ export function BookingPanel({
         )}
       </div>
 
-      <p className="text-sm text-pearl/65">
+      <p className="text-sm text-content/65">
         Covers matching, the reservation and the conversation deck. Food and drink are settled at the venue.
       </p>
 
-      <div className="flex items-center gap-2 rounded-2xl bg-pearl/5 px-4 py-3 text-sm">
-        <Users size={16} className="text-pearl/55" />
+      <div className="flex items-center gap-2 rounded-2xl bg-content/5 px-4 py-3 text-sm">
+        <Users size={16} className="text-content/55" />
         {event.seatsTaken} of {event.seatsTotal} seats taken · {event.language}
       </div>
 
       {!signedIn ? (
         <Link
           href={`/login?next=/dinners/${event.id}`}
-          className="inline-flex h-14 w-full items-center justify-center rounded-full bg-rouge px-8 font-semibold text-pearl hover:bg-rouge-600"
+          className="inline-flex h-14 w-full items-center justify-center rounded-full bg-rouge px-8 font-semibold text-content hover:bg-rouge-600"
         >
           Sign in to claim a seat
         </Link>
@@ -116,7 +116,7 @@ export function BookingPanel({
       )}
 
       {signedIn && !hasQuiz && (
-        <p className="rounded-2xl border border-dashed border-pearl/25 px-4 py-3 text-xs leading-relaxed text-pearl/60">
+        <p className="rounded-2xl border border-dashed border-content/25 px-4 py-3 text-xs leading-relaxed text-content/60">
           You have not done the{' '}
           <Link href="/dinners/quiz" className="font-semibold text-rouge-700 hover:underline">
             matching questionnaire
@@ -125,7 +125,7 @@ export function BookingPanel({
         </p>
       )}
 
-      <p className="text-center text-xs text-pearl/55">Free cancellation up to 24 hours before.</p>
+      <p className="text-center text-xs text-content/55">Free cancellation up to 24 hours before.</p>
     </div>
   );
 }

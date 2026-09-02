@@ -238,22 +238,44 @@ PLAYWRIGHT_CHROMIUM_PATH=/path/to/chrome npm run test:e2e
 A dark-first rose system. Every accent is one hue, separated by lightness
 rather than by a second colour:
 
-| Token | Value | Role |
-| --- | --- | --- |
-| `noir` | `#0D080A` → `#34212A` | The canvas. Black warmed with rose, so it never reads as flat `#000`. `noir-700` is the raised card, `noir-600` the hover/elevated surface. |
-| `pearl` | `#FBF1F4` → `#C3A3AE` | Type and hairlines. Rose-tinted white, so text belongs to the palette rather than sitting on top of it. |
-| `rouge` | `#F43F5E` | Brand and action: primary buttons, links, selected state, focus rings. |
-| `blush` | `#FF8FA3` | Affirmative signal: open-now, confirmed bookings, proof-point stats. |
-| `petal` | `#FFD9E0` | Ratings and small flourishes. |
+| Token | Role | Dark | Light |
+| --- | --- | --- | --- |
+| `canvas` | The ground. `canvas-700` is the raised card, `canvas-600` the hover/elevated surface, `canvas-900` the band that sets the footer apart. | `#0D080A` → `#34212A` | `#FDF7F8` → `#EBD9DE` |
+| `content` | Type and hairlines. Rose-tinted, so text belongs to the palette rather than sitting on top of it. | `#FBF1F4` → `#C3A3AE` | `#2B1219` → `#8E6B76` |
+| `rouge` | Brand and action: primary buttons, links, selected state, focus rings. | `#F43F5E` | `#E11D48` |
+| `blush` | Affirmative signal: open-now, confirmed bookings, proof-point stats. | `#FF8FA3` | `#B03A5B` |
+| `petal` | Ratings and small flourishes. | `#FFD9E0` | `#F0567B` |
+
+The tokens are named for their **role**, not their colour: with two themes,
+`canvas` is black in one and near-white in the other, so a name like `noir`
+would be a lie half the time.
 
 The brand token is `rouge`, not `rose`, on purpose: Tailwind ships a `rose`
 scale and `extend` deep-merges, so a token named `rose` would leave `rose-500`
 meaning Tailwind's and `rose-600` meaning ours. A different name makes every
 usage unambiguous.
 
-The `rouge` ramp runs **brighter** as the number rises (`rouge-700` is the
-lightest) because on a black canvas emphasis means more light, not less — the
-opposite of a ramp designed for paper.
+### Two themes, one attribute
+
+Every colour is a CSS custom property holding space-separated RGB channels, and
+Tailwind reads them as `rgb(var(--token) / <alpha-value>)` — which is what lets
+`text-content/60` keep working. Switching themes therefore rewrites one
+attribute on `<html>`, not 700-odd class names, and no component carries a
+`dark:` variant.
+
+A blocking script in `<head>` sets `data-theme` before first paint, so the page
+never renders in the wrong theme and then jumps. Order of authority: an explicit
+choice the visitor made, then the OS preference, then dark.
+
+The header toggle picks its icon and its accessible name from `data-theme` in
+CSS rather than from React state. There is nothing to hydrate, so the button is
+correct on the very first paint and no hydration mismatch is possible.
+
+The `rouge` ramp reverses between themes, and this is the part that cannot be
+automated. On black, emphasis means **more light**, so `rouge-700` — the step
+used for emphatic text — is the palest. On paper, emphasis means **darker ink**,
+so the same token becomes the deepest rose. Reusing one ramp for both themes
+produces text that is unreadable in exactly one of them.
 
 One consequence worth knowing: because the palette is a single hue, status no
 longer reads by colour alone. Open-now and confirmed use `blush` against
@@ -261,8 +283,10 @@ longer reads by colour alone. Open-now and confirmed use `blush` against
 text rather than by the red/green contrast most interfaces lean on. Every such
 state is labelled in words for exactly that reason.
 
-Because black drops no shadow on black, depth comes from the `lift` and `glow`
-shadows, which bloom rose rather than grey. Display type is Bricolage
+Shadows are per-theme for the same reason: black drops no shadow on black, so
+the dark theme's depth comes from a rose bloom, while the light theme uses a
+conventional soft drop — a shadow tuned for one is invisible or muddy in the
+other. Display type is Bricolage
 Grotesque, body is Plus Jakarta Sans. Cards are generously rounded, buttons are
 pills, and every section is built mobile-first.
 

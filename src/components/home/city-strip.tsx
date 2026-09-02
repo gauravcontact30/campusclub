@@ -14,13 +14,13 @@ export function CityStrip({ counts }: { counts: Record<string, number> }) {
           <Link
             key={city.slug}
             href={`/businesses?city=${city.slug}`}
-            className="group flex items-center justify-between gap-4 rounded-3xl border border-pearl/10 bg-noir-700 p-6 transition-all hover:border-pearl/45 hover:bg-noir hover:text-pearl"
+            className="group flex items-center justify-between gap-4 rounded-3xl border border-content/10 bg-canvas-700 p-6 transition-all hover:border-content/45 hover:bg-canvas hover:text-content"
           >
             <div>
               <h3 className="font-display text-xl font-semibold">{city.name}</h3>
-              <p className="mt-1 text-sm text-pearl/60 group-hover:text-pearl/60">{city.blurb}</p>
+              <p className="mt-1 text-sm text-content/60 group-hover:text-content/60">{city.blurb}</p>
             </div>
-            <span className="shrink-0 rounded-full bg-pearl/5 px-3 py-1.5 text-xs font-semibold group-hover:bg-pearl/15">
+            <span className="shrink-0 rounded-full bg-content/5 px-3 py-1.5 text-xs font-semibold group-hover:bg-content/15">
               {counts[city.slug] ?? 0} places
             </span>
           </Link>

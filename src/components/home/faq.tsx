@@ -48,7 +48,7 @@ export function Faq() {
           </p>
         </div>
 
-        <dl className="divide-y divide-pearl/10 border-y border-pearl/10">
+        <dl className="divide-y divide-content/10 border-y border-content/10">
           {FAQS.map((faq, i) => (
             <div key={faq.q}>
               <dt>
@@ -62,7 +62,7 @@ export function Faq() {
                 </button>
               </dt>
               {open === i && (
-                <dd className="animate-fade-in pb-5 text-sm leading-relaxed text-pearl/65">{faq.a}</dd>
+                <dd className="animate-fade-in pb-5 text-sm leading-relaxed text-content/65">{faq.a}</dd>
               )}
             </div>
           ))}

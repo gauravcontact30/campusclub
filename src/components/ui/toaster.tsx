@@ -29,7 +29,7 @@ export function Toaster() {
             key={toast.id}
             className={cn(
               'pointer-events-auto flex w-full max-w-sm animate-fade-up items-start gap-3 rounded-2xl border px-4 py-3 shadow-lift',
-              toast.tone === 'error' ? 'border-rouge/50 bg-rouge-200 text-pearl' : 'border-pearl/15 bg-noir-600 text-pearl',
+              toast.tone === 'error' ? 'border-rouge/50 bg-rouge-200 text-content' : 'border-content/15 bg-canvas-600 text-content',
             )}
           >
             <Icon size={18} className="mt-0.5 shrink-0" />
