@@ -66,7 +66,7 @@ export function HeroSearch() {
             key={q}
             type="button"
             onClick={() => router.push(`/businesses?term=${encodeURIComponent(q)}`)}
-            className="rounded-full border border-content/20 px-3 py-1.5 text-xs text-content/80 transition-colors hover:border-ember hover:text-ember"
+            className="rounded-full border border-content/20 px-3 py-1.5 text-xs text-content/80 transition-colors hover:border-brand hover:text-brand"
           >
             {q}
           </button>

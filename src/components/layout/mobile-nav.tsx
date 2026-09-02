@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect } from "react";
-import { createPortal } from "react-dom";
-import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
-import { NAV_LINKS } from "./nav-links";
-import { useUiStore } from "@/store/ui-store";
-import { ButtonLink } from "@/components/ui/button";
-import { signOutAction } from "@/app/actions/auth";
-import { ThemeToggle } from "./theme-toggle";
-import type { UserProfile } from "@/types";
+import Link from 'next/link';
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { usePathname } from 'next/navigation';
+import { Menu, X } from 'lucide-react';
+import { NAV_LINKS } from './nav-links';
+import { useUiStore } from '@/store/ui-store';
+import { ButtonLink } from '@/components/ui/button';
+import { signOutAction } from '@/app/actions/auth';
+import { ThemeToggle } from './theme-toggle';
+import { PaletteRow } from './palette-row';
+import type { UserProfile } from '@/types';
 
 export function MobileNav({ user }: { user: UserProfile | null }) {
   const open = useUiStore((s) => s.mobileNavOpen);
@@ -21,9 +22,9 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
   useEffect(() => close(), [pathname, close]);
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    document.body.style.overflow = open ? 'hidden' : '';
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = '';
     };
   }, [open]);
 
@@ -31,7 +32,7 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
     <>
       <button
         onClick={toggle}
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
         className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content md:hidden"
       >
@@ -64,26 +65,15 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
                 className="flex w-full items-center gap-3 rounded-2xl border border-content/15 px-4 py-3.5 text-sm font-semibold text-content transition-colors hover:bg-content/10"
               />
 
+              <PaletteRow />
+
               {user ? (
                 <>
-                  <p className="px-1 text-sm text-content/60">
-                    Signed in as {user.email}
-                  </p>
-                  <ButtonLink
-                    href="/profile"
-                    variant="secondary"
-                    full
-                    size="lg"
-                  >
+                  <p className="px-1 text-sm text-content/60">Signed in as {user.email}</p>
+                  <ButtonLink href="/profile" variant="secondary" full size="lg">
                     Your profile
                   </ButtonLink>
-                  <ButtonLink
-                    href="/saved"
-                    variant="ghost"
-                    full
-                    size="lg"
-                    className="text-content hover:bg-content/10"
-                  >
+                  <ButtonLink href="/saved" variant="ghost" full size="lg" className="text-content hover:bg-content/10">
                     Saved places
                   </ButtonLink>
                   <ButtonLink
@@ -98,7 +88,7 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
                   <form action={signOutAction}>
                     <button
                       type="submit"
-                      className="w-full rounded-full px-5 py-3 text-sm font-semibold text-ember hover:bg-content/10"
+                      className="w-full rounded-full px-5 py-3 text-sm font-semibold text-brand hover:bg-content/10"
                     >
                       Sign out
                     </button>

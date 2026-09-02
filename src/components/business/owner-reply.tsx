@@ -63,9 +63,9 @@ export function OwnerReply({
 
   if (response) {
     return (
-      <div className="mt-4 rounded-2xl border-l-2 border-ember bg-canvas/[0.04] p-4">
+      <div className="mt-4 rounded-2xl border-l-2 border-brand bg-canvas/[0.04] p-4">
         <p className="flex flex-wrap items-center gap-2 text-sm font-semibold">
-          <Store size={15} className="text-ember" />
+          <Store size={15} className="text-brand" />
           Response from {businessName}
           {respondedAt && <span className="font-normal text-xs text-content/55">{relativeTime(respondedAt)}</span>}
         </p>
@@ -73,13 +73,13 @@ export function OwnerReply({
 
         {canRespond && (
           <div className="mt-3 flex gap-3">
-            <button onClick={() => setOpen((o) => !o)} className="text-xs font-semibold text-ember-700 hover:underline">
+            <button onClick={() => setOpen((o) => !o)} className="text-xs font-semibold text-brand-700 hover:underline">
               Edit reply
             </button>
             <button
               onClick={withdraw}
               disabled={withdrawing}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-content/55 hover:text-ember"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-content/55 hover:text-brand"
             >
               <Trash2 size={12} /> Withdraw
             </button>

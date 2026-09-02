@@ -30,7 +30,7 @@ describe('RatingInput', () => {
 
 describe('Badge', () => {
   it('renders its children', () => {
-    render(<Badge tone="ember">2 seats left</Badge>);
+    render(<Badge tone="brand">2 seats left</Badge>);
     expect(screen.getByText('2 seats left')).toBeInTheDocument();
   });
 });

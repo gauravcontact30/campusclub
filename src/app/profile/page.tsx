@@ -45,8 +45,8 @@ export default async function ProfilePage() {
               {new Date(user.createdAt).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
-              <Badge tone="ember">{plan.name}</Badge>
-              {quiz ? <Badge tone="marigold">Match-ready</Badge> : <Badge>Quiz not taken</Badge>}
+              <Badge tone="brand">{plan.name}</Badge>
+              {quiz ? <Badge tone="signal">Match-ready</Badge> : <Badge>Quiz not taken</Badge>}
             </div>
           </div>
         </div>
@@ -76,7 +76,7 @@ export default async function ProfilePage() {
           <div className="surface-card p-6">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-display text-xl font-semibold">Listings you manage</h2>
-              <Link href="/add-business" className="text-sm font-semibold text-ember-700 hover:underline">
+              <Link href="/add-business" className="text-sm font-semibold text-brand-700 hover:underline">
                 Add one
               </Link>
             </div>
@@ -90,14 +90,14 @@ export default async function ProfilePage() {
                 {managed.map((business) => (
                   <li key={business.id} className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <Link href={`/businesses/${business.slug}`} className="font-semibold hover:text-ember">
+                      <Link href={`/businesses/${business.slug}`} className="font-semibold hover:text-brand">
                         {business.name}
                       </Link>
                       <p className="truncate text-xs text-content/55">
                         {business.neighborhood}, {business.city} · {business.reviewCount} reviews
                       </p>
                     </div>
-                    <Badge tone="marigold">Claimed</Badge>
+                    <Badge tone="signal">Claimed</Badge>
                   </li>
                 ))}
               </ul>
@@ -120,7 +120,7 @@ export default async function ProfilePage() {
                     );
                   })}
                 </dl>
-                <Link href="/dinners/quiz" className="mt-5 inline-block text-sm font-semibold text-ember-700 hover:underline">
+                <Link href="/dinners/quiz" className="mt-5 inline-block text-sm font-semibold text-brand-700 hover:underline">
                   Retake the questionnaire →
                 </Link>
               </>
@@ -140,7 +140,7 @@ export default async function ProfilePage() {
         <div className="surface-card p-6">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-xl font-semibold">Your reviews</h2>
-            <Link href="/businesses" className="text-sm font-semibold text-ember-700 hover:underline">
+            <Link href="/businesses" className="text-sm font-semibold text-brand-700 hover:underline">
               Write another
             </Link>
           </div>
@@ -158,7 +158,7 @@ export default async function ProfilePage() {
                     <div className="flex items-center justify-between gap-3">
                       <Link
                         href={business ? `/businesses/${business.slug}` : '/businesses'}
-                        className="font-semibold hover:text-ember"
+                        className="font-semibold hover:text-brand"
                       >
                         {business?.name ?? 'A place on SitNext'}
                       </Link>

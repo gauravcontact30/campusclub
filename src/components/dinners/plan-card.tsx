@@ -42,11 +42,11 @@ export function PlanCard({
     <div
       className={cn(
         'flex flex-col rounded-4xl border p-7 transition-transform hover:-translate-y-1',
-        plan.highlight ? 'border-ember/60 bg-canvas-600 text-content shadow-lift' : 'border-content/12 bg-canvas-700',
+        plan.highlight ? 'border-brand/60 bg-canvas-600 text-content shadow-lift' : 'border-content/12 bg-canvas-700',
       )}
     >
       {plan.highlight && (
-        <span className="mb-4 w-fit rounded-full bg-ember px-3 py-1 text-xs font-semibold text-content">
+        <span className="mb-4 w-fit rounded-full bg-brand px-3 py-1 text-xs font-semibold text-content">
           Most popular
         </span>
       )}
@@ -64,7 +64,7 @@ export function PlanCard({
       <ul className="mt-6 flex-1 space-y-3">
         {plan.perks.map((perk) => (
           <li key={perk} className="flex items-start gap-2.5 text-sm">
-            <Check size={16} className={cn('mt-0.5 shrink-0', plan.highlight ? 'text-ember' : 'text-marigold-600')} />
+            <Check size={16} className={cn('mt-0.5 shrink-0', plan.highlight ? 'text-brand' : 'text-signal-600')} />
             <span className={plan.highlight ? 'text-content/85' : 'text-content/75'}>{perk}</span>
           </li>
         ))}

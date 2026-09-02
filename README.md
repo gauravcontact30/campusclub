@@ -245,19 +245,51 @@ or pink palette picks up next to the phrase *meet five strangers*.
 | --- | --- | --- | --- |
 | `canvas` | The ground. `canvas-700` is the raised card, `canvas-600` the hover/elevated surface, `canvas-900` the band that sets the footer apart. | `#0F0A08` → `#3A261C` | `#FDF9F5` → `#ECDDCF` |
 | `content` | Type and hairlines. Warm-tinted, so text belongs to the palette rather than sitting on top of it. | `#FAF3ED` → `#BEA898` | `#281810` → `#8C705E` |
-| `ember` | Brand and action: primary buttons, links, selected state, focus rings. | `#EA6C3A` | `#C64E20` |
-| `marigold` | Affirmative signal: open-now, confirmed bookings, proof-point stats. | `#F5B342` | `#B06F14` |
-| `honey` | Ratings and small flourishes. | `#FFD68F` | `#C7801A` |
+| `brand` | Brand and action: primary buttons, links, selected state, focus rings. | `#EA6C3A` | `#C64E20` |
+| `signal` | Affirmative signal: open-now, confirmed bookings, proof-point stats. | `#F5B342` | `#B06F14` |
+| `glint` | Ratings and small flourishes. | `#FFD68F` | `#C7801A` |
 
 The tokens are named for their **role**, not their literal colour: with two
 themes, `canvas` is near-black in one and near-white in the other, so a name
 like `noir` would be a lie half the time.
 
+Every token is named for its role, right down to the accents: with five
+selectable palettes, a token called `ember` would be wrong in four of them.
+
 None of the five shares a name with a Tailwind default scale, and that is
-checked rather than assumed. `extend` deep-merges, so a token called `rose` or
-`amber` would leave `-500` meaning Tailwind's and `-600` meaning ours — a trap
-for anyone who later types a step the theme does not define. `ember` replaced a
-`rouge`, and `marigold` replaced an `amber` for exactly this reason.
+checked against `tailwindcss/colors` rather than assumed. `extend` deep-merges,
+so a token called `rose` or `amber` would leave `-500` meaning Tailwind's and
+`-600` meaning ours — a trap for anyone who later types a step the theme does
+not define.
+
+### Five palettes
+
+The header carries two controls: light/dark, which is one click because it is a
+frequent action, and a palette menu, which is a menu because it is a rare one.
+On small screens the menu is hidden and the drawer carries the same swatches as
+a row, so nothing is unreachable by thumb.
+
+| Palette | Character |
+| --- | --- |
+| **Ember** *(default)* | Terracotta and gold. Appetite and candlelight. |
+| **Ink & Saffron** | Marigold on near-neutral ink. Festive rather than cautionary. |
+| **Olive & Amber** | Bistro green with warm amber. |
+| **Nightshade** | Indigo ground, coral accent. |
+| **Sage & Clay** | Muted and editorial; the most restrained. |
+
+Each palette ships both themes, so there are ten variable sets in total. Ember
+is the default and lives in the base blocks; the other four override it from
+`data-palette` on `<html>`, resolved by the same blocking script that resolves
+the theme.
+
+The palette selectors are deliberately over-qualified —
+`:root[data-palette='x']:not([data-theme='light'])` rather than plain
+`:root[data-palette='x']`. A bare palette selector has *identical* specificity
+to `:root[data-theme='light']`, so whichever came later in the file would win,
+and a palette's dark values would silently override the base light theme.
+Pinning each block to a theme makes it one step more specific and removes the
+ordering trap. `a palette keeps its own light values, not the dark ones` in
+`e2e/theme.spec.ts` guards it.
 
 ### Two themes, one attribute
 

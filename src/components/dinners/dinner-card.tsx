@@ -31,7 +31,7 @@ export function DinnerCard({ event, compact = false }: { event: DinnerEvent; com
             </p>
           </div>
         </div>
-        {seatsLeft <= 2 && seatsLeft > 0 && <Badge tone="ember">{pluralize(seatsLeft, 'seat')} left</Badge>}
+        {seatsLeft <= 2 && seatsLeft > 0 && <Badge tone="brand">{pluralize(seatsLeft, 'seat')} left</Badge>}
         {seatsLeft === 0 && <Badge tone="neutral">Waitlist</Badge>}
       </div>
 
@@ -51,7 +51,7 @@ export function DinnerCard({ event, compact = false }: { event: DinnerEvent; com
           <span>{event.language}</span>
         </div>
         <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-content/10">
-          <div className="h-full rounded-full bg-ember transition-all" style={{ width: `${filled}%` }} />
+          <div className="h-full rounded-full bg-brand transition-all" style={{ width: `${filled}%` }} />
         </div>
       </div>
 

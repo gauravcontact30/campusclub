@@ -7,6 +7,7 @@ import { MobileNav } from './mobile-nav';
 import { NAV_LINKS } from './nav-links';
 import { Logo } from './logo';
 import { ThemeToggle } from './theme-toggle';
+import { ThemePicker } from './theme-picker';
 
 export async function Navbar() {
   const user = await getCurrentUser();
@@ -31,6 +32,10 @@ export async function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          {/* Light/dark is a frequent action and stays one click. The palette is
+              a rare one, so it hides behind a menu — and on small screens it
+              hides entirely, because the drawer carries the same swatches. */}
+          <ThemePicker className="hidden sm:inline-flex" />
 
           <Link
             href="/businesses"

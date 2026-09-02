@@ -40,11 +40,11 @@ export function FilterPanel({
     <aside className="surface-card h-fit p-5 lg:sticky lg:top-24">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-          <SlidersHorizontal size={18} className="text-ember" />
+          <SlidersHorizontal size={18} className="text-brand" />
           Filters
         </h2>
         {activeCount > 0 && (
-          <button onClick={onReset} className="inline-flex items-center gap-1 text-xs font-semibold text-ember-700">
+          <button onClick={onReset} className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700">
             <X size={13} /> Clear ({activeCount})
           </button>
         )}
@@ -80,7 +80,7 @@ export function FilterPanel({
                 className={cn(
                   'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                   query.category === c.slug
-                    ? 'border-ember bg-ember text-content'
+                    ? 'border-brand bg-brand text-content'
                     : 'border-content/15 text-content/70 hover:border-content/40',
                 )}
               >
@@ -101,7 +101,7 @@ export function FilterPanel({
                 className={cn(
                   'flex-1 rounded-xl border py-2 text-sm font-semibold transition-colors',
                   query.price?.includes(level)
-                    ? 'border-ember bg-ember/10 text-ember-700'
+                    ? 'border-brand bg-brand/10 text-brand-700'
                     : 'border-content/15 text-content/60 hover:border-content/40',
                 )}
               >
@@ -122,7 +122,7 @@ export function FilterPanel({
                 className={cn(
                   'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                   (query.minRating ?? 0) === rating
-                    ? 'border-ember bg-ember text-content'
+                    ? 'border-brand bg-brand text-content'
                     : 'border-content/15 text-content/70 hover:border-content/40',
                 )}
               >
@@ -138,7 +138,7 @@ export function FilterPanel({
             type="checkbox"
             checked={Boolean(query.openNow)}
             onChange={(e) => onChange('openNow', e.target.checked)}
-            className="h-5 w-9 cursor-pointer appearance-none rounded-full bg-content/20 transition-colors checked:bg-ember relative after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-canvas after:transition-transform checked:after:translate-x-4"
+            className="h-5 w-9 cursor-pointer appearance-none rounded-full bg-content/20 transition-colors checked:bg-brand relative after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-canvas after:transition-transform checked:after:translate-x-4"
           />
         </label>
 
@@ -150,7 +150,7 @@ export function FilterPanel({
             aria-pressed={Boolean(query.near)}
             className={cn(
               'mt-2 inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-semibold transition-colors',
-              query.near ? 'border-ember bg-ember/10 text-ember-700' : 'border-content/15 hover:border-content/45',
+              query.near ? 'border-brand bg-brand/10 text-brand-700' : 'border-content/15 hover:border-content/45',
             )}
           >
             {locating ? <Loader2 size={15} className="animate-spin" /> : <LocateFixed size={15} />}
@@ -162,13 +162,13 @@ export function FilterPanel({
                 onChange('near', undefined);
                 if (query.sort === 'distance') onChange('sort', 'recommended');
               }}
-              className="mt-2 text-xs font-semibold text-content/55 hover:text-ember"
+              className="mt-2 text-xs font-semibold text-content/55 hover:text-brand"
             >
               Clear location
             </button>
           )}
           {locationError && (
-            <p role="alert" className="mt-2 text-xs text-ember-700">
+            <p role="alert" className="mt-2 text-xs text-brand-700">
               {locationError}
             </p>
           )}

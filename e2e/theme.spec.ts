@@ -77,3 +77,60 @@ test('the drawer carries its own toggle, labelled', async ({ page }) => {
   expect(await themeOf(page)).toBe('light');
   await expect(page.getByRole('button', { name: 'Switch to dark theme' }).last()).toBeVisible();
 });
+
+const paletteOf = (page: import('@playwright/test').Page) =>
+  page.evaluate(() => document.documentElement.dataset.palette ?? 'ember');
+
+const brandOf = (page: import('@playwright/test').Page) =>
+  page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--brand').trim());
+
+test('each swatch repaints the site and the choice survives a reload', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  expect(await paletteOf(page)).toBe('ember');
+
+  await page.getByRole('button', { name: 'Choose a colour theme' }).click();
+
+  const seen = new Set<string>([await brandOf(page)]);
+  for (const name of ['Ink & Saffron', 'Olive & Amber', 'Nightshade', 'Sage & Clay']) {
+    await page.getByRole('menuitemradio', { name: new RegExp(name) }).click();
+    const brand = await brandOf(page);
+    expect(seen.has(brand), `${name} reused another palette's brand colour`).toBe(false);
+    seen.add(brand);
+  }
+
+  expect(await paletteOf(page)).toBe('sage');
+  await page.reload();
+  expect(await paletteOf(page)).toBe('sage');
+});
+
+test('a palette keeps its own light values, not the dark ones', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+
+  await page.getByRole('button', { name: 'Choose a colour theme' }).click();
+  await page.getByRole('menuitemradio', { name: /Nightshade/ }).click();
+  const dark = await brandOf(page);
+
+  // A palette block and the base light block have equal specificity, so without
+  // the theme qualifier the dark values would win in light mode too.
+  await page.getByRole('button', { name: 'Switch to light theme' }).click();
+  const light = await brandOf(page);
+  expect(light, 'the dark palette leaked into light mode').not.toBe(dark);
+
+  const canvas = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  expect(canvas).toBe('rgb(250, 250, 253)');
+});
+
+test('the drawer offers the same swatches', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open menu' }).click();
+
+  await page.getByRole('radio', { name: 'Olive & Amber' }).click();
+  expect(await paletteOf(page)).toBe('olive');
+  await expect(page.getByRole('radio', { name: 'Olive & Amber' })).toHaveAttribute('aria-checked', 'true');
+});

@@ -41,7 +41,7 @@ export default function AboutPage() {
           <ol className="space-y-6">
             {MILESTONES.map(([year, text]) => (
               <li key={year} className="flex gap-6 border-b border-content/15 pb-6 last:border-0">
-                <span className="w-20 shrink-0 font-display text-xl font-semibold text-ember">{year}</span>
+                <span className="w-20 shrink-0 font-display text-xl font-semibold text-brand">{year}</span>
                 <span className="text-sm leading-relaxed text-content/75">{text}</span>
               </li>
             ))}

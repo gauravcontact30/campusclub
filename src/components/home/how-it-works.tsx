@@ -32,10 +32,10 @@ export function HowItWorks() {
       <ol className="mt-12 grid gap-5 md:grid-cols-3">
         {STEPS.map((step, i) => (
           <li key={step.title} className="surface-card group relative overflow-hidden p-7 transition-transform hover:-translate-y-1">
-            <span className="font-display text-6xl font-semibold text-content/20 transition-colors group-hover:text-ember/25">
+            <span className="font-display text-6xl font-semibold text-content/20 transition-colors group-hover:text-brand/25">
               0{i + 1}
             </span>
-            <step.icon size={26} className="mt-4 text-ember" />
+            <step.icon size={26} className="mt-4 text-brand" />
             <h3 className="mt-4 font-display text-xl font-semibold">{step.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-content/65">{step.body}</p>
           </li>

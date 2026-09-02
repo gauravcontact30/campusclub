@@ -70,7 +70,7 @@ export function AccountMenu({ user }: { user: UserProfile }) {
           <form action={signOutAction} className="border-t border-content/10">
             <button
               type="submit"
-              className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-ember-700 hover:bg-ember/10"
+              className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-brand-700 hover:bg-brand/10"
             >
               <LogOut size={16} />
               Sign out

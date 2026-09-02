@@ -173,7 +173,7 @@ export function BusinessSearch({
 
         <div>
           {isError && (
-            <p className="mb-4 rounded-2xl border border-ember/30 bg-ember/10 p-4 text-sm text-ember-700">
+            <p className="mb-4 rounded-2xl border border-brand/30 bg-brand/10 p-4 text-sm text-brand-700">
               Something went wrong loading results. Try adjusting your filters.
             </p>
           )}
@@ -225,7 +225,7 @@ export function BusinessSearch({
                     aria-current={results.page === i + 1}
                     className={cn(
                       'h-9 w-9 rounded-full text-sm font-semibold transition-colors',
-                      results.page === i + 1 ? 'bg-ember text-content' : 'text-content/60 hover:bg-content/5',
+                      results.page === i + 1 ? 'bg-brand text-content' : 'text-content/60 hover:bg-content/5',
                     )}
                   >
                     {i + 1}

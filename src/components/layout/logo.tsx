@@ -22,7 +22,7 @@ function Seat({ angle, index }: { angle: number; index: number }) {
   const gathered = index % 2 === 1;
   // Palette utilities rather than literal hexes, so the mark re-colours with
   // the theme instead of staying at its dark-mode values on a light page.
-  const tone = gathered ? 'text-marigold' : 'text-ember';
+  const tone = gathered ? 'text-signal' : 'text-brand';
   return (
     <g transform={`rotate(${angle} 20 20)`} className={tone}>
       <path
@@ -41,8 +41,8 @@ function Seat({ angle, index }: { angle: number; index: number }) {
 function TableMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" aria-hidden className={cn('h-9 w-9', className)}>
-      <circle cx="20" cy="20" r="8.6" className="fill-ember/20" />
-      <circle cx="20" cy="20" r="8.6" fill="none" strokeWidth="1.9" className="stroke-ember" />
+      <circle cx="20" cy="20" r="8.6" className="fill-brand/20" />
+      <circle cx="20" cy="20" r="8.6" fill="none" strokeWidth="1.9" className="stroke-brand" />
       {SEATS.map((angle, i) => (
         <Seat key={angle} angle={angle} index={i} />
       ))}
@@ -63,7 +63,7 @@ export function Logo({ className }: { className?: string }) {
       {/* The table turns on hover — the one animation the mark asks for */}
       <TableMark className="transition-transform duration-500 group-hover:rotate-[60deg]" />
       <span>
-        Sit<span className="text-ember">Next</span>
+        Sit<span className="text-brand">Next</span>
       </span>
     </Link>
   );

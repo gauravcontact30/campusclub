@@ -19,8 +19,8 @@ export function OpenNowBadge({ hours, className }: { hours: WeekHours; className
 
   return (
     <span className={cn('inline-flex items-center gap-1.5 text-xs font-medium', className)}>
-      <span className={cn('h-1.5 w-1.5 rounded-full', open ? 'bg-marigold-600' : 'bg-ember')} />
-      <span className={open ? 'text-marigold-600' : 'text-content/55'}>
+      <span className={cn('h-1.5 w-1.5 rounded-full', open ? 'bg-signal-600' : 'bg-brand')} />
+      <span className={open ? 'text-signal-600' : 'text-content/55'}>
         {open ? 'Open now' : 'Closed'} · {label}
       </span>
     </span>

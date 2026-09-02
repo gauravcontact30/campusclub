@@ -6,7 +6,7 @@ export function TableReveal({ mates, locked }: { mates: TableMate[]; locked: boo
   return (
     <section className="rounded-4xl bg-canvas p-7 text-content sm:p-9">
       <div className="flex items-center gap-2">
-        <Sparkles size={18} className="text-ember" />
+        <Sparkles size={18} className="text-brand" />
         <h2 className="font-display text-2xl font-semibold">Your table</h2>
       </div>
       <p className="mt-2 max-w-xl text-sm text-content/65">
@@ -27,7 +27,7 @@ export function TableReveal({ mates, locked }: { mates: TableMate[]; locked: boo
                 {mate.name}, {mate.ageBand}
               </p>
               <p className="text-xs text-content/60">{mate.works}</p>
-              <p className="mt-0.5 text-xs text-ember">Into {mate.sharedInterest}</p>
+              <p className="mt-0.5 text-xs text-brand">Into {mate.sharedInterest}</p>
             </div>
           </li>
         ))}

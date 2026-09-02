@@ -69,7 +69,7 @@ export default async function DinnerPage({ params }: { params: Promise<{ id: str
               { icon: Globe2, label: 'Language', value: event.language },
             ].map((item) => (
               <div key={item.label} className="surface-card p-5">
-                <item.icon size={18} className="text-ember" />
+                <item.icon size={18} className="text-brand" />
                 <dt className="mt-3 text-xs font-semibold uppercase tracking-widest text-content/55">{item.label}</dt>
                 <dd className="mt-1 text-sm font-medium">{item.value}</dd>
               </div>
@@ -78,7 +78,7 @@ export default async function DinnerPage({ params }: { params: Promise<{ id: str
 
           <section className="mt-10">
             <h2 className="display-md flex items-center gap-2">
-              <Utensils size={22} className="text-ember" />
+              <Utensils size={22} className="text-brand" />
               How the night runs
             </h2>
             <p className="lede mt-4">{event.hostNotes}</p>
@@ -91,7 +91,7 @@ export default async function DinnerPage({ params }: { params: Promise<{ id: str
                 ['23:00', 'The bill is split evenly by default. Half the tables go somewhere else afterwards.'],
               ].map(([time, text]) => (
                 <li key={time} className="flex gap-4">
-                  <span className="w-14 shrink-0 font-display text-lg font-semibold text-ember">{time}</span>
+                  <span className="w-14 shrink-0 font-display text-lg font-semibold text-brand">{time}</span>
                   <span className="text-sm leading-relaxed text-content/70">{text}</span>
                 </li>
               ))}

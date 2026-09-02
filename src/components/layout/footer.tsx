@@ -46,7 +46,7 @@ export function Footer() {
               {[Instagram, Twitter, Linkedin].map((Icon, i) => (
                 <span
                   key={i}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content/70 transition-colors hover:border-ember hover:text-ember"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content/70 transition-colors hover:border-brand hover:text-brand"
                 >
                   <Icon size={16} />
                 </span>
@@ -63,7 +63,7 @@ export function Footer() {
                 <ul className="mt-4 space-y-2.5">
                   {col.links.map((link) => (
                     <li key={link.href + link.label}>
-                      <Link href={link.href} className="text-sm text-content/80 transition-colors hover:text-ember">
+                      <Link href={link.href} className="text-sm text-content/80 transition-colors hover:text-brand">
                         {link.label}
                       </Link>
                     </li>
@@ -79,7 +79,7 @@ export function Footer() {
             © {new Date().getFullYear()} {SITE.name}. Built with Next.js, React and Supabase.
           </p>
           <p className="flex items-center gap-2">
-            <span className="inline-flex h-2 w-2 rounded-full bg-ember" aria-hidden />
+            <span className="inline-flex h-2 w-2 rounded-full bg-brand" aria-hidden />
             Data source: {BACKEND_MODE === 'supabase' ? 'Supabase Postgres' : 'seeded demo dataset'}
           </p>
         </div>

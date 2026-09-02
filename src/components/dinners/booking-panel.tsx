@@ -71,11 +71,11 @@ export function BookingPanel({
           <span className="text-sm text-content/55"> / seat</span>
         </p>
         {current ? (
-          <Badge tone={current.status === 'confirmed' ? 'marigold' : 'honey'}>
+          <Badge tone={current.status === 'confirmed' ? 'signal' : 'glint'}>
             {current.status === 'confirmed' ? 'Seat confirmed' : 'On the waitlist'}
           </Badge>
         ) : (
-          <Badge tone={seatsLeft ? 'ember' : 'neutral'}>
+          <Badge tone={seatsLeft ? 'brand' : 'neutral'}>
             {seatsLeft ? `${pluralize(seatsLeft, 'seat')} left` : 'Waitlist only'}
           </Badge>
         )}
@@ -93,13 +93,13 @@ export function BookingPanel({
       {!signedIn ? (
         <Link
           href={`/login?next=/dinners/${event.id}`}
-          className="inline-flex h-14 w-full items-center justify-center rounded-full bg-ember px-8 font-semibold text-content hover:bg-ember-600"
+          className="inline-flex h-14 w-full items-center justify-center rounded-full bg-brand px-8 font-semibold text-content hover:bg-brand-600"
         >
           Sign in to claim a seat
         </Link>
       ) : current ? (
         <div className="space-y-3">
-          <div className="flex items-center gap-2 rounded-2xl border border-marigold/50 bg-marigold/15 px-4 py-3 text-sm">
+          <div className="flex items-center gap-2 rounded-2xl border border-signal/50 bg-signal/15 px-4 py-3 text-sm">
             <CalendarCheck size={16} />
             {current.status === 'confirmed'
               ? 'You are in. Venue lands 36 hours before.'
@@ -118,7 +118,7 @@ export function BookingPanel({
       {signedIn && !hasQuiz && (
         <p className="rounded-2xl border border-dashed border-content/25 px-4 py-3 text-xs leading-relaxed text-content/60">
           You have not done the{' '}
-          <Link href="/dinners/quiz" className="font-semibold text-ember-700 hover:underline">
+          <Link href="/dinners/quiz" className="font-semibold text-brand-700 hover:underline">
             matching questionnaire
           </Link>{' '}
           yet — without it we seat you at random.

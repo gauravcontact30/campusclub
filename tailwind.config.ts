@@ -30,22 +30,22 @@ const config: Config = {
         /* Signature terracotta. Every token here is checked against Tailwind's
            own palette first: `extend` deep-merges, so a token sharing a name
            with a built-in scale (`rose`, `amber`, `orange`…) would leave
-           `-500` meaning Tailwind's and `-600` meaning ours. `ember`,
-           `marigold` and `honey` collide with nothing. The ramp runs BRIGHTER
+           `-500` meaning Tailwind's and `-600` meaning ours. `brand`,
+           `signal` and `glint` collide with nothing. The ramp runs BRIGHTER
            as the number rises in dark and DARKER in light — see globals.css. */
-        ember: {
-          DEFAULT: withAlpha('--ember'),
-          600: withAlpha('--ember-600'),
-          700: withAlpha('--ember-700'),
-          200: withAlpha('--ember-200'),
+        brand: {
+          DEFAULT: withAlpha('--brand'),
+          600: withAlpha('--brand-600'),
+          700: withAlpha('--brand-700'),
+          200: withAlpha('--brand-200'),
         },
         /* Warm gold. Carries the affirmative signal — open now, confirmed. */
-        marigold: {
-          DEFAULT: withAlpha('--marigold'),
-          600: withAlpha('--marigold-600'),
+        signal: {
+          DEFAULT: withAlpha('--signal'),
+          600: withAlpha('--signal-600'),
         },
         /* The palest tint, for ratings and small flourishes */
-        honey: withAlpha('--honey'),
+        glint: withAlpha('--glint'),
       },
       fontFamily: {
         display: ['var(--font-display)', 'Georgia', 'serif'],

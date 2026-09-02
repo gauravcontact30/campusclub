@@ -30,15 +30,15 @@
     --content-300: 190 168 152;
 
     /* On black, emphasis means more light: 700 is the lightest step. */
-    --ember: 234 108 58;
-    --ember-600: 247 138 92;
-    --ember-700: 253 197 165;
-    --ember-200: 72 30 14;
+    --brand: 234 108 58;
+    --brand-600: 247 138 92;
+    --brand-700: 253 197 165;
+    --brand-200: 72 30 14;
 
-    --marigold: 245 179 66;
-    --marigold-600: 250 208 133;
+    --signal: 245 179 66;
+    --signal-600: 250 208 133;
 
-    --honey: 255 214 143;
+    --glint: 255 214 143;
 
     --page-wash:
       radial-gradient(58rem 40rem at 8% -6%, rgba(234, 108, 58, 0.18), transparent 65%),
@@ -70,15 +70,15 @@
     /* And here the ramp genuinely reverses: on paper emphasis is darker ink,
        so 700 — the step used for emphatic text — becomes the deepest terracotta
        rather than the palest. */
-    --ember: 198 78 32;
-    --ember-600: 166 62 24;
-    --ember-700: 133 49 18;
-    --ember-200: 253 231 219;
+    --brand: 198 78 32;
+    --brand-600: 166 62 24;
+    --brand-700: 133 49 18;
+    --brand-200: 253 231 219;
 
-    --marigold: 176 111 20;
-    --marigold-600: 138 85 12;
+    --signal: 176 111 20;
+    --signal-600: 138 85 12;
 
-    --honey: 199 128 26;
+    --glint: 199 128 26;
 
     --page-wash:
       radial-gradient(58rem 40rem at 8% -6%, rgba(198, 78, 32, 0.10), transparent 65%),
@@ -89,6 +89,225 @@
     --shadow-glow: 0 0 0 1px rgba(198, 78, 32, 0.22), 0 14px 44px -18px rgba(198, 78, 32, 0.30);
   }
 
+
+  /* ------------------------------------------------------- palette swatches --
+     Five selectable palettes. Ember is the default and lives in the two blocks
+     above; these four override it when `data-palette` is set on <html>.
+
+     The selectors are deliberately over-qualified. `:root[data-palette='x']`
+     and `:root[data-theme='light']` have identical specificity, so whichever
+     came last in the file would win — meaning a palette's DARK values would
+     silently override the base LIGHT theme. Pinning each block to a theme with
+     `:not([data-theme='light'])` or `[data-theme='light']` makes both one step
+     more specific than the base rules and removes the ordering trap entirely. */
+  /* Ink & Saffron */
+  :root[data-palette='saffron']:not([data-theme='light']) {
+    --canvas: 10 10 11;
+    --canvas-900: 5 5 6;
+    --canvas-800: 10 10 11;
+    --canvas-700: 20 20 22;
+    --canvas-600: 31 31 34;
+    --canvas-500: 48 47 52;
+    --content: 245 243 240;
+    --content-100: 253 252 250;
+    --content-200: 222 218 211;
+    --content-300: 176 171 163;
+    --brand: 242 169 24;
+    --brand-600: 250 192 74;
+    --brand-700: 253 219 150;
+    --brand-200: 66 44 5;
+    --signal: 224 122 60;
+    --signal-600: 244 163 111;
+    --glint: 255 205 92;
+    --page-wash:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(242, 169, 24, 0.18), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(224, 122, 60, 0.10), transparent 60%);
+    --shadow-lift: 0 26px 64px -26px rgba(242, 169, 24, 0.55);
+    --shadow-glow: 0 0 0 1px rgba(242, 169, 24, 0.28), 0 14px 44px -14px rgba(242, 169, 24, 0.55);
+  }
+
+  :root[data-palette='saffron'][data-theme='light'] {
+    --canvas: 252 250 246;
+    --canvas-900: 240 235 226;
+    --canvas-800: 252 250 246;
+    --canvas-700: 255 255 255;
+    --canvas-600: 247 242 233;
+    --canvas-500: 234 227 214;
+    --content: 28 26 22;
+    --content-100: 17 16 13;
+    --content-200: 80 74 64;
+    --content-300: 128 120 108;
+    --brand: 176 108 6;
+    --brand-600: 146 89 4;
+    --brand-700: 117 71 3;
+    --brand-200: 253 240 214;
+    --signal: 181 79 26;
+    --signal-600: 145 61 18;
+    --glint: 191 122 12;
+    --page-wash:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(176, 108, 6, 0.10), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(181, 79, 26, 0.12), transparent 60%);
+    --shadow-card: 0 1px 2px rgba(28, 26, 22, 0.06), 0 14px 34px -18px rgba(28, 26, 22, 0.22);
+    --shadow-lift: 0 26px 64px -30px rgba(117, 71, 3, 0.35);
+    --shadow-glow: 0 0 0 1px rgba(176, 108, 6, 0.22), 0 14px 44px -18px rgba(176, 108, 6, 0.30);
+  }
+
+  /* Olive & Amber */
+  :root[data-palette='olive']:not([data-theme='light']) {
+    --canvas: 11 14 11;
+    --canvas-900: 6 8 6;
+    --canvas-800: 11 14 11;
+    --canvas-700: 20 25 19;
+    --canvas-600: 30 38 29;
+    --canvas-500: 46 57 43;
+    --content: 243 246 239;
+    --content-100: 251 253 249;
+    --content-200: 216 224 208;
+    --content-300: 169 181 159;
+    --brand: 154 190 96;
+    --brand-600: 181 210 130;
+    --brand-700: 213 232 179;
+    --brand-200: 38 52 20;
+    --signal: 236 176 74;
+    --signal-600: 246 206 138;
+    --glint: 246 199 108;
+    --page-wash:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(154, 190, 96, 0.18), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(236, 176, 74, 0.10), transparent 60%);
+    --shadow-lift: 0 26px 64px -26px rgba(154, 190, 96, 0.55);
+    --shadow-glow: 0 0 0 1px rgba(154, 190, 96, 0.28), 0 14px 44px -14px rgba(154, 190, 96, 0.55);
+  }
+
+  :root[data-palette='olive'][data-theme='light'] {
+    --canvas: 250 251 246;
+    --canvas-900: 234 238 226;
+    --canvas-800: 250 251 246;
+    --canvas-700: 255 255 255;
+    --canvas-600: 242 246 234;
+    --canvas-500: 227 233 216;
+    --content: 25 31 22;
+    --content-100: 15 19 13;
+    --content-200: 74 84 66;
+    --content-300: 120 132 110;
+    --brand: 85 118 34;
+    --brand-600: 68 96 26;
+    --brand-700: 53 76 19;
+    --brand-200: 235 243 219;
+    --signal: 162 106 12;
+    --signal-600: 128 83 8;
+    --glint: 176 118 16;
+    --page-wash:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(85, 118, 34, 0.10), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(162, 106, 12, 0.12), transparent 60%);
+    --shadow-card: 0 1px 2px rgba(25, 31, 22, 0.06), 0 14px 34px -18px rgba(25, 31, 22, 0.22);
+    --shadow-lift: 0 26px 64px -30px rgba(53, 76, 19, 0.35);
+    --shadow-glow: 0 0 0 1px rgba(85, 118, 34, 0.22), 0 14px 44px -18px rgba(85, 118, 34, 0.30);
+  }
+
+  /* Nightshade */
+  :root[data-palette='nightshade']:not([data-theme='light']) {
+    --canvas: 11 11 20;
+    --canvas-900: 6 6 12;
+    --canvas-800: 11 11 20;
+    --canvas-700: 20 20 34;
+    --canvas-600: 30 30 50;
+    --canvas-500: 46 46 74;
+    --content: 240 241 250;
+    --content-100: 250 250 255;
+    --content-200: 212 214 232;
+    --content-300: 164 167 194;
+    --brand: 255 122 89;
+    --brand-600: 255 152 124;
+    --brand-700: 255 199 183;
+    --brand-200: 74 28 18;
+    --signal: 124 152 255;
+    --signal-600: 171 189 255;
+    --glint: 255 190 120;
+    --page-wash:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(255, 122, 89, 0.18), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(124, 152, 255, 0.10), transparent 60%);
+    --shadow-lift: 0 26px 64px -26px rgba(255, 122, 89, 0.55);
+    --shadow-glow: 0 0 0 1px rgba(255, 122, 89, 0.28), 0 14px 44px -14px rgba(255, 122, 89, 0.55);
+  }
+
+  :root[data-palette='nightshade'][data-theme='light'] {
+    --canvas: 250 250 253;
+    --canvas-900: 232 233 243;
+    --canvas-800: 250 250 253;
+    --canvas-700: 255 255 255;
+    --canvas-600: 242 243 250;
+    --canvas-500: 225 227 240;
+    --content: 22 23 38;
+    --content-100: 13 14 25;
+    --content-200: 70 73 100;
+    --content-300: 116 120 150;
+    --brand: 214 68 36;
+    --brand-600: 180 54 27;
+    --brand-700: 145 42 20;
+    --brand-200: 255 232 224;
+    --signal: 58 78 190;
+    --signal-600: 42 58 150;
+    --glint: 186 102 16;
+    --page-wash:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(214, 68, 36, 0.10), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(58, 78, 190, 0.12), transparent 60%);
+    --shadow-card: 0 1px 2px rgba(22, 23, 38, 0.06), 0 14px 34px -18px rgba(22, 23, 38, 0.22);
+    --shadow-lift: 0 26px 64px -30px rgba(145, 42, 20, 0.35);
+    --shadow-glow: 0 0 0 1px rgba(214, 68, 36, 0.22), 0 14px 44px -18px rgba(214, 68, 36, 0.30);
+  }
+
+  /* Sage & Clay */
+  :root[data-palette='sage']:not([data-theme='light']) {
+    --canvas: 14 16 15;
+    --canvas-900: 8 9 8;
+    --canvas-800: 14 16 15;
+    --canvas-700: 23 27 25;
+    --canvas-600: 35 41 38;
+    --canvas-500: 53 62 57;
+    --content: 242 244 240;
+    --content-100: 251 252 250;
+    --content-200: 215 221 214;
+    --content-300: 167 177 170;
+    --brand: 198 122 92;
+    --brand-600: 216 152 124;
+    --brand-700: 234 194 176;
+    --brand-200: 62 32 22;
+    --signal: 150 180 158;
+    --signal-600: 190 212 196;
+    --glint: 214 190 140;
+    --page-wash:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(198, 122, 92, 0.18), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(150, 180, 158, 0.10), transparent 60%);
+    --shadow-lift: 0 26px 64px -26px rgba(198, 122, 92, 0.55);
+    --shadow-glow: 0 0 0 1px rgba(198, 122, 92, 0.28), 0 14px 44px -14px rgba(198, 122, 92, 0.55);
+  }
+
+  :root[data-palette='sage'][data-theme='light'] {
+    --canvas: 250 250 248;
+    --canvas-900: 234 236 231;
+    --canvas-800: 250 250 248;
+    --canvas-700: 255 255 255;
+    --canvas-600: 243 245 241;
+    --canvas-500: 228 231 224;
+    --content: 26 30 27;
+    --content-100: 16 19 17;
+    --content-200: 76 84 78;
+    --content-300: 122 132 125;
+    --brand: 162 82 52;
+    --brand-600: 134 66 40;
+    --brand-700: 107 51 30;
+    --brand-200: 245 233 227;
+    --signal: 74 110 84;
+    --signal-600: 56 86 64;
+    --glint: 150 122 62;
+    --page-wash:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(162, 82, 52, 0.10), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(74, 110, 84, 0.12), transparent 60%);
+    --shadow-card: 0 1px 2px rgba(26, 30, 27, 0.06), 0 14px 34px -18px rgba(26, 30, 27, 0.22);
+    --shadow-lift: 0 26px 64px -30px rgba(107, 51, 30, 0.35);
+    --shadow-glow: 0 0 0 1px rgba(162, 82, 52, 0.22), 0 14px 44px -18px rgba(162, 82, 52, 0.30);
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -97,7 +316,7 @@
     @apply bg-canvas text-content antialiased;
     font-family: var(--font-sans);
     /* A flat ground goes dead either way, so both themes get two very
-       low-opacity ember blooms behind the top of the page. Deliberately NOT
+       low-opacity brand blooms behind the top of the page. Deliberately NOT
        background-attachment: fixed, which repaints the whole viewport on every
        scroll frame. */
     background-image: var(--page-wash);
@@ -110,12 +329,12 @@
   }
 
   ::selection {
-    @apply bg-ember text-canvas;
+    @apply bg-brand text-canvas;
   }
 
   /* Keyboard focus stays visible everywhere — pointer focus does not shout. */
   :focus-visible {
-    @apply outline-none ring-2 ring-ember ring-offset-2 ring-offset-canvas;
+    @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-canvas;
   }
 
   /* The theme toggle swaps its icon and its accessible name with no JS state,
@@ -147,7 +366,7 @@
   }
 
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.18em] text-ember;
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-brand;
   }
 
   .lede {
@@ -159,7 +378,7 @@
   }
 
   .link-underline {
-    @apply underline decoration-ember decoration-2 underline-offset-4 hover:decoration-content;
+    @apply underline decoration-brand decoration-2 underline-offset-4 hover:decoration-content;
   }
 
   /* Hides scrollbars on the horizontal chip rails without killing scroll */

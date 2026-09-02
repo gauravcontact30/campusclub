@@ -32,8 +32,8 @@ export function AuthShell({
       </div>
 
       <div className="relative hidden overflow-hidden bg-canvas lg:block">
-        <div aria-hidden className="absolute -left-20 top-1/4 h-96 w-96 rounded-full bg-ember/30 blur-[130px]" />
-        <div aria-hidden className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-marigold/20 blur-[130px]" />
+        <div aria-hidden className="absolute -left-20 top-1/4 h-96 w-96 rounded-full bg-brand/30 blur-[130px]" />
+        <div aria-hidden className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-signal/20 blur-[130px]" />
         <div className="relative flex h-full flex-col justify-end p-14 text-content">
           <blockquote className="font-display text-3xl font-semibold leading-tight">
             “I came for a restaurant recommendation and left with four people I now text every week.”
