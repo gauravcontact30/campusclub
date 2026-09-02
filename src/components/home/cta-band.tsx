@@ -3,7 +3,7 @@ import { ButtonLink } from '@/components/ui/button';
 export function CtaBand() {
   return (
     <section className="container-page pb-8">
-      <div className="relative overflow-hidden rounded-4xl bg-brand px-6 py-16 text-center text-content sm:px-12 sm:py-20">
+      <div className="relative overflow-hidden rounded-4xl bg-brand px-6 py-16 text-center text-on-brand sm:px-12 sm:py-20">
         <div aria-hidden className="pointer-events-none absolute -left-16 -top-20 h-72 w-72 rounded-full bg-signal/35 blur-3xl" />
         <div aria-hidden className="pointer-events-none absolute -bottom-24 -right-10 h-72 w-72 rounded-full bg-content/25 blur-3xl" />
         <div className="relative mx-auto max-w-2xl">

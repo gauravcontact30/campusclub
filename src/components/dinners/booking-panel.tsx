@@ -93,7 +93,7 @@ export function BookingPanel({
       {!signedIn ? (
         <Link
           href={`/login?next=/dinners/${event.id}`}
-          className="inline-flex h-14 w-full items-center justify-center rounded-full bg-brand px-8 font-semibold text-content hover:bg-brand-600"
+          className="inline-flex h-14 w-full items-center justify-center rounded-full bg-brand px-8 font-semibold text-on-brand hover:bg-brand-600"
         >
           Sign in to claim a seat
         </Link>

@@ -80,7 +80,7 @@ export function FilterPanel({
                 className={cn(
                   'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                   query.category === c.slug
-                    ? 'border-brand bg-brand text-content'
+                    ? 'border-brand bg-brand text-on-brand'
                     : 'border-content/15 text-content/70 hover:border-content/40',
                 )}
               >
@@ -122,7 +122,7 @@ export function FilterPanel({
                 className={cn(
                   'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                   (query.minRating ?? 0) === rating
-                    ? 'border-brand bg-brand text-content'
+                    ? 'border-brand bg-brand text-on-brand'
                     : 'border-content/15 text-content/70 hover:border-content/40',
                 )}
               >

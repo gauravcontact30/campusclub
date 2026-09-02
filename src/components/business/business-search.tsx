@@ -225,7 +225,7 @@ export function BusinessSearch({
                     aria-current={results.page === i + 1}
                     className={cn(
                       'h-9 w-9 rounded-full text-sm font-semibold transition-colors',
-                      results.page === i + 1 ? 'bg-brand text-content' : 'text-content/60 hover:bg-content/5',
+                      results.page === i + 1 ? 'bg-brand text-on-brand' : 'text-content/60 hover:bg-content/5',
                     )}
                   >
                     {i + 1}

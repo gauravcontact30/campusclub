@@ -352,6 +352,43 @@ degrades any remote image to a deterministic brand gradient if it fails to load.
 
 ---
 
+## The assistant
+
+A chat panel on every page, opened from the launcher bottom-right. With
+`ANTHROPIC_API_KEY` set it is a real Claude conversation (`claude-opus-5`,
+streamed) that answers from **this** site rather than from general knowledge:
+four tools sit between the model and the data layer the pages already render
+from.
+
+| Tool | Answers |
+| --- | --- |
+| `search_places` | Any "somewhere to eat / drink / go" question — by name, cuisine, city, category, price or rating |
+| `get_place` | One listing in full: hours, contact, address, recent review quotes |
+| `list_dinners` | Upcoming Wednesday tables, seats left, price per city |
+| `get_site_facts` | Plans, cities, categories, and how the dinners actually work |
+
+The system prompt forbids a factual claim that did not come back through a
+tool, so the assistant says "I don't know" rather than inventing a rating or an
+address. Tool results are labelled as data: business descriptions and review
+bodies are member-written, so the prompt tells the model to ignore anything in
+them that reads as an instruction.
+
+Three things worth knowing about the implementation:
+
+- **Tools use plain JSON Schema, not the SDK's zod helper.** That helper needs
+  zod 4 and this app is on zod 3 for its form validators; `betaTool` validates
+  arguments identically without forcing an upgrade.
+- **The route streams and is rate-limited.** Text deltas are forwarded to the
+  browser as they arrive. A per-IP window caps requests, because this endpoint
+  spends money on every call — it is in-memory, which is honest for one server
+  and needs a shared store before there are two.
+- **Demo mode.** With no key the panel still answers, from retrieval only, and
+  the header says *"Demo mode — answers from the directory, not the AI"*. The
+  whole app is built to run with zero configuration; a dead panel would break
+  that, and a panel pretending to be an AI would be worse than dead.
+
+---
+
 ## Agent tooling
 
 `.mcp.json` registers the **Playwright MCP** server so Claude Code can drive a

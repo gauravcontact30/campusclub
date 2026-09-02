@@ -23,7 +23,7 @@ export function MapPanel({ business }: { business: Business }) {
           <path d="M240 0 L240 90 L400 90" strokeWidth="6" fill="none" opacity="0.5" className="stroke-signal" />
         </svg>
         <span className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand text-content shadow-lift">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand text-on-brand shadow-lift">
             <MapPin size={20} />
           </span>
           <span className="mt-1 h-3 w-3 rotate-45 rounded-sm bg-brand/40" />
