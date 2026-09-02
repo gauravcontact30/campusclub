@@ -39,7 +39,7 @@ export function AccountMenu({ user }: { user: UserProfile }) {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="flex items-center gap-2 rounded-full border border-frost/20 py-1 pl-1 pr-3 text-sm font-medium text-frost transition-colors hover:border-frost/50"
+        className="flex items-center gap-2 rounded-full border border-pearl/20 py-1 pl-1 pr-3 text-sm font-medium text-pearl transition-colors hover:border-pearl/50"
       >
         <Avatar name={user.fullName} src={user.avatarUrl} size={30} />
         <span className="hidden max-w-[8rem] truncate lg:inline">{user.fullName.split(' ')[0]}</span>
@@ -49,11 +49,11 @@ export function AccountMenu({ user }: { user: UserProfile }) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-60 animate-fade-up overflow-hidden rounded-2xl border border-frost/10 bg-noir-700 shadow-lift"
+          className="absolute right-0 z-50 mt-2 w-60 animate-fade-up overflow-hidden rounded-2xl border border-pearl/10 bg-noir-700 shadow-lift"
         >
-          <div className="border-b border-frost/10 px-4 py-3">
-            <p className="truncate text-sm font-semibold text-frost">{user.fullName}</p>
-            <p className="truncate text-xs text-frost/55">{user.email}</p>
+          <div className="border-b border-pearl/10 px-4 py-3">
+            <p className="truncate text-sm font-semibold text-pearl">{user.fullName}</p>
+            <p className="truncate text-xs text-pearl/55">{user.email}</p>
           </div>
           {ITEMS.map(({ href, label, icon: Icon }) => (
             <Link
@@ -61,16 +61,16 @@ export function AccountMenu({ user }: { user: UserProfile }) {
               href={href}
               role="menuitem"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-frost hover:bg-frost/5"
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-pearl hover:bg-pearl/5"
             >
-              <Icon size={16} className="text-frost/55" />
+              <Icon size={16} className="text-pearl/55" />
               {label}
             </Link>
           ))}
-          <form action={signOutAction} className="border-t border-frost/10">
+          <form action={signOutAction} className="border-t border-pearl/10">
             <button
               type="submit"
-              className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-orchid-700 hover:bg-orchid/10"
+              className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-rouge-700 hover:bg-rouge/10"
             >
               <LogOut size={16} />
               Sign out

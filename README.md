@@ -235,36 +235,55 @@ PLAYWRIGHT_CHROMIUM_PATH=/path/to/chrome npm run test:e2e
 
 ## Design
 
-A dark-first system built on three colours, each with one job:
+A dark-first rose system. Every accent is one hue, separated by lightness
+rather than by a second colour:
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `noir` | `#0A0711` → `#2B1F4A` | The canvas. Black cooled with violet, so it never reads as flat `#000`. `noir-700` is the raised card, `noir-600` the hover/elevated surface. |
-| `frost` | `#F2EDFB` → `#B4A7D0` | Type and hairlines. Violet-tinted white, so text belongs to the palette rather than sitting on top of it. |
-| `orchid` | `#A855F7` | Brand and action: primary buttons, links, selected state, focus rings. |
-| `parrot` | `#4ADE64` | Affirmative signal: open-now, confirmed bookings, proof-point stats. |
-| `zest` | `#C8F751` | Ratings and small flourishes. |
+| `noir` | `#0D080A` → `#34212A` | The canvas. Black warmed with rose, so it never reads as flat `#000`. `noir-700` is the raised card, `noir-600` the hover/elevated surface. |
+| `pearl` | `#FBF1F4` → `#C3A3AE` | Type and hairlines. Rose-tinted white, so text belongs to the palette rather than sitting on top of it. |
+| `rouge` | `#F43F5E` | Brand and action: primary buttons, links, selected state, focus rings. |
+| `blush` | `#FF8FA3` | Affirmative signal: open-now, confirmed bookings, proof-point stats. |
+| `petal` | `#FFD9E0` | Ratings and small flourishes. |
 
-The `orchid` ramp runs **brighter** as the number rises (`orchid-700` is the
+The brand token is `rouge`, not `rose`, on purpose: Tailwind ships a `rose`
+scale and `extend` deep-merges, so a token named `rose` would leave `rose-500`
+meaning Tailwind's and `rose-600` meaning ours. A different name makes every
+usage unambiguous.
+
+The `rouge` ramp runs **brighter** as the number rises (`rouge-700` is the
 lightest) because on a black canvas emphasis means more light, not less — the
 opposite of a ramp designed for paper.
 
+One consequence worth knowing: because the palette is a single hue, status no
+longer reads by colour alone. Open-now and confirmed use `blush` against
+`rouge` for pending, so the distinction is carried by lightness plus the label
+text rather than by the red/green contrast most interfaces lean on. Every such
+state is labelled in words for exactly that reason.
+
 Because black drops no shadow on black, depth comes from the `lift` and `glow`
-shadows, which bloom violet rather than grey. Display type is Bricolage
+shadows, which bloom rose rather than grey. Display type is Bricolage
 Grotesque, body is Plus Jakarta Sans. Cards are generously rounded, buttons are
 pills, and every section is built mobile-first.
 
 ### The mark
 
-The logo is the product in one glyph: a round table, five seats taken and one
-still open — the seat being offered to you. The open seat is the only element
-that carries parrot green, so it reads as the subject of the mark rather than
-decoration, and the taken seats sit at 55% so the table edge stays dominant.
+Six people seated around a round table, seen from above: each is a head with a
+shoulder cap curving behind it, facing in. The seats alternate between the two
+rose tones and between two silhouettes — a plain head, and a head with hair
+gathered above it — so the group reads as mixed rather than as six copies of
+one person.
 
-It ships in two files, because a six-seat arrangement turns to mush at favicon
-size: `public/logo.svg` is the full mark, and `public/icon-16.svg` drops to the
-two shapes that survive at 16px — the table and the open seat. `layout.tsx`
-offers both and lets the browser pick.
+Two decisions carry the drawing. The shoulder cap is struck about the head
+rather than about the table, which is what stops it drifting off as a crescent.
+And the hair is a separate small disc rather than a wider head: at 32px a wider
+head just reads as a bigger head, while a detached mark still reads as a
+different hairstyle.
+
+It ships in two files, because six figures smear into a ring at favicon size:
+`public/logo.svg` is the full mark, and `public/icon-16.svg` keeps the table
+and reduces the group to four heads. `layout.tsx` offers both and lets the
+browser pick by size.
 
 Cover art and avatars are generated SVGs in `public/img/`, so the app has no
 external image dependency and never shows a broken tile. `ImageWithFallback`

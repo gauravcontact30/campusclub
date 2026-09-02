@@ -43,7 +43,7 @@ export function SaveButton({
         aria-pressed={saved}
         className={cn(
           'inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-semibold transition-colors',
-          saved ? 'border-orchid bg-orchid/10 text-orchid-700' : 'border-frost/20 text-frost hover:border-frost/45',
+          saved ? 'border-rouge bg-rouge/10 text-rouge-700' : 'border-pearl/20 text-pearl hover:border-pearl/45',
           className,
         )}
       >
@@ -60,8 +60,8 @@ export function SaveButton({
       aria-label={saved ? 'Remove from saved' : 'Save this place'}
       aria-pressed={saved}
       className={cn(
-        'inline-flex h-9 w-9 items-center justify-center rounded-full border border-frost/20 bg-noir/70 text-frost shadow-card backdrop-blur transition-transform hover:scale-105',
-        saved && 'text-orchid',
+        'inline-flex h-9 w-9 items-center justify-center rounded-full border border-pearl/20 bg-noir/70 text-pearl shadow-card backdrop-blur transition-transform hover:scale-105',
+        saved && 'text-rouge',
         className,
       )}
     >

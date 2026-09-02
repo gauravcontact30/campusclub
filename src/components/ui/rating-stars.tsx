@@ -19,9 +19,9 @@ export function RatingStars({
         const fill = Math.max(0, Math.min(1, value - star + 1));
         return (
           <span key={star} className="relative inline-block" style={{ width: size, height: size }}>
-            <Star size={size} className="absolute inset-0 text-frost/30" strokeWidth={1.5} />
+            <Star size={size} className="absolute inset-0 text-pearl/30" strokeWidth={1.5} />
             <span className="absolute inset-0 overflow-hidden" style={{ width: `${fill * 100}%` }}>
-              <Star size={size} className="text-zest" fill="currentColor" strokeWidth={1.5} />
+              <Star size={size} className="text-petal" fill="currentColor" strokeWidth={1.5} />
             </span>
           </span>
         );
@@ -64,14 +64,14 @@ export function RatingInput({
           >
             <Star
               size={30}
-              className={star <= shown ? 'text-zest' : 'text-frost/30'}
+              className={star <= shown ? 'text-petal' : 'text-pearl/30'}
               fill={star <= shown ? 'currentColor' : 'none'}
               strokeWidth={1.5}
             />
           </button>
         ))}
       </div>
-      <span className="text-sm font-medium text-frost/60">{labels[shown] ?? ''}</span>
+      <span className="text-sm font-medium text-pearl/60">{labels[shown] ?? ''}</span>
     </div>
   );
 }

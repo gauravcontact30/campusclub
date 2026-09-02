@@ -13,15 +13,15 @@
   }
 
   body {
-    @apply bg-noir text-frost antialiased;
+    @apply bg-noir text-pearl antialiased;
     font-family: var(--font-sans);
-    /* Pure black goes dead. Two very low-opacity blooms — violet left, parrot
-       right — sit behind the top of the page so it has a floor to stand on.
-       Deliberately NOT background-attachment: fixed, which repaints the whole
-       viewport on every scroll frame. */
+    /* Pure black goes dead. Two very low-opacity blooms — deep rose left, pale
+       blush right — sit behind the top of the page so it has a floor to stand
+       on. Deliberately NOT background-attachment: fixed, which repaints the
+       whole viewport on every scroll frame. */
     background-image:
-      radial-gradient(58rem 40rem at 8% -6%, rgba(168, 85, 247, 0.16), transparent 65%),
-      radial-gradient(46rem 34rem at 96% 4%, rgba(74, 222, 100, 0.08), transparent 60%);
+      radial-gradient(58rem 40rem at 8% -6%, rgba(244, 63, 94, 0.18), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(255, 143, 163, 0.10), transparent 60%);
     background-repeat: no-repeat;
   }
 
@@ -31,12 +31,12 @@
   }
 
   ::selection {
-    @apply bg-orchid text-frost;
+    @apply bg-rouge text-pearl;
   }
 
   /* Keyboard focus stays visible everywhere — pointer focus does not shout. */
   :focus-visible {
-    @apply outline-none ring-2 ring-orchid ring-offset-2 ring-offset-noir;
+    @apply outline-none ring-2 ring-rouge ring-offset-2 ring-offset-noir;
   }
 }
 
@@ -58,19 +58,19 @@
   }
 
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.18em] text-orchid;
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-rouge;
   }
 
   .lede {
-    @apply text-base sm:text-lg leading-relaxed text-frost/70;
+    @apply text-base sm:text-lg leading-relaxed text-pearl/70;
   }
 
   .surface-card {
-    @apply rounded-3xl border border-frost/10 bg-noir-700 shadow-card;
+    @apply rounded-3xl border border-pearl/10 bg-noir-700 shadow-card;
   }
 
   .link-underline {
-    @apply underline decoration-orchid decoration-2 underline-offset-4 hover:decoration-frost;
+    @apply underline decoration-rouge decoration-2 underline-offset-4 hover:decoration-pearl;
   }
 
   /* Hides scrollbars on the horizontal chip rails without killing scroll */

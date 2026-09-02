@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Abstract venue artwork">
   <defs>
     <linearGradient id="g11" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#130D20"/>
-      <stop offset="100%" stop-color="#D9B8FE"/>
+      <stop offset="0%" stop-color="#170F13"/>
+      <stop offset="100%" stop-color="#FFB0C0"/>
     </linearGradient>
     <radialGradient id="r11" cx="37%" cy="46%" r="70%">
-      <stop offset="0%" stop-color="#8DF5A6" stop-opacity="0.55"/>
-      <stop offset="100%" stop-color="#8DF5A6" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#FFC2CE" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#FFC2CE" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <rect width="800" height="600" fill="url(#g11)"/>
   <rect width="800" height="600" fill="url(#r11)"/>
-  <g opacity="0.5" fill="none" stroke="#8DF5A6" stroke-width="2">
+  <g opacity="0.5" fill="none" stroke="#FFC2CE" stroke-width="2">
     <circle cx="527" cy="243" r="167"/>
     <circle cx="571" cy="419" r="123"/>
   </g>
-  <g opacity="0.22" fill="#8DF5A6">
+  <g opacity="0.22" fill="#FFC2CE">
     <path d="M0 473 Q200 419 400 507 T800 391 V600 H0 Z"/>
   </g>
 </svg>

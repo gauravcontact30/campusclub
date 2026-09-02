@@ -31,7 +31,7 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
         onClick={toggle}
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-frost/20 text-frost md:hidden"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-pearl/20 text-pearl md:hidden"
       >
         {open ? <X size={18} /> : <Menu size={18} />}
       </button>
@@ -43,30 +43,30 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-2xl px-4 py-4 font-display text-2xl text-frost hover:bg-frost/10"
+                className="rounded-2xl px-4 py-4 font-display text-2xl text-pearl hover:bg-pearl/10"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          <div className="mt-8 space-y-3 border-t border-frost/15 pt-6">
+          <div className="mt-8 space-y-3 border-t border-pearl/15 pt-6">
             {user ? (
               <>
-                <p className="px-1 text-sm text-frost/60">Signed in as {user.email}</p>
+                <p className="px-1 text-sm text-pearl/60">Signed in as {user.email}</p>
                 <ButtonLink href="/profile" variant="secondary" full size="lg">
                   Your profile
                 </ButtonLink>
-                <ButtonLink href="/saved" variant="ghost" full size="lg" className="text-frost hover:bg-frost/10">
+                <ButtonLink href="/saved" variant="ghost" full size="lg" className="text-pearl hover:bg-pearl/10">
                   Saved places
                 </ButtonLink>
-                <ButtonLink href="/bookings" variant="ghost" full size="lg" className="text-frost hover:bg-frost/10">
+                <ButtonLink href="/bookings" variant="ghost" full size="lg" className="text-pearl hover:bg-pearl/10">
                   Your dinners
                 </ButtonLink>
                 <form action={signOutAction}>
                   <button
                     type="submit"
-                    className="w-full rounded-full px-5 py-3 text-sm font-semibold text-orchid hover:bg-frost/10"
+                    className="w-full rounded-full px-5 py-3 text-sm font-semibold text-rouge hover:bg-pearl/10"
                   >
                     Sign out
                   </button>

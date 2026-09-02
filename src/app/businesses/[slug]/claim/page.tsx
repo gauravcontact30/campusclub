@@ -29,14 +29,14 @@ export default async function ClaimPage({ params }: { params: Promise<{ slug: st
 
   return (
     <div className="container-page py-10 sm:py-14">
-      <Link href={`/businesses/${slug}`} className="inline-flex items-center gap-2 text-sm text-frost/60 hover:text-frost">
+      <Link href={`/businesses/${slug}`} className="inline-flex items-center gap-2 text-sm text-pearl/60 hover:text-pearl">
         <ArrowLeft size={16} /> Back to {business.name}
       </Link>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1.5fr_1fr]">
         <div>
           <div className="surface-card flex items-center gap-4 p-5">
-            <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-frost/5">
+            <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-pearl/5">
               <ImageWithFallback
                 src={business.coverImage}
                 alt={business.name}
@@ -48,7 +48,7 @@ export default async function ClaimPage({ params }: { params: Promise<{ slug: st
             </div>
             <div>
               <h1 className="font-display text-2xl font-semibold">{business.name}</h1>
-              <p className="text-sm text-frost/60">
+              <p className="text-sm text-pearl/60">
                 {business.address}, {business.neighborhood}, {business.city}
               </p>
               <div className="mt-1.5">
@@ -65,12 +65,12 @@ export default async function ClaimPage({ params }: { params: Promise<{ slug: st
         <aside className="space-y-4 lg:sticky lg:top-24 lg:h-fit">
           {PERKS.map((perk) => (
             <div key={perk.title} className="surface-card p-6">
-              <perk.icon size={22} className="text-orchid" />
+              <perk.icon size={22} className="text-rouge" />
               <h2 className="mt-3 font-display text-lg font-semibold">{perk.title}</h2>
-              <p className="mt-1.5 text-sm leading-relaxed text-frost/65">{perk.body}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-pearl/65">{perk.body}</p>
             </div>
           ))}
-          <p className="px-2 text-xs leading-relaxed text-frost/55">
+          <p className="px-2 text-xs leading-relaxed text-pearl/55">
             Claiming a business you do not represent is a breach of our terms and gets the account removed.
           </p>
         </aside>

@@ -19,12 +19,12 @@ export function AuthShell({
           <div className="mt-9">{children}</div>
 
           {BACKEND_MODE === 'demo' && (
-            <div className="mt-8 rounded-2xl border border-dashed border-frost/25 p-4 text-xs leading-relaxed text-frost/60">
-              <p className="font-semibold text-frost">Demo mode is on</p>
+            <div className="mt-8 rounded-2xl border border-dashed border-pearl/25 p-4 text-xs leading-relaxed text-pearl/60">
+              <p className="font-semibold text-pearl">Demo mode is on</p>
               <p className="mt-1">
                 No Supabase keys detected, so accounts live in the seeded dataset. Sign in with{' '}
-                <span className="font-mono text-frost">priya@example.com</span> /{' '}
-                <span className="font-mono text-frost">password123</span>, or create a new account — both work.
+                <span className="font-mono text-pearl">priya@example.com</span> /{' '}
+                <span className="font-mono text-pearl">password123</span>, or create a new account — both work.
               </p>
             </div>
           )}
@@ -32,13 +32,13 @@ export function AuthShell({
       </div>
 
       <div className="relative hidden overflow-hidden bg-noir lg:block">
-        <div aria-hidden className="absolute -left-20 top-1/4 h-96 w-96 rounded-full bg-orchid/30 blur-[130px]" />
-        <div aria-hidden className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-parrot/20 blur-[130px]" />
-        <div className="relative flex h-full flex-col justify-end p-14 text-frost">
+        <div aria-hidden className="absolute -left-20 top-1/4 h-96 w-96 rounded-full bg-rouge/30 blur-[130px]" />
+        <div aria-hidden className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-blush/20 blur-[130px]" />
+        <div className="relative flex h-full flex-col justify-end p-14 text-pearl">
           <blockquote className="font-display text-3xl font-semibold leading-tight">
             “I came for a restaurant recommendation and left with four people I now text every week.”
           </blockquote>
-          <p className="mt-5 text-sm text-frost/60">Mei Lin C. — 11 dinners in New York</p>
+          <p className="mt-5 text-sm text-pearl/60">Mei Lin C. — 11 dinners in New York</p>
         </div>
       </div>
     </div>

@@ -7,15 +7,15 @@ export function Badge({
   className,
 }: {
   children: ReactNode;
-  tone?: 'neutral' | 'orchid' | 'parrot' | 'zest' | 'dark';
+  tone?: 'neutral' | 'rouge' | 'blush' | 'petal' | 'dark';
   className?: string;
 }) {
   const tones = {
-    neutral: 'bg-frost/8 text-frost/70 border-frost/15',
-    orchid: 'bg-orchid/15 text-orchid-700 border-orchid/35',
-    parrot: 'bg-parrot/15 text-parrot-600 border-parrot/35',
-    zest: 'bg-zest/15 text-zest border-zest/35',
-    dark: 'bg-noir-600 text-frost border-frost/20',
+    neutral: 'bg-pearl/8 text-pearl/70 border-pearl/15',
+    rouge: 'bg-rouge/15 text-rouge-700 border-rouge/35',
+    blush: 'bg-blush/15 text-blush-600 border-blush/35',
+    petal: 'bg-petal/15 text-petal border-petal/35',
+    dark: 'bg-noir-600 text-pearl border-pearl/20',
   };
   return (
     <span

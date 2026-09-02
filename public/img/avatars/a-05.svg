@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Member portrait">
-  <rect width="120" height="120" rx="60" fill="#BC7BFF"/>
-  <circle cx="60" cy="46" r="21" fill="#F2EDFB" opacity="0.9"/>
-  <path d="M18 120c0-24 19-40 42-40s42 16 42 40z" fill="#F2EDFB" opacity="0.9"/>
+  <rect width="120" height="120" rx="60" fill="#FF6478"/>
+  <circle cx="60" cy="46" r="21" fill="#FBF1F4" opacity="0.9"/>
+  <path d="M18 120c0-24 19-40 42-40s42 16 42 40z" fill="#FBF1F4" opacity="0.9"/>
 </svg>
