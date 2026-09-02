@@ -1,4 +1,4 @@
-# HomeMart
+# SitNext
 
 **Find the good stuff. Meet the good people.**
 
@@ -131,7 +131,7 @@ Supabase application.
 ## Folder structure
 
 ```
-home-mart/
+sitnext/
 ├── e2e/                        Playwright specs (directory, auth, dinners, responsive)
 ├── public/
 │   ├── img/covers/             Generated SVG cover art (no external images needed)
@@ -253,6 +253,18 @@ Because black drops no shadow on black, depth comes from the `lift` and `glow`
 shadows, which bloom violet rather than grey. Display type is Bricolage
 Grotesque, body is Plus Jakarta Sans. Cards are generously rounded, buttons are
 pills, and every section is built mobile-first.
+
+### The mark
+
+The logo is the product in one glyph: a round table, five seats taken and one
+still open — the seat being offered to you. The open seat is the only element
+that carries parrot green, so it reads as the subject of the mark rather than
+decoration, and the taken seats sit at 55% so the table edge stays dominant.
+
+It ships in two files, because a six-seat arrangement turns to mush at favicon
+size: `public/logo.svg` is the full mark, and `public/icon-16.svg` drops to the
+two shapes that survive at 16px — the table and the open seat. `layout.tsx`
+offers both and lets the browser pick.
 
 Cover art and avatars are generated SVGs in `public/img/`, so the app has no
 external image dependency and never shows a broken tile. `ImageWithFallback`

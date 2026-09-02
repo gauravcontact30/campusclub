@@ -32,7 +32,15 @@ export const metadata: Metadata = {
     type: 'website',
     url: SITE.url,
   },
-  icons: { icon: '/logo.svg' },
+  // The detailed mark loses its seats at favicon scale, so a simplified variant
+  // is offered for 16px and the full one for everything larger.
+  icons: {
+    icon: [
+      { url: '/icon-16.svg', sizes: '16x16', type: 'image/svg+xml' },
+      { url: '/logo.svg', sizes: 'any', type: 'image/svg+xml' },
+    ],
+    apple: '/logo.svg',
+  },
 };
 
 export const viewport: Viewport = {

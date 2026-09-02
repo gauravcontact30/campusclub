@@ -85,7 +85,7 @@ export default async function DinnerPage({ params }: { params: Promise<{ id: str
 
             <ol className="mt-6 space-y-4">
               {[
-                ['20:00', 'Everyone arrives within ten minutes of each other. The table is booked under HomeMart.'],
+                ['20:00', 'Everyone arrives within ten minutes of each other. The table is booked under SitNext.'],
                 ['20:15', 'The conversation deck unlocks on your phone. First question is always the same one.'],
                 ['21:30', 'Mains, second bottle, the part where nobody checks the time.'],
                 ['23:00', 'The bill is split evenly by default. Half the tables go somewhere else afterwards.'],

@@ -11,7 +11,7 @@ function fromRow(row: ReviewRow): Review {
     id: String(row.id),
     businessId: String(row.business_id),
     userId: String(row.user_id),
-    authorName: profile.full_name ?? 'HomeMart member',
+    authorName: profile.full_name ?? 'SitNext member',
     authorAvatar: profile.avatar_url ?? null,
     rating: Number(row.rating),
     title: String(row.title ?? ''),

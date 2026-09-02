@@ -1,5 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
-  <rect width="48" height="48" rx="14" fill="#0A0711"/>
-  <path d="M13 33V16h4.6v6.5h6.4V16h4.6v17h-4.6v-6.7h-6.4V33z" fill="#F2EDFB"/>
-  <circle cx="34.5" cy="30.5" r="4.5" fill="#A855F7"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="SitNext">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1D1433"/>
+      <stop offset="100%" stop-color="#0A0711"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="13" fill="url(#tile)"/>
+  <rect x="0.5" y="0.5" width="47" height="47" rx="12.5" fill="none" stroke="#A855F7" stroke-opacity="0.35"/>
+  <g transform="translate(4 4)" fill="#A855F7" fill-opacity="0.55">
+    <circle cx="20" cy="20" r="8.5" fill="none" stroke="#A855F7" stroke-opacity="0.95" stroke-width="2.4"/>
+    <circle cx="20" cy="5.5" r="2.75"/>
+    <circle cx="32.6" cy="12.8" r="2.75"/>
+    <circle cx="32.6" cy="27.2" r="2.75"/>
+    <circle cx="20" cy="34.5" r="2.75"/>
+    <circle cx="7.4" cy="27.2" r="2.75"/>
+    <circle cx="7.4" cy="12.8" r="3.4" fill="#4ADE64" fill-opacity="1"/>
+  </g>
 </svg>

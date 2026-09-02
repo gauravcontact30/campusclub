@@ -56,7 +56,7 @@ export function HeroSearch() {
         </div>
 
         <Button type="submit" size="lg" full>
-          Search HomeMart
+          Search SitNext
         </Button>
       </form>
 

@@ -160,7 +160,7 @@ export default async function ProfilePage() {
                         href={business ? `/businesses/${business.slug}` : '/businesses'}
                         className="font-semibold hover:text-orchid"
                       >
-                        {business?.name ?? 'A place on HomeMart'}
+                        {business?.name ?? 'A place on SitNext'}
                       </Link>
                       <span className="shrink-0 text-xs text-frost/55">{relativeTime(review.createdAt)}</span>
                     </div>

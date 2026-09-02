@@ -25,7 +25,7 @@ export function HowItWorks() {
         <p className="eyebrow">The whole idea</p>
         <h2 className="display-lg mt-3">Two strangers away from a better Wednesday.</h2>
         <p className="lede mt-4">
-          Reviews tell you where to go. Dinners give you someone to go with. HomeMart runs both sides of that loop.
+          Reviews tell you where to go. Dinners give you someone to go with. SitNext runs both sides of that loop.
         </p>
       </div>
 

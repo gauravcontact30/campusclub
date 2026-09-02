@@ -300,7 +300,7 @@ export interface ClaimInput {
 
 /**
  * Hands a listing to the member claiming it and files the claim for the record.
- * Claiming is instant while HomeMart is in beta; the filed claim is what a
+ * Claiming is instant while SitNext is in beta; the filed claim is what a
  * human spot-checks afterwards.
  */
 export async function claimBusiness(input: ClaimInput): Promise<Business | null> {

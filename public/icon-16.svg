@@ -1,0 +1,8 @@
+<!-- Favicon-scale variant. At 16px the six seats collapse into the table ring,
+     so this drops to the two shapes that still read: the table and the open
+     seat. Same geometry, same colours — just fewer of them. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="SitNext">
+  <rect width="48" height="48" rx="13" fill="#0A0711"/>
+  <circle cx="26" cy="26" r="11" fill="none" stroke="#A855F7" stroke-width="5"/>
+  <circle cx="14" cy="14" r="6.5" fill="#4ADE64"/>
+</svg>

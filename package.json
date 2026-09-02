@@ -1,8 +1,8 @@
 {
-  "name": "home-mart",
+  "name": "sitnext",
   "version": "1.0.0",
   "private": true,
-  "description": "HomeMart — discover local businesses and join curated dinners with strangers.",
+  "description": "SitNext — discover local businesses and join curated dinners with strangers.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

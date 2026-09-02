@@ -38,7 +38,7 @@ export function Hero({ businessCount, cityCount }: { businessCount: number; city
           </h1>
 
           <p className="lede mt-6 max-w-xl text-frost/70">
-            HomeMart does two things properly. It tells you which local places are actually worth your money — reviewed
+            SitNext does two things properly. It tells you which local places are actually worth your money — reviewed
             by people who went — and it seats you at a table with five strangers you would probably like.
           </p>
 

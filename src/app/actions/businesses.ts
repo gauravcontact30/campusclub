@@ -59,7 +59,7 @@ export async function claimBusinessAction(
       message:
         business.ownerId === user.id
           ? 'You already manage this listing.'
-          : 'Someone has already claimed this listing. Email support@homemart.example to dispute it.',
+          : 'Someone has already claimed this listing. Email support@sitnext.example to dispute it.',
     };
   }
 

@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/auth/session';
 
 export const metadata: Metadata = {
   title: 'List your business',
-  description: 'Add your business to HomeMart, claim the listing and respond to reviews.',
+  description: 'Add your business to SitNext, claim the listing and respond to reviews.',
 };
 
 const PERKS = [

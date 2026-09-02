@@ -5,7 +5,7 @@ import { Faq } from '@/components/home/faq';
 
 export const metadata: Metadata = {
   title: 'How it works',
-  description: 'How HomeMart matches six strangers to one table — and how the review directory stays honest.',
+  description: 'How SitNext matches six strangers to one table — and how the review directory stays honest.',
 };
 
 const DINNER_STEPS = [

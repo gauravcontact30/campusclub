@@ -1,5 +1,5 @@
 -- =============================================================================
--- HomeMart — reference data
+-- SitNext — reference data
 -- Categories are fixed vocabulary, so they live in SQL. The demo businesses and
 -- dinners are seeded from the TypeScript dataset (single source of truth) via
 --   POST /api/admin/seed   with header  x-seed-key: <SUPABASE_SERVICE_ROLE_KEY>
