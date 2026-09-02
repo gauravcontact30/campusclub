@@ -21,12 +21,19 @@ Claude Code will ask you to approve the server the first time you open the repo
 set `enableAllProjectMcpServers`). Approve it once and it is available in every
 session here.
 
-The browser binaries come from `@playwright/test`, which this project already
-depends on. If the MCP server reports a missing browser:
+The server is pinned to `--browser chromium` rather than the default `chrome`
+channel: Chromium is what this repo's own e2e suite uses, and it is what
+`npx playwright install` provides, so there is no dependency on a Google Chrome
+install. If the MCP server reports a missing browser:
 
 ```bash
 npx playwright install chromium
 ```
+
+It runs **headed** by default, so you actually see the window — which is the
+point when you are previewing. Add `--headless` to the args for CI. On a machine
+where Chromium sits at a fixed path outside Playwright's cache, set
+`PLAYWRIGHT_MCP_EXECUTABLE_PATH` instead of editing the committed config.
 
 On a machine where Chromium already lives at a fixed path, point the e2e suite
 at it with `PLAYWRIGHT_CHROMIUM_PATH` (see `playwright.config.ts`).
