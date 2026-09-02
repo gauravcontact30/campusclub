@@ -61,3 +61,19 @@ test('body colours actually change with the theme', async ({ page }) => {
 
   expect(light).not.toBe(dark);
 });
+
+test('the drawer carries its own toggle, labelled', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open menu' }).click();
+
+  // Two toggles are on the page once the drawer is open — the header's and the
+  // drawer's — so target the one inside the drawer by its visible text.
+  const inDrawer = page.getByRole('button', { name: 'Switch to light theme' }).last();
+  await expect(inDrawer).toContainText('Switch to light theme');
+
+  await inDrawer.click();
+  expect(await themeOf(page)).toBe('light');
+  await expect(page.getByRole('button', { name: 'Switch to dark theme' }).last()).toBeVisible();
+});
