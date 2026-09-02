@@ -55,7 +55,7 @@ export function Faq() {
                 <button
                   onClick={() => setOpen(open === i ? null : i)}
                   aria-expanded={open === i}
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left font-display text-lg font-semibold hover:text-rouge"
+                  className="flex w-full items-center justify-between gap-4 py-5 text-left font-display text-lg font-semibold hover:text-ember"
                 >
                   {faq.q}
                   {open === i ? <Minus size={18} className="shrink-0" /> : <Plus size={18} className="shrink-0" />}

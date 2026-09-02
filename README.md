@@ -235,25 +235,29 @@ PLAYWRIGHT_CHROMIUM_PATH=/path/to/chrome npm run test:e2e
 
 ## Design
 
-A dark-first rose system. Every accent is one hue, separated by lightness
-rather than by a second colour:
+**Ember**: terracotta and warm gold on a charcoal-brown ground. The product is
+two halves that pull in opposite directions — a review directory wants
+credibility, a dinner club wants warmth — and terracotta is the hue that serves
+both. It is appetite-forward and social without the romantic reading that a rose
+or pink palette picks up next to the phrase *meet five strangers*.
 
 | Token | Role | Dark | Light |
 | --- | --- | --- | --- |
-| `canvas` | The ground. `canvas-700` is the raised card, `canvas-600` the hover/elevated surface, `canvas-900` the band that sets the footer apart. | `#0D080A` → `#34212A` | `#FDF7F8` → `#EBD9DE` |
-| `content` | Type and hairlines. Rose-tinted, so text belongs to the palette rather than sitting on top of it. | `#FBF1F4` → `#C3A3AE` | `#2B1219` → `#8E6B76` |
-| `rouge` | Brand and action: primary buttons, links, selected state, focus rings. | `#F43F5E` | `#E11D48` |
-| `blush` | Affirmative signal: open-now, confirmed bookings, proof-point stats. | `#FF8FA3` | `#B03A5B` |
-| `petal` | Ratings and small flourishes. | `#FFD9E0` | `#F0567B` |
+| `canvas` | The ground. `canvas-700` is the raised card, `canvas-600` the hover/elevated surface, `canvas-900` the band that sets the footer apart. | `#0F0A08` → `#3A261C` | `#FDF9F5` → `#ECDDCF` |
+| `content` | Type and hairlines. Warm-tinted, so text belongs to the palette rather than sitting on top of it. | `#FAF3ED` → `#BEA898` | `#281810` → `#8C705E` |
+| `ember` | Brand and action: primary buttons, links, selected state, focus rings. | `#EA6C3A` | `#C64E20` |
+| `marigold` | Affirmative signal: open-now, confirmed bookings, proof-point stats. | `#F5B342` | `#B06F14` |
+| `honey` | Ratings and small flourishes. | `#FFD68F` | `#C7801A` |
 
-The tokens are named for their **role**, not their colour: with two themes,
-`canvas` is black in one and near-white in the other, so a name like `noir`
-would be a lie half the time.
+The tokens are named for their **role**, not their literal colour: with two
+themes, `canvas` is near-black in one and near-white in the other, so a name
+like `noir` would be a lie half the time.
 
-The brand token is `rouge`, not `rose`, on purpose: Tailwind ships a `rose`
-scale and `extend` deep-merges, so a token named `rose` would leave `rose-500`
-meaning Tailwind's and `rose-600` meaning ours. A different name makes every
-usage unambiguous.
+None of the five shares a name with a Tailwind default scale, and that is
+checked rather than assumed. `extend` deep-merges, so a token called `rose` or
+`amber` would leave `-500` meaning Tailwind's and `-600` meaning ours — a trap
+for anyone who later types a step the theme does not define. `ember` replaced a
+`rouge`, and `marigold` replaced an `amber` for exactly this reason.
 
 ### Two themes, one attribute
 
@@ -271,20 +275,21 @@ The header toggle picks its icon and its accessible name from `data-theme` in
 CSS rather than from React state. There is nothing to hydrate, so the button is
 correct on the very first paint and no hydration mismatch is possible.
 
-The `rouge` ramp reverses between themes, and this is the part that cannot be
-automated. On black, emphasis means **more light**, so `rouge-700` — the step
+The `ember` ramp reverses between themes, and this is the part that cannot be
+automated. On black, emphasis means **more light**, so `ember-700` — the step
 used for emphatic text — is the palest. On paper, emphasis means **darker ink**,
-so the same token becomes the deepest rose. Reusing one ramp for both themes
-produces text that is unreadable in exactly one of them.
+so the same token becomes the deepest terracotta. Reusing one ramp for both
+themes produces text that is unreadable in exactly one of them.
 
-One consequence worth knowing: because the palette is a single hue, status no
-longer reads by colour alone. Open-now and confirmed use `blush` against
-`rouge` for pending, so the distinction is carried by lightness plus the label
-text rather than by the red/green contrast most interfaces lean on. Every such
-state is labelled in words for exactly that reason.
+One consequence worth knowing: the palette is warm end to end, so status does
+not read by colour alone. Open-now and confirmed use `marigold` against `ember`
+for pending — a hue shift, but a small one next to the red/green contrast most
+interfaces lean on. Every such state is labelled in words for exactly that
+reason, which is what makes the narrow separation acceptable rather than a
+regression.
 
 Shadows are per-theme for the same reason: black drops no shadow on black, so
-the dark theme's depth comes from a rose bloom, while the light theme uses a
+the dark theme's depth comes from an ember bloom, while the light theme uses a
 conventional soft drop — a shadow tuned for one is invisible or muddy in the
 other. Display type is Bricolage
 Grotesque, body is Plus Jakarta Sans. Cards are generously rounded, buttons are
@@ -294,7 +299,7 @@ pills, and every section is built mobile-first.
 
 Six people seated around a round table, seen from above: each is a head with a
 shoulder cap curving behind it, facing in. The seats alternate between the two
-rose tones and between two silhouettes — a plain head, and a head with hair
+warm tones and between two silhouettes — a plain head, and a head with hair
 gathered above it — so the group reads as mixed rather than as six copies of
 one person.
 

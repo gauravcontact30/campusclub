@@ -19,14 +19,14 @@ export function MapPanel({ business }: { business: Business }) {
             </pattern>
           </defs>
           <rect width="400" height="180" fill="url(#grid)" />
-          <path d="M0 120 L140 120 L140 180" strokeWidth="6" fill="none" opacity="0.5" className="stroke-blush" />
-          <path d="M240 0 L240 90 L400 90" strokeWidth="6" fill="none" opacity="0.5" className="stroke-blush" />
+          <path d="M0 120 L140 120 L140 180" strokeWidth="6" fill="none" opacity="0.5" className="stroke-marigold" />
+          <path d="M240 0 L240 90 L400 90" strokeWidth="6" fill="none" opacity="0.5" className="stroke-marigold" />
         </svg>
         <span className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-rouge text-content shadow-lift">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-ember text-content shadow-lift">
             <MapPin size={20} />
           </span>
-          <span className="mt-1 h-3 w-3 rotate-45 rounded-sm bg-rouge/40" />
+          <span className="mt-1 h-3 w-3 rotate-45 rounded-sm bg-ember/40" />
         </span>
       </div>
 
@@ -42,7 +42,7 @@ export function MapPanel({ business }: { business: Business }) {
           href={`https://www.google.com/maps/search/?api=1&query=${query}`}
           target="_blank"
           rel="noreferrer noopener"
-          className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-rouge-700 hover:underline"
+          className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-ember-700 hover:underline"
         >
           Get directions <ExternalLink size={14} />
         </a>

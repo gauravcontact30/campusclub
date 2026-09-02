@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
  * Six people seated around a round table, seen from above: each is a head with
  * a shoulder cap curving behind it, facing in.
  *
- * The seats alternate between the two rose tones and between two silhouettes —
+ * The seats alternate between the two warm tones and between two silhouettes —
  * a plain head, and a head with hair gathered above it — so the group reads as
  * mixed rather than as six copies of one person. The hair is a separate small
  * disc rather than a wider head, because at 32px a wider head just reads as a
@@ -22,7 +22,7 @@ function Seat({ angle, index }: { angle: number; index: number }) {
   const gathered = index % 2 === 1;
   // Palette utilities rather than literal hexes, so the mark re-colours with
   // the theme instead of staying at its dark-mode values on a light page.
-  const tone = gathered ? 'text-blush' : 'text-rouge';
+  const tone = gathered ? 'text-marigold' : 'text-ember';
   return (
     <g transform={`rotate(${angle} 20 20)`} className={tone}>
       <path
@@ -41,8 +41,8 @@ function Seat({ angle, index }: { angle: number; index: number }) {
 function TableMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" aria-hidden className={cn('h-9 w-9', className)}>
-      <circle cx="20" cy="20" r="8.6" className="fill-rouge/20" />
-      <circle cx="20" cy="20" r="8.6" fill="none" strokeWidth="1.9" className="stroke-rouge" />
+      <circle cx="20" cy="20" r="8.6" className="fill-ember/20" />
+      <circle cx="20" cy="20" r="8.6" fill="none" strokeWidth="1.9" className="stroke-ember" />
       {SEATS.map((angle, i) => (
         <Seat key={angle} angle={angle} index={i} />
       ))}
@@ -63,7 +63,7 @@ export function Logo({ className }: { className?: string }) {
       {/* The table turns on hover — the one animation the mark asks for */}
       <TableMark className="transition-transform duration-500 group-hover:rotate-[60deg]" />
       <span>
-        Sit<span className="text-rouge">Next</span>
+        Sit<span className="text-ember">Next</span>
       </span>
     </Link>
   );

@@ -43,7 +43,7 @@ export function SaveButton({
         aria-pressed={saved}
         className={cn(
           'inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-semibold transition-colors',
-          saved ? 'border-rouge bg-rouge/10 text-rouge-700' : 'border-content/20 text-content hover:border-content/45',
+          saved ? 'border-ember bg-ember/10 text-ember-700' : 'border-content/20 text-content hover:border-content/45',
           className,
         )}
       >
@@ -61,7 +61,7 @@ export function SaveButton({
       aria-pressed={saved}
       className={cn(
         'inline-flex h-9 w-9 items-center justify-center rounded-full border border-content/20 bg-canvas/70 text-content shadow-card backdrop-blur transition-transform hover:scale-105',
-        saved && 'text-rouge',
+        saved && 'text-ember',
         className,
       )}
     >

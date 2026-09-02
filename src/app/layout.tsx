@@ -47,8 +47,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   // One per theme, so the browser chrome matches the page it frames.
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#FDF7F8' },
-    { media: '(prefers-color-scheme: dark)', color: '#0D080A' },
+    { media: '(prefers-color-scheme: light)', color: '#FDF9F5' },
+    { media: '(prefers-color-scheme: dark)', color: '#0F0A08' },
   ],
   width: 'device-width',
   initialScale: 1,
@@ -74,7 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-rouge focus:px-5 focus:py-3 focus:text-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ember focus:px-5 focus:py-3 focus:text-content"
           >
             Skip to content
           </a>

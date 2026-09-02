@@ -39,7 +39,7 @@ export function Testimonials() {
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {QUOTES.map((quote) => (
           <figure key={quote.name} className="surface-card flex h-full flex-col p-6">
-            <Quote size={22} className="text-rouge" />
+            <Quote size={22} className="text-ember" />
             <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-content/75">“{quote.text}”</blockquote>
             <figcaption className="mt-5 flex items-center gap-3 border-t border-content/10 pt-4">
               <Avatar name={quote.name} src={quote.avatar} size={36} />

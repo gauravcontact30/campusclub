@@ -24,7 +24,7 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
         })
       }
       disabled={pending}
-      className="inline-flex h-11 items-center rounded-full px-5 text-sm font-semibold text-rouge-700 hover:bg-rouge/10"
+      className="inline-flex h-11 items-center rounded-full px-5 text-sm font-semibold text-ember-700 hover:bg-ember/10"
     >
       {pending ? <Loader2 size={16} className="animate-spin" /> : 'Cancel'}
     </button>

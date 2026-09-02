@@ -65,7 +65,7 @@ export default async function ClaimPage({ params }: { params: Promise<{ slug: st
         <aside className="space-y-4 lg:sticky lg:top-24 lg:h-fit">
           {PERKS.map((perk) => (
             <div key={perk.title} className="surface-card p-6">
-              <perk.icon size={22} className="text-rouge" />
+              <perk.icon size={22} className="text-ember" />
               <h2 className="mt-3 font-display text-lg font-semibold">{perk.title}</h2>
               <p className="mt-1.5 text-sm leading-relaxed text-content/65">{perk.body}</p>
             </div>

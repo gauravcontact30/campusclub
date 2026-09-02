@@ -52,7 +52,7 @@ export function BusinessCard({
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-display text-lg font-semibold leading-snug">
-            <Link href={`/businesses/${business.slug}`} className="after:absolute after:inset-0 hover:text-rouge">
+            <Link href={`/businesses/${business.slug}`} className="after:absolute after:inset-0 hover:text-ember">
               {business.name}
             </Link>
           </h3>
@@ -80,7 +80,7 @@ export function BusinessCard({
           <OpenNowBadge hours={business.hours} />
           <div className="hidden gap-1.5 sm:flex">
             {typeof business.distanceKm === 'number' ? (
-              <Badge tone="blush">
+              <Badge tone="marigold">
                 <Navigation size={11} />
                 {formatDistance(business.distanceKm)}
               </Badge>

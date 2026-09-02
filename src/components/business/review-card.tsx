@@ -69,7 +69,7 @@ export function ReviewCard({
           <button
             onClick={remove}
             disabled={pending}
-            className="inline-flex items-center gap-1.5 rounded-full border border-content/15 px-3 py-1.5 text-xs font-medium text-content/60 hover:border-rouge hover:text-rouge"
+            className="inline-flex items-center gap-1.5 rounded-full border border-content/15 px-3 py-1.5 text-xs font-medium text-content/60 hover:border-ember hover:text-ember"
           >
             <Trash2 size={13} /> Delete
           </button>
@@ -97,7 +97,7 @@ export function ReviewCard({
         onClick={vote}
         disabled={pending}
         aria-pressed={voted}
-        className="mt-4 inline-flex items-center gap-2 rounded-full border border-content/15 px-4 py-2 text-xs font-semibold transition-colors hover:border-content/45 data-[voted=true]:border-rouge data-[voted=true]:text-rouge"
+        className="mt-4 inline-flex items-center gap-2 rounded-full border border-content/15 px-4 py-2 text-xs font-semibold transition-colors hover:border-content/45 data-[voted=true]:border-ember data-[voted=true]:text-ember"
         data-voted={voted}
       >
         <ThumbsUp size={14} />

@@ -17,36 +17,36 @@
 
     color-scheme: dark;
 
-    --canvas: 13 8 10;
-    --canvas-900: 7 4 5;
-    --canvas-800: 13 8 10;
-    --canvas-700: 23 15 19;
-    --canvas-600: 35 22 28;
-    --canvas-500: 52 33 42;
+    --canvas: 15 10 8;
+    --canvas-900: 8 5 4;
+    --canvas-800: 15 10 8;
+    --canvas-700: 26 17 13;
+    --canvas-600: 39 25 19;
+    --canvas-500: 58 38 28;
 
-    --content: 251 241 244;
-    --content-100: 255 250 251;
-    --content-200: 235 213 220;
-    --content-300: 195 163 174;
+    --content: 250 243 237;
+    --content-100: 255 251 247;
+    --content-200: 234 218 205;
+    --content-300: 190 168 152;
 
     /* On black, emphasis means more light: 700 is the lightest step. */
-    --rouge: 244 63 94;
-    --rouge-600: 255 100 120;
-    --rouge-700: 255 176 192;
-    --rouge-200: 74 18 32;
+    --ember: 234 108 58;
+    --ember-600: 247 138 92;
+    --ember-700: 253 197 165;
+    --ember-200: 72 30 14;
 
-    --blush: 255 143 163;
-    --blush-600: 255 194 206;
+    --marigold: 245 179 66;
+    --marigold-600: 250 208 133;
 
-    --petal: 255 217 224;
+    --honey: 255 214 143;
 
     --page-wash:
-      radial-gradient(58rem 40rem at 8% -6%, rgba(244, 63, 94, 0.18), transparent 65%),
-      radial-gradient(46rem 34rem at 96% 4%, rgba(255, 143, 163, 0.10), transparent 60%);
+      radial-gradient(58rem 40rem at 8% -6%, rgba(234, 108, 58, 0.18), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(245, 179, 66, 0.10), transparent 60%);
 
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 14px 34px -14px rgba(0, 0, 0, 0.85);
-    --shadow-lift: 0 26px 64px -26px rgba(244, 63, 94, 0.55);
-    --shadow-glow: 0 0 0 1px rgba(244, 63, 94, 0.28), 0 14px 44px -14px rgba(244, 63, 94, 0.55);
+    --shadow-lift: 0 26px 64px -26px rgba(234, 108, 58, 0.55);
+    --shadow-glow: 0 0 0 1px rgba(234, 108, 58, 0.28), 0 14px 44px -14px rgba(234, 108, 58, 0.55);
   }
 
   :root[data-theme='light'] {
@@ -55,38 +55,38 @@
     /* The canvas ramp keeps its meaning, not its direction: 700 is still the
        raised card, which on paper means brighter than the page rather than
        darker, and 900 is still the band that sets the footer apart. */
-    --canvas: 253 247 248;
-    --canvas-900: 241 227 231;
-    --canvas-800: 253 247 248;
+    --canvas: 253 249 245;
+    --canvas-900: 243 232 222;
+    --canvas-800: 253 249 245;
     --canvas-700: 255 255 255;
-    --canvas-600: 247 234 238;
-    --canvas-500: 235 217 222;
+    --canvas-600: 248 238 229;
+    --canvas-500: 236 221 207;
 
-    --content: 43 18 25;
-    --content-100: 24 10 14;
-    --content-200: 94 58 69;
-    --content-300: 142 107 118;
+    --content: 40 24 16;
+    --content-100: 25 14 9;
+    --content-200: 92 66 50;
+    --content-300: 140 112 94;
 
     /* And here the ramp genuinely reverses: on paper emphasis is darker ink,
-       so 700 — the step used for emphatic text — becomes the deepest rose
+       so 700 — the step used for emphatic text — becomes the deepest terracotta
        rather than the palest. */
-    --rouge: 225 29 72;
-    --rouge-600: 190 18 60;
-    --rouge-700: 159 18 57;
-    --rouge-200: 255 228 233;
+    --ember: 198 78 32;
+    --ember-600: 166 62 24;
+    --ember-700: 133 49 18;
+    --ember-200: 253 231 219;
 
-    --blush: 176 58 91;
-    --blush-600: 140 44 71;
+    --marigold: 176 111 20;
+    --marigold-600: 138 85 12;
 
-    --petal: 240 86 123;
+    --honey: 199 128 26;
 
     --page-wash:
-      radial-gradient(58rem 40rem at 8% -6%, rgba(244, 63, 94, 0.10), transparent 65%),
-      radial-gradient(46rem 34rem at 96% 4%, rgba(255, 143, 163, 0.12), transparent 60%);
+      radial-gradient(58rem 40rem at 8% -6%, rgba(198, 78, 32, 0.10), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(176, 111, 20, 0.12), transparent 60%);
 
-    --shadow-card: 0 1px 2px rgba(43, 18, 25, 0.06), 0 14px 34px -18px rgba(43, 18, 25, 0.22);
-    --shadow-lift: 0 26px 64px -30px rgba(159, 18, 57, 0.35);
-    --shadow-glow: 0 0 0 1px rgba(225, 29, 72, 0.22), 0 14px 44px -18px rgba(225, 29, 72, 0.30);
+    --shadow-card: 0 1px 2px rgba(40, 24, 16, 0.06), 0 14px 34px -18px rgba(40, 24, 16, 0.22);
+    --shadow-lift: 0 26px 64px -30px rgba(133, 49, 18, 0.35);
+    --shadow-glow: 0 0 0 1px rgba(198, 78, 32, 0.22), 0 14px 44px -18px rgba(198, 78, 32, 0.30);
   }
 
   html {
@@ -97,7 +97,7 @@
     @apply bg-canvas text-content antialiased;
     font-family: var(--font-sans);
     /* A flat ground goes dead either way, so both themes get two very
-       low-opacity rose blooms behind the top of the page. Deliberately NOT
+       low-opacity ember blooms behind the top of the page. Deliberately NOT
        background-attachment: fixed, which repaints the whole viewport on every
        scroll frame. */
     background-image: var(--page-wash);
@@ -110,12 +110,12 @@
   }
 
   ::selection {
-    @apply bg-rouge text-canvas;
+    @apply bg-ember text-canvas;
   }
 
   /* Keyboard focus stays visible everywhere — pointer focus does not shout. */
   :focus-visible {
-    @apply outline-none ring-2 ring-rouge ring-offset-2 ring-offset-canvas;
+    @apply outline-none ring-2 ring-ember ring-offset-2 ring-offset-canvas;
   }
 
   /* The theme toggle swaps its icon and its accessible name with no JS state,
@@ -147,7 +147,7 @@
   }
 
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.18em] text-rouge;
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-ember;
   }
 
   .lede {
@@ -159,7 +159,7 @@
   }
 
   .link-underline {
-    @apply underline decoration-rouge decoration-2 underline-offset-4 hover:decoration-content;
+    @apply underline decoration-ember decoration-2 underline-offset-4 hover:decoration-content;
   }
 
   /* Hides scrollbars on the horizontal chip rails without killing scroll */

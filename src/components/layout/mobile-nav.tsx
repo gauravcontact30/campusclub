@@ -98,7 +98,7 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
                   <form action={signOutAction}>
                     <button
                       type="submit"
-                      className="w-full rounded-full px-5 py-3 text-sm font-semibold text-rouge hover:bg-content/10"
+                      className="w-full rounded-full px-5 py-3 text-sm font-semibold text-ember hover:bg-content/10"
                     >
                       Sign out
                     </button>

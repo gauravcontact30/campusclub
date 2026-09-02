@@ -24,7 +24,7 @@ export function CategoryGrid() {
               href={`/businesses?category=${category.slug}`}
               className="group flex flex-col justify-between rounded-3xl border border-content/10 bg-canvas-700 p-5 transition-all hover:-translate-y-1 hover:border-content/45 hover:bg-canvas hover:text-content"
             >
-              <Icon size={24} className="text-rouge" />
+              <Icon size={24} className="text-ember" />
               <div className="mt-8">
                 <h3 className="font-display text-lg font-semibold">{category.name}</h3>
                 <p className="mt-1 text-xs leading-relaxed text-content/60 group-hover:text-content/60">{category.blurb}</p>

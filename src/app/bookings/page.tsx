@@ -54,7 +54,7 @@ export default async function BookingsPage() {
                     <h2 className="font-display text-xl font-semibold">
                       {booking.event.city} · {booking.event.neighborhood}
                     </h2>
-                    <Badge tone={booking.status === 'confirmed' ? 'blush' : 'petal'}>
+                    <Badge tone={booking.status === 'confirmed' ? 'marigold' : 'honey'}>
                       {booking.status === 'confirmed' ? 'Confirmed' : 'Waitlisted'}
                     </Badge>
                   </div>

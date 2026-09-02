@@ -26,7 +26,7 @@ export function DinnerTeaser({ events }: { events: DinnerEvent[] }) {
                 ['3 hrs', 'average dinner'],
               ].map(([stat, label]) => (
                 <div key={label}>
-                  <dt className="font-display text-3xl font-semibold text-blush">{stat}</dt>
+                  <dt className="font-display text-3xl font-semibold text-marigold">{stat}</dt>
                   <dd className="mt-1 text-sm text-content/60">{label}</dd>
                 </div>
               ))}

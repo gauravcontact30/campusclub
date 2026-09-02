@@ -76,7 +76,7 @@ export default async function DinnersPage({
             {Object.entries(grouped).map(([date, group]) => (
               <section key={date}>
                 <h2 className="flex items-center gap-2 font-display text-xl font-semibold">
-                  <CalendarRange size={18} className="text-rouge" />
+                  <CalendarRange size={18} className="text-ember" />
                   {date}
                 </h2>
                 <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

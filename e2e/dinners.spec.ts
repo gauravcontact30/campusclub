@@ -33,8 +33,15 @@ test('a member can claim a seat and see it in their bookings', async ({ page }, 
   await expect(page).toHaveURL('/');
 
   await page.goto('/dinners');
-  await page.locator('article').first().getByRole('link', { name: /Claim a seat|Join waitlist/ }).click();
-  await page.waitForURL(/\/dinners\/[\w-]+/);
+  const seatLink = page.locator('article').first().getByRole('link', { name: /Claim a seat|Join waitlist/ });
+  await expect(seatLink).toBeVisible();
+
+  // Same pre-hydration swallow as in directory.spec.ts: retry the click rather
+  // than wait longer, because nothing is in flight to wait for.
+  await expect(async () => {
+    await seatLink.click();
+    await expect(page).toHaveURL(/\/dinners\/[\w-]+/, { timeout: 3_000 });
+  }).toPass({ timeout: 20_000 });
 
   const claim = page.getByRole('button', { name: /Claim my seat|Join the waitlist/ });
   const cancel = page.getByRole('button', { name: 'Cancel my seat' });

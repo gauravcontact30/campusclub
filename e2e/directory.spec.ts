@@ -47,8 +47,17 @@ test.describe('directory', () => {
 
   test('a listing page shows hours, contact and reviews', async ({ page }) => {
     await page.goto('/businesses');
-    await page.locator('article a').first().click();
-    await page.waitForURL(/\/businesses\/[\w-]+/);
+    const firstCard = page.locator('article a').first();
+    await expect(firstCard).toBeVisible();
+
+    // Clicking a Next Link in the window between the anchor rendering and React
+    // hydrating it gets the default prevented by a router that is not yet
+    // listening, and the click is silently swallowed. Retrying the click is the
+    // fix; a longer wait is not, because nothing is in flight to wait for.
+    await expect(async () => {
+      await firstCard.click();
+      await expect(page).toHaveURL(/\/businesses\/[\w-]+/, { timeout: 3_000 });
+    }).toPass({ timeout: 20_000 });
 
     await expect(page.getByRole('heading', { name: 'Opening hours' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Contact' })).toBeVisible();

@@ -43,7 +43,7 @@ export function ReviewForm({
         </p>
         <Link
           href={`/login?next=/businesses/${slug}`}
-          className="inline-flex h-11 items-center rounded-full bg-rouge px-5 text-sm font-semibold text-content hover:bg-rouge-600"
+          className="inline-flex h-11 items-center rounded-full bg-ember px-5 text-sm font-semibold text-content hover:bg-ember-600"
         >
           Sign in to review
         </Link>

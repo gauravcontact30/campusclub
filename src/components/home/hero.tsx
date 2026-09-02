@@ -17,24 +17,24 @@ export function Hero({ businessCount, cityCount }: { businessCount: number; city
       {/* soft light bloom behind the headline */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-24 -top-32 h-[520px] w-[520px] rounded-full bg-rouge/25 blur-[120px]"
+        className="pointer-events-none absolute -right-24 -top-32 h-[520px] w-[520px] rounded-full bg-ember/25 blur-[120px]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-40 -left-20 h-[420px] w-[420px] rounded-full bg-blush/20 blur-[120px]"
+        className="pointer-events-none absolute -bottom-40 -left-20 h-[420px] w-[420px] rounded-full bg-marigold/20 blur-[120px]"
       />
 
       <div className="container-page relative grid gap-14 py-16 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:py-28">
         <div className="animate-fade-up">
           <span className="inline-flex items-center gap-2 rounded-full border border-content/20 px-3.5 py-1.5 text-xs font-medium text-content/80">
-            <Sparkles size={14} className="text-rouge" />
+            <Sparkles size={14} className="text-ember" />
             Every Wednesday, 8:00 PM — in {cityCount} cities
           </span>
 
           <h1 className="display-xl mt-6 text-content">
             Meet five strangers.
             <br />
-            <span className="text-rouge">Find your city.</span>
+            <span className="text-ember">Find your city.</span>
           </h1>
 
           <p className="lede mt-6 max-w-xl text-content/70">

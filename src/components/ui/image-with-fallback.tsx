@@ -6,11 +6,11 @@ import { cn, hashIndex } from '@/lib/utils';
 
 const GRADIENTS = [
   'from-canvas to-canvas-500',
-  'from-rouge to-petal',
-  'from-canvas-600 to-blush',
-  'from-petal to-rouge-600',
-  'from-blush to-canvas',
-  'from-canvas-700 to-rouge',
+  'from-ember to-honey',
+  'from-canvas-600 to-marigold',
+  'from-honey to-ember-600',
+  'from-marigold to-canvas',
+  'from-canvas-700 to-ember',
 ];
 
 /**

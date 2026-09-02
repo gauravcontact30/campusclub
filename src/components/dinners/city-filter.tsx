@@ -20,7 +20,7 @@ export function CityFilter() {
         aria-pressed={active === ''}
         className={cn(
           'shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-colors',
-          active === '' ? 'border-rouge bg-rouge text-content' : 'border-content/15 text-content/70 hover:border-content/40',
+          active === '' ? 'border-ember bg-ember text-content' : 'border-content/15 text-content/70 hover:border-content/40',
         )}
       >
         All cities
@@ -32,7 +32,7 @@ export function CityFilter() {
           aria-pressed={active === city.slug}
           className={cn(
             'shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-colors',
-            active === city.slug ? 'border-rouge bg-rouge text-content' : 'border-content/15 text-content/70 hover:border-content/40',
+            active === city.slug ? 'border-ember bg-ember text-content' : 'border-content/15 text-content/70 hover:border-content/40',
           )}
         >
           {city.name}

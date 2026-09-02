@@ -85,9 +85,9 @@ export default async function BusinessPage({
       </nav>
 
       {isOwner && (
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-blush/50 bg-blush/15 px-5 py-4">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-marigold/50 bg-marigold/15 px-5 py-4">
           <p className="flex items-center gap-2 text-sm font-medium">
-            <ShieldCheck size={18} className="text-blush-600" />
+            <ShieldCheck size={18} className="text-marigold-600" />
             {claimed === '1' ? `Claimed — ${business.name} is yours to manage.` : 'You manage this listing.'}
             {unanswered > 0 && (
               <span className="text-content/60">
@@ -95,7 +95,7 @@ export default async function BusinessPage({
               </span>
             )}
           </p>
-          <a href="#reviews" className="text-sm font-semibold text-rouge-700 hover:underline">
+          <a href="#reviews" className="text-sm font-semibold text-ember-700 hover:underline">
             Respond to reviews →
           </a>
         </div>
@@ -115,7 +115,7 @@ export default async function BusinessPage({
                 <span className="text-content/40">·</span>
                 <span className="text-content/70">{priceLabel(business.priceLevel, business.city)}</span>
                 <span className="text-content/40">·</span>
-                <Link href={`/businesses?category=${business.categorySlug}`} className="text-content/70 hover:text-rouge">
+                <Link href={`/businesses?category=${business.categorySlug}`} className="text-content/70 hover:text-ember">
                   {category?.name}
                 </Link>
               </div>
@@ -127,7 +127,7 @@ export default async function BusinessPage({
             <div className="flex flex-wrap gap-2">
               <Link
                 href={`/businesses/${slug}/review`}
-                className="inline-flex h-11 items-center gap-2 rounded-full bg-rouge px-5 text-sm font-semibold text-content hover:bg-rouge-600"
+                className="inline-flex h-11 items-center gap-2 rounded-full bg-ember px-5 text-sm font-semibold text-content hover:bg-ember-600"
               >
                 <Star size={16} /> Write a review
               </Link>
@@ -139,7 +139,7 @@ export default async function BusinessPage({
 
           <div className="mt-6 flex flex-wrap gap-2">
             {business.tags.map((tag) => (
-              <Badge key={tag} tone="blush">
+              <Badge key={tag} tone="marigold">
                 {tag}
               </Badge>
             ))}
@@ -151,7 +151,7 @@ export default async function BusinessPage({
             <ul className="mt-5 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
               {business.amenities.map((amenity) => (
                 <li key={amenity} className="flex items-center gap-2.5 text-sm text-content/75">
-                  <span className="h-1.5 w-1.5 rounded-full bg-rouge" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-ember" />
                   {amenity}
                 </li>
               ))}
@@ -169,7 +169,7 @@ export default async function BusinessPage({
                     scroll={false}
                     className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                       reviewSort === option.value
-                        ? 'border-rouge bg-rouge text-content'
+                        ? 'border-ember bg-ember text-content'
                         : 'border-content/15 text-content/60 hover:border-content/40'
                     }`}
                   >
@@ -219,7 +219,7 @@ export default async function BusinessPage({
           <div className="surface-card p-6">
             <h2 className="font-display text-lg font-semibold">Contact</h2>
             <div className="mt-4 space-y-3 text-sm">
-              <a href={`tel:${business.phone.replace(/\s+/g, '')}`} className="flex items-center gap-3 hover:text-rouge">
+              <a href={`tel:${business.phone.replace(/\s+/g, '')}`} className="flex items-center gap-3 hover:text-ember">
                 <Phone size={16} className="text-content/50" />
                 {business.phone}
               </a>
@@ -228,7 +228,7 @@ export default async function BusinessPage({
                   href={business.website}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="flex items-center gap-3 break-all hover:text-rouge"
+                  className="flex items-center gap-3 break-all hover:text-ember"
                 >
                   <Globe size={16} className="shrink-0 text-content/50" />
                   {business.website.replace(/^https?:\/\//, '')}
@@ -256,7 +256,7 @@ export default async function BusinessPage({
               </p>
               <Link
                 href={`/businesses/${slug}/claim`}
-                className="mt-3 inline-block text-sm font-semibold text-rouge-700 hover:underline"
+                className="mt-3 inline-block text-sm font-semibold text-ember-700 hover:underline"
               >
                 Claim {business.name} →
               </Link>

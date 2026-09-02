@@ -40,7 +40,7 @@ export default function HowItWorksPage() {
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {DINNER_STEPS.map((step) => (
             <div key={step.title} className="surface-card p-7">
-              <step.icon size={24} className="text-rouge" />
+              <step.icon size={24} className="text-ember" />
               <h3 className="mt-4 font-display text-xl font-semibold">{step.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-content/65">{step.body}</p>
             </div>
@@ -54,7 +54,7 @@ export default function HowItWorksPage() {
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {TRUST.map((item) => (
               <div key={item.title} className="rounded-3xl bg-canvas-700 p-7">
-                <item.icon size={24} className="text-rouge" />
+                <item.icon size={24} className="text-ember" />
                 <h3 className="mt-4 font-display text-xl font-semibold">{item.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-content/65">{item.body}</p>
               </div>

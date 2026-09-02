@@ -27,17 +27,25 @@ const config: Config = {
           200: withAlpha('--content-200'),
           300: withAlpha('--content-300'),
         },
-        rouge: {
-          DEFAULT: withAlpha('--rouge'),
-          600: withAlpha('--rouge-600'),
-          700: withAlpha('--rouge-700'),
-          200: withAlpha('--rouge-200'),
+        /* Signature terracotta. Every token here is checked against Tailwind's
+           own palette first: `extend` deep-merges, so a token sharing a name
+           with a built-in scale (`rose`, `amber`, `orange`…) would leave
+           `-500` meaning Tailwind's and `-600` meaning ours. `ember`,
+           `marigold` and `honey` collide with nothing. The ramp runs BRIGHTER
+           as the number rises in dark and DARKER in light — see globals.css. */
+        ember: {
+          DEFAULT: withAlpha('--ember'),
+          600: withAlpha('--ember-600'),
+          700: withAlpha('--ember-700'),
+          200: withAlpha('--ember-200'),
         },
-        blush: {
-          DEFAULT: withAlpha('--blush'),
-          600: withAlpha('--blush-600'),
+        /* Warm gold. Carries the affirmative signal — open now, confirmed. */
+        marigold: {
+          DEFAULT: withAlpha('--marigold'),
+          600: withAlpha('--marigold-600'),
         },
-        petal: withAlpha('--petal'),
+        /* The palest tint, for ratings and small flourishes */
+        honey: withAlpha('--honey'),
       },
       fontFamily: {
         display: ['var(--font-display)', 'Georgia', 'serif'],
