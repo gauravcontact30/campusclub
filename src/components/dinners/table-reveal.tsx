@@ -4,12 +4,12 @@ import type { TableMate } from '@/lib/data/dinners';
 
 export function TableReveal({ mates, locked }: { mates: TableMate[]; locked: boolean }) {
   return (
-    <section className="rounded-4xl bg-ink p-7 text-cream sm:p-9">
+    <section className="rounded-4xl bg-noir p-7 text-frost sm:p-9">
       <div className="flex items-center gap-2">
-        <Sparkles size={18} className="text-flame" />
+        <Sparkles size={18} className="text-orchid" />
         <h2 className="font-display text-2xl font-semibold">Your table</h2>
       </div>
-      <p className="mt-2 max-w-xl text-sm text-cream/65">
+      <p className="mt-2 max-w-xl text-sm text-frost/65">
         {locked
           ? 'Claim your seat and we will introduce the five people you are eating with — first names only, the rest is for the table.'
           : 'Five people matched on how you talk, what you are curious about and how late you stay. Full names are nobody’s business but yours.'}
@@ -19,15 +19,15 @@ export function TableReveal({ mates, locked }: { mates: TableMate[]; locked: boo
         {mates.map((mate, i) => (
           <li
             key={`${mate.name}-${i}`}
-            className="flex items-center gap-3 rounded-2xl border border-cream/15 bg-cream/5 p-4"
+            className="flex items-center gap-3 rounded-2xl border border-frost/15 bg-frost/5 p-4"
           >
             <Avatar name={mate.name} src={locked ? null : mate.avatar} size={44} />
             <div className={locked ? 'blur-[5px] select-none' : ''}>
               <p className="text-sm font-semibold">
                 {mate.name}, {mate.ageBand}
               </p>
-              <p className="text-xs text-cream/60">{mate.works}</p>
-              <p className="mt-0.5 text-xs text-flame">Into {mate.sharedInterest}</p>
+              <p className="text-xs text-frost/60">{mate.works}</p>
+              <p className="mt-0.5 text-xs text-orchid">Into {mate.sharedInterest}</p>
             </div>
           </li>
         ))}

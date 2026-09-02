@@ -235,11 +235,24 @@ PLAYWRIGHT_CHROMIUM_PATH=/path/to/chrome npm run test:e2e
 
 ## Design
 
-A warm, editorial dark-and-cream system: deep forest `ink` (`#0B1F17`) against
-paper `cream` (`#F8F4EA`), a single hot `flame` accent (`#FF5C39`), `sage` and
-`gold` supporting it. Display type is Bricolage Grotesque, body is Plus Jakarta
-Sans. Cards are generously rounded, buttons are pills, and every section is
-built mobile-first.
+A dark-first system built on three colours, each with one job:
+
+| Token | Value | Role |
+| --- | --- | --- |
+| `noir` | `#0A0711` → `#2B1F4A` | The canvas. Black cooled with violet, so it never reads as flat `#000`. `noir-700` is the raised card, `noir-600` the hover/elevated surface. |
+| `frost` | `#F2EDFB` → `#B4A7D0` | Type and hairlines. Violet-tinted white, so text belongs to the palette rather than sitting on top of it. |
+| `orchid` | `#A855F7` | Brand and action: primary buttons, links, selected state, focus rings. |
+| `parrot` | `#4ADE64` | Affirmative signal: open-now, confirmed bookings, proof-point stats. |
+| `zest` | `#C8F751` | Ratings and small flourishes. |
+
+The `orchid` ramp runs **brighter** as the number rises (`orchid-700` is the
+lightest) because on a black canvas emphasis means more light, not less — the
+opposite of a ramp designed for paper.
+
+Because black drops no shadow on black, depth comes from the `lift` and `glow`
+shadows, which bloom violet rather than grey. Display type is Bricolage
+Grotesque, body is Plus Jakarta Sans. Cards are generously rounded, buttons are
+pills, and every section is built mobile-first.
 
 Cover art and avatars are generated SVGs in `public/img/`, so the app has no
 external image dependency and never shows a broken tile. `ImageWithFallback`

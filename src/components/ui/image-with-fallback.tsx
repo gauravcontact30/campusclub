@@ -5,12 +5,12 @@ import { useState } from 'react';
 import { cn, hashIndex } from '@/lib/utils';
 
 const GRADIENTS = [
-  'from-ink to-ink-500',
-  'from-flame to-gold',
-  'from-ink-600 to-sage',
-  'from-gold to-flame-600',
-  'from-sage to-ink',
-  'from-ink-700 to-flame',
+  'from-noir to-noir-500',
+  'from-orchid to-zest',
+  'from-noir-600 to-parrot',
+  'from-zest to-orchid-600',
+  'from-parrot to-noir',
+  'from-noir-700 to-orchid',
 ];
 
 /**

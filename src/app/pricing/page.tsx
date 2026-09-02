@@ -14,11 +14,11 @@ export default async function PricingPage() {
 
   return (
     <>
-      <section className="bg-ink py-16 text-cream sm:py-20">
+      <section className="bg-noir py-16 text-frost sm:py-20">
         <div className="container-page max-w-3xl text-center">
           <p className="eyebrow">Membership</p>
-          <h1 className="display-lg mt-3 text-cream">Pay for the table, not the app.</h1>
-          <p className="lede mx-auto mt-5 max-w-xl text-cream/70">
+          <h1 className="display-lg mt-3 text-frost">Pay for the table, not the app.</h1>
+          <p className="lede mx-auto mt-5 max-w-xl text-frost/70">
             Reviews and the directory are free forever. Membership is only for the dinners — and it brings the per-seat
             price down every week you use it.
           </p>
@@ -31,7 +31,7 @@ export default async function PricingPage() {
             <PlanCard key={plan.id} plan={plan} currentPlan={user?.plan ?? null} signedIn={Boolean(user)} />
           ))}
         </div>
-        <p className="mt-6 text-center text-sm text-ink/55">
+        <p className="mt-6 text-center text-sm text-frost/60">
           Prices include the reservation fee. Food and drink are always settled directly with the venue.
         </p>
       </section>

@@ -17,7 +17,7 @@ export function PhotoGallery({ images, name }: { images: string[]; name: string 
             key={src + i}
             onClick={() => setOpen(i)}
             className={cn(
-              'relative overflow-hidden bg-ink/5 transition-opacity hover:opacity-90',
+              'relative overflow-hidden bg-frost/5 transition-opacity hover:opacity-90',
               i === 0 ? 'aspect-[16/10] sm:col-span-2 sm:row-span-2 sm:aspect-auto' : 'hidden aspect-[4/3] sm:block',
             )}
             aria-label={`Open photo ${i + 1} of ${name}`}
@@ -32,13 +32,13 @@ export function PhotoGallery({ images, name }: { images: string[]; name: string 
           role="dialog"
           aria-modal="true"
           aria-label={`${name} photo viewer`}
-          className="fixed inset-0 z-[70] flex animate-fade-in items-center justify-center bg-ink/95 p-4"
+          className="fixed inset-0 z-[70] flex animate-fade-in items-center justify-center bg-noir/95 p-4"
           onClick={() => setOpen(null)}
         >
           <button
             onClick={() => setOpen(null)}
             aria-label="Close photo viewer"
-            className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-cream/10 text-cream hover:bg-cream/20"
+            className="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-frost/10 text-frost hover:bg-frost/20"
           >
             <X size={20} />
           </button>

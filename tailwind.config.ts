@@ -5,34 +5,38 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* Deep forest "ink" — the dark canvas the brand sits on */
-        ink: {
-          DEFAULT: '#0B1F17',
-          900: '#081712',
-          800: '#0B1F17',
-          700: '#122C22',
-          600: '#1B3B2E',
-          500: '#2A5240',
+        /* The canvas: black cooled with violet so it never reads as flat #000 */
+        noir: {
+          DEFAULT: '#0A0711',
+          900: '#050308',
+          800: '#0A0711',
+          700: '#130D20',
+          600: '#1D1433',
+          500: '#2B1F4A',
         },
-        /* Warm paper tones */
-        cream: {
-          DEFAULT: '#F8F4EA',
-          100: '#FDFBF6',
-          200: '#F1E9D9',
-          300: '#E3D7C1',
+        /* Light foreground. Tinted toward violet so text belongs to the palette
+           instead of sitting on top of it as clinical white. */
+        frost: {
+          DEFAULT: '#F2EDFB',
+          100: '#FBF9FF',
+          200: '#DDD4F2',
+          300: '#B4A7D0',
         },
-        /* Signature accent */
-        flame: {
-          DEFAULT: '#FF5C39',
-          600: '#E8492A',
-          700: '#C93A1F',
-          200: '#FFD3C7',
+        /* Signature purple. The ramp runs BRIGHTER as the number rises: on a black
+           canvas emphasis means more light, not less. */
+        orchid: {
+          DEFAULT: '#A855F7',
+          600: '#BC7BFF',
+          700: '#D9B8FE',
+          200: '#2C1550',
         },
-        sage: {
-          DEFAULT: '#A8C3B0',
-          600: '#6E9280',
+        /* Parrot green — the counterweight that keeps the purple from going gothic */
+        parrot: {
+          DEFAULT: '#4ADE64',
+          600: '#8DF5A6',
         },
-        gold: '#F5B942',
+        /* Lime highlight for ratings and small flourishes */
+        zest: '#C8F751',
       },
       fontFamily: {
         display: ['var(--font-display)', 'Georgia', 'serif'],
@@ -43,8 +47,10 @@ const config: Config = {
         '5xl': '2.75rem',
       },
       boxShadow: {
-        card: '0 1px 2px rgba(11,31,23,0.06), 0 12px 32px -12px rgba(11,31,23,0.18)',
-        lift: '0 24px 60px -24px rgba(11,31,23,0.45)',
+        /* Black drops nothing on black — depth has to come from a violet bloom */
+        card: '0 1px 2px rgba(0,0,0,0.6), 0 14px 34px -14px rgba(0,0,0,0.85)',
+        lift: '0 26px 64px -26px rgba(168,85,247,0.55)',
+        glow: '0 0 0 1px rgba(168,85,247,0.28), 0 14px 44px -14px rgba(168,85,247,0.55)',
       },
       maxWidth: {
         page: '1240px',

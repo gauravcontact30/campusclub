@@ -39,13 +39,13 @@ export function Testimonials() {
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {QUOTES.map((quote) => (
           <figure key={quote.name} className="surface-card flex h-full flex-col p-6">
-            <Quote size={22} className="text-flame" />
-            <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-ink/75">“{quote.text}”</blockquote>
-            <figcaption className="mt-5 flex items-center gap-3 border-t border-ink/10 pt-4">
+            <Quote size={22} className="text-orchid" />
+            <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-frost/75">“{quote.text}”</blockquote>
+            <figcaption className="mt-5 flex items-center gap-3 border-t border-frost/10 pt-4">
               <Avatar name={quote.name} src={quote.avatar} size={36} />
               <div>
                 <p className="text-sm font-semibold">{quote.name}</p>
-                <p className="text-xs text-ink/50">{quote.city}</p>
+                <p className="text-xs text-frost/55">{quote.city}</p>
               </div>
             </figcaption>
           </figure>

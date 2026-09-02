@@ -66,7 +66,7 @@ export function AuthForm({ mode, next }: { mode: 'signin' | 'signup'; next: stri
         {pending ? 'One moment…' : mode === 'signin' ? 'Sign in' : 'Create account'}
       </Button>
 
-      <p className="text-center text-sm text-ink/60">
+      <p className="text-center text-sm text-frost/60">
         {mode === 'signin' ? (
           <>
             New here?{' '}

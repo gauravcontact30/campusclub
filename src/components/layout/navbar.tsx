@@ -11,16 +11,16 @@ export async function Navbar() {
   const user = await getCurrentUser();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-cream/10 bg-ink/95 backdrop-blur supports-[backdrop-filter]:bg-ink/80">
+    <header className="sticky top-0 z-50 border-b border-frost/10 bg-noir/95 backdrop-blur supports-[backdrop-filter]:bg-noir/80">
       <div className="container-page flex h-[68px] items-center justify-between gap-4">
         <div className="flex items-center gap-8">
-          <Logo tone="light" />
+          <Logo />
           <nav className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-full px-3.5 py-2 text-sm font-medium text-cream/80 transition-colors hover:bg-cream/10 hover:text-cream"
+                className="rounded-full px-3.5 py-2 text-sm font-medium text-frost/80 transition-colors hover:bg-frost/10 hover:text-frost"
               >
                 {link.label}
               </Link>
@@ -32,7 +32,7 @@ export async function Navbar() {
           <Link
             href="/businesses"
             aria-label="Search businesses"
-            className="hidden h-10 w-10 items-center justify-center rounded-full border border-cream/20 text-cream transition-colors hover:border-cream/50 sm:inline-flex"
+            className="hidden h-10 w-10 items-center justify-center rounded-full border border-frost/20 text-frost transition-colors hover:border-frost/50 sm:inline-flex"
           >
             <Search size={16} />
           </Link>
@@ -41,7 +41,7 @@ export async function Navbar() {
             <AccountMenu user={user} />
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
-              <ButtonLink href="/login" variant="ghost" size="sm" className="text-cream hover:bg-cream/10">
+              <ButtonLink href="/login" variant="ghost" size="sm" className="text-frost hover:bg-frost/10">
                 Sign in
               </ButtonLink>
               <ButtonLink href="/signup" size="sm">
