@@ -1,4 +1,4 @@
-# HomeMart
+# SitNext
 
 **Find the good stuff. Meet the good people.**
 
@@ -131,7 +131,7 @@ Supabase application.
 ## Folder structure
 
 ```
-home-mart/
+sitnext/
 ├── e2e/                        Playwright specs (directory, auth, dinners, responsive)
 ├── public/
 │   ├── img/covers/             Generated SVG cover art (no external images needed)
@@ -235,24 +235,116 @@ PLAYWRIGHT_CHROMIUM_PATH=/path/to/chrome npm run test:e2e
 
 ## Design
 
-A dark-first system built on three colours, each with one job:
+**Ember**: terracotta and warm gold on a charcoal-brown ground. The product is
+two halves that pull in opposite directions — a review directory wants
+credibility, a dinner club wants warmth — and terracotta is the hue that serves
+both. It is appetite-forward and social without the romantic reading that a rose
+or pink palette picks up next to the phrase *meet five strangers*.
 
-| Token | Value | Role |
-| --- | --- | --- |
-| `noir` | `#0A0711` → `#2B1F4A` | The canvas. Black cooled with violet, so it never reads as flat `#000`. `noir-700` is the raised card, `noir-600` the hover/elevated surface. |
-| `frost` | `#F2EDFB` → `#B4A7D0` | Type and hairlines. Violet-tinted white, so text belongs to the palette rather than sitting on top of it. |
-| `orchid` | `#A855F7` | Brand and action: primary buttons, links, selected state, focus rings. |
-| `parrot` | `#4ADE64` | Affirmative signal: open-now, confirmed bookings, proof-point stats. |
-| `zest` | `#C8F751` | Ratings and small flourishes. |
+| Token | Role | Dark | Light |
+| --- | --- | --- | --- |
+| `canvas` | The ground. `canvas-700` is the raised card, `canvas-600` the hover/elevated surface, `canvas-900` the band that sets the footer apart. | `#0F0A08` → `#3A261C` | `#FDF9F5` → `#ECDDCF` |
+| `content` | Type and hairlines. Warm-tinted, so text belongs to the palette rather than sitting on top of it. | `#FAF3ED` → `#BEA898` | `#281810` → `#8C705E` |
+| `brand` | Brand and action: primary buttons, links, selected state, focus rings. | `#EA6C3A` | `#C64E20` |
+| `signal` | Affirmative signal: open-now, confirmed bookings, proof-point stats. | `#F5B342` | `#B06F14` |
+| `glint` | Ratings and small flourishes. | `#FFD68F` | `#C7801A` |
 
-The `orchid` ramp runs **brighter** as the number rises (`orchid-700` is the
-lightest) because on a black canvas emphasis means more light, not less — the
-opposite of a ramp designed for paper.
+The tokens are named for their **role**, not their literal colour: with two
+themes, `canvas` is near-black in one and near-white in the other, so a name
+like `noir` would be a lie half the time.
 
-Because black drops no shadow on black, depth comes from the `lift` and `glow`
-shadows, which bloom violet rather than grey. Display type is Bricolage
+Every token is named for its role, right down to the accents: with five
+selectable palettes, a token called `ember` would be wrong in four of them.
+
+None of the five shares a name with a Tailwind default scale, and that is
+checked against `tailwindcss/colors` rather than assumed. `extend` deep-merges,
+so a token called `rose` or `amber` would leave `-500` meaning Tailwind's and
+`-600` meaning ours — a trap for anyone who later types a step the theme does
+not define.
+
+### Five palettes
+
+The header carries two controls: light/dark, which is one click because it is a
+frequent action, and a palette menu, which is a menu because it is a rare one.
+On small screens the menu is hidden and the drawer carries the same swatches as
+a row, so nothing is unreachable by thumb.
+
+| Palette | Character |
+| --- | --- |
+| **Ember** *(default)* | Terracotta and gold. Appetite and candlelight. |
+| **Ink & Saffron** | Marigold on near-neutral ink. Festive rather than cautionary. |
+| **Olive & Amber** | Bistro green with warm amber. |
+| **Nightshade** | Indigo ground, coral accent. |
+| **Sage & Clay** | Muted and editorial; the most restrained. |
+
+Each palette ships both themes, so there are ten variable sets in total. Ember
+is the default and lives in the base blocks; the other four override it from
+`data-palette` on `<html>`, resolved by the same blocking script that resolves
+the theme.
+
+The palette selectors are deliberately over-qualified —
+`:root[data-palette='x']:not([data-theme='light'])` rather than plain
+`:root[data-palette='x']`. A bare palette selector has *identical* specificity
+to `:root[data-theme='light']`, so whichever came later in the file would win,
+and a palette's dark values would silently override the base light theme.
+Pinning each block to a theme makes it one step more specific and removes the
+ordering trap. `a palette keeps its own light values, not the dark ones` in
+`e2e/theme.spec.ts` guards it.
+
+### Two themes, one attribute
+
+Every colour is a CSS custom property holding space-separated RGB channels, and
+Tailwind reads them as `rgb(var(--token) / <alpha-value>)` — which is what lets
+`text-content/60` keep working. Switching themes therefore rewrites one
+attribute on `<html>`, not 700-odd class names, and no component carries a
+`dark:` variant.
+
+A blocking script in `<head>` sets `data-theme` before first paint, so the page
+never renders in the wrong theme and then jumps. Order of authority: an explicit
+choice the visitor made, then the OS preference, then dark.
+
+The header toggle picks its icon and its accessible name from `data-theme` in
+CSS rather than from React state. There is nothing to hydrate, so the button is
+correct on the very first paint and no hydration mismatch is possible.
+
+The `ember` ramp reverses between themes, and this is the part that cannot be
+automated. On black, emphasis means **more light**, so `ember-700` — the step
+used for emphatic text — is the palest. On paper, emphasis means **darker ink**,
+so the same token becomes the deepest terracotta. Reusing one ramp for both
+themes produces text that is unreadable in exactly one of them.
+
+One consequence worth knowing: the palette is warm end to end, so status does
+not read by colour alone. Open-now and confirmed use `marigold` against `ember`
+for pending — a hue shift, but a small one next to the red/green contrast most
+interfaces lean on. Every such state is labelled in words for exactly that
+reason, which is what makes the narrow separation acceptable rather than a
+regression.
+
+Shadows are per-theme for the same reason: black drops no shadow on black, so
+the dark theme's depth comes from an ember bloom, while the light theme uses a
+conventional soft drop — a shadow tuned for one is invisible or muddy in the
+other. Display type is Bricolage
 Grotesque, body is Plus Jakarta Sans. Cards are generously rounded, buttons are
 pills, and every section is built mobile-first.
+
+### The mark
+
+Six people seated around a round table, seen from above: each is a head with a
+shoulder cap curving behind it, facing in. The seats alternate between the two
+warm tones and between two silhouettes — a plain head, and a head with hair
+gathered above it — so the group reads as mixed rather than as six copies of
+one person.
+
+Two decisions carry the drawing. The shoulder cap is struck about the head
+rather than about the table, which is what stops it drifting off as a crescent.
+And the hair is a separate small disc rather than a wider head: at 32px a wider
+head just reads as a bigger head, while a detached mark still reads as a
+different hairstyle.
+
+It ships in two files, because six figures smear into a ring at favicon size:
+`public/logo.svg` is the full mark, and `public/icon-16.svg` keeps the table
+and reduces the group to four heads. `layout.tsx` offers both and lets the
+browser pick by size.
 
 Cover art and avatars are generated SVGs in `public/img/`, so the app has no
 external image dependency and never shows a broken tile. `ImageWithFallback`

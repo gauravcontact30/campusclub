@@ -26,7 +26,7 @@ const columns = [
   {
     title: 'Company',
     links: [
-      { href: '/about', label: 'About HomeMart' },
+      { href: '/about', label: 'About SitNext' },
       { href: '/add-business', label: 'List your business' },
       { href: '/how-it-works', label: 'Trust & safety' },
       { href: '/signup', label: 'Create an account' },
@@ -36,17 +36,17 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-frost/10 bg-noir-900 text-frost">
+    <footer className="mt-24 border-t border-content/10 bg-canvas-900 text-content">
       <div className="container-page py-16">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_2.5fr]">
           <div className="space-y-5">
             <Logo />
-            <p className="max-w-xs text-sm leading-relaxed text-frost/60">{SITE.description}</p>
+            <p className="max-w-xs text-sm leading-relaxed text-content/60">{SITE.description}</p>
             <div className="flex gap-3">
               {[Instagram, Twitter, Linkedin].map((Icon, i) => (
                 <span
                   key={i}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-frost/20 text-frost/70 transition-colors hover:border-orchid hover:text-orchid"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content/70 transition-colors hover:border-brand hover:text-brand"
                 >
                   <Icon size={16} />
                 </span>
@@ -57,13 +57,13 @@ export function Footer() {
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             {columns.map((col) => (
               <div key={col.title}>
-                <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-frost/50">
+                <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-content/50">
                   {col.title}
                 </h3>
                 <ul className="mt-4 space-y-2.5">
                   {col.links.map((link) => (
                     <li key={link.href + link.label}>
-                      <Link href={link.href} className="text-sm text-frost/80 transition-colors hover:text-orchid">
+                      <Link href={link.href} className="text-sm text-content/80 transition-colors hover:text-brand">
                         {link.label}
                       </Link>
                     </li>
@@ -74,12 +74,12 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col gap-3 border-t border-frost/15 pt-6 text-xs text-frost/50 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 flex flex-col gap-3 border-t border-content/15 pt-6 text-xs text-content/50 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {SITE.name}. Built with Next.js, React and Supabase.
           </p>
           <p className="flex items-center gap-2">
-            <span className="inline-flex h-2 w-2 rounded-full bg-orchid" aria-hidden />
+            <span className="inline-flex h-2 w-2 rounded-full bg-brand" aria-hidden />
             Data source: {BACKEND_MODE === 'supabase' ? 'Supabase Postgres' : 'seeded demo dataset'}
           </p>
         </div>

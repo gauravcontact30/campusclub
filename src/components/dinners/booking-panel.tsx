@@ -68,38 +68,38 @@ export function BookingPanel({
       <div className="flex items-baseline justify-between">
         <p>
           <span className="font-display text-3xl font-semibold">{formatMoneyForCity(event.priceCents, event.city)}</span>
-          <span className="text-sm text-frost/55"> / seat</span>
+          <span className="text-sm text-content/55"> / seat</span>
         </p>
         {current ? (
-          <Badge tone={current.status === 'confirmed' ? 'parrot' : 'zest'}>
+          <Badge tone={current.status === 'confirmed' ? 'signal' : 'glint'}>
             {current.status === 'confirmed' ? 'Seat confirmed' : 'On the waitlist'}
           </Badge>
         ) : (
-          <Badge tone={seatsLeft ? 'orchid' : 'neutral'}>
+          <Badge tone={seatsLeft ? 'brand' : 'neutral'}>
             {seatsLeft ? `${pluralize(seatsLeft, 'seat')} left` : 'Waitlist only'}
           </Badge>
         )}
       </div>
 
-      <p className="text-sm text-frost/65">
+      <p className="text-sm text-content/65">
         Covers matching, the reservation and the conversation deck. Food and drink are settled at the venue.
       </p>
 
-      <div className="flex items-center gap-2 rounded-2xl bg-frost/5 px-4 py-3 text-sm">
-        <Users size={16} className="text-frost/55" />
+      <div className="flex items-center gap-2 rounded-2xl bg-content/5 px-4 py-3 text-sm">
+        <Users size={16} className="text-content/55" />
         {event.seatsTaken} of {event.seatsTotal} seats taken · {event.language}
       </div>
 
       {!signedIn ? (
         <Link
           href={`/login?next=/dinners/${event.id}`}
-          className="inline-flex h-14 w-full items-center justify-center rounded-full bg-orchid px-8 font-semibold text-frost hover:bg-orchid-600"
+          className="inline-flex h-14 w-full items-center justify-center rounded-full bg-brand px-8 font-semibold text-content hover:bg-brand-600"
         >
           Sign in to claim a seat
         </Link>
       ) : current ? (
         <div className="space-y-3">
-          <div className="flex items-center gap-2 rounded-2xl border border-parrot/50 bg-parrot/15 px-4 py-3 text-sm">
+          <div className="flex items-center gap-2 rounded-2xl border border-signal/50 bg-signal/15 px-4 py-3 text-sm">
             <CalendarCheck size={16} />
             {current.status === 'confirmed'
               ? 'You are in. Venue lands 36 hours before.'
@@ -116,16 +116,16 @@ export function BookingPanel({
       )}
 
       {signedIn && !hasQuiz && (
-        <p className="rounded-2xl border border-dashed border-frost/25 px-4 py-3 text-xs leading-relaxed text-frost/60">
+        <p className="rounded-2xl border border-dashed border-content/25 px-4 py-3 text-xs leading-relaxed text-content/60">
           You have not done the{' '}
-          <Link href="/dinners/quiz" className="font-semibold text-orchid-700 hover:underline">
+          <Link href="/dinners/quiz" className="font-semibold text-brand-700 hover:underline">
             matching questionnaire
           </Link>{' '}
           yet — without it we seat you at random.
         </p>
       )}
 
-      <p className="text-center text-xs text-frost/55">Free cancellation up to 24 hours before.</p>
+      <p className="text-center text-xs text-content/55">Free cancellation up to 24 hours before.</p>
     </div>
   );
 }

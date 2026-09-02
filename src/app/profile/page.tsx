@@ -40,13 +40,13 @@ export default async function ProfilePage() {
           <Avatar name={user.fullName} src={user.avatarUrl} size={72} />
           <div>
             <h1 className="display-md">{user.fullName}</h1>
-            <p className="text-sm text-frost/60">
+            <p className="text-sm text-content/60">
               {user.city || 'City not set'} · Member since{' '}
               {new Date(user.createdAt).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
-              <Badge tone="orchid">{plan.name}</Badge>
-              {quiz ? <Badge tone="parrot">Match-ready</Badge> : <Badge>Quiz not taken</Badge>}
+              <Badge tone="brand">{plan.name}</Badge>
+              {quiz ? <Badge tone="signal">Match-ready</Badge> : <Badge>Quiz not taken</Badge>}
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default async function ProfilePage() {
           ['Cities explored', new Set(saved.map((s) => s.city)).size],
         ].map(([label, value]) => (
           <div key={String(label)} className="surface-card p-5">
-            <dt className="text-xs font-semibold uppercase tracking-widest text-frost/55">{label}</dt>
+            <dt className="text-xs font-semibold uppercase tracking-widest text-content/55">{label}</dt>
             <dd className="mt-2 font-display text-3xl font-semibold">{value}</dd>
           </div>
         ))}
@@ -76,13 +76,13 @@ export default async function ProfilePage() {
           <div className="surface-card p-6">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-display text-xl font-semibold">Listings you manage</h2>
-              <Link href="/add-business" className="text-sm font-semibold text-orchid-700 hover:underline">
+              <Link href="/add-business" className="text-sm font-semibold text-brand-700 hover:underline">
                 Add one
               </Link>
             </div>
 
             {managed.length === 0 ? (
-              <p className="mt-2 text-sm text-frost/65">
+              <p className="mt-2 text-sm text-content/65">
                 Claim your business from its listing page to reply to reviews and fix your own opening hours.
               </p>
             ) : (
@@ -90,14 +90,14 @@ export default async function ProfilePage() {
                 {managed.map((business) => (
                   <li key={business.id} className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <Link href={`/businesses/${business.slug}`} className="font-semibold hover:text-orchid">
+                      <Link href={`/businesses/${business.slug}`} className="font-semibold hover:text-brand">
                         {business.name}
                       </Link>
-                      <p className="truncate text-xs text-frost/55">
+                      <p className="truncate text-xs text-content/55">
                         {business.neighborhood}, {business.city} · {business.reviewCount} reviews
                       </p>
                     </div>
-                    <Badge tone="parrot">Claimed</Badge>
+                    <Badge tone="signal">Claimed</Badge>
                   </li>
                 ))}
               </ul>
@@ -114,19 +114,19 @@ export default async function ProfilePage() {
                     if (!answer) return null;
                     return (
                       <div key={question.id} className="flex items-start justify-between gap-4 text-sm">
-                        <dt className="text-frost/60">{question.prompt.replace(/\?$/, '')}</dt>
+                        <dt className="text-content/60">{question.prompt.replace(/\?$/, '')}</dt>
                         <dd className="shrink-0 font-semibold">{answer.label}</dd>
                       </div>
                     );
                   })}
                 </dl>
-                <Link href="/dinners/quiz" className="mt-5 inline-block text-sm font-semibold text-orchid-700 hover:underline">
+                <Link href="/dinners/quiz" className="mt-5 inline-block text-sm font-semibold text-brand-700 hover:underline">
                   Retake the questionnaire →
                 </Link>
               </>
             ) : (
               <>
-                <p className="mt-2 text-sm text-frost/65">
+                <p className="mt-2 text-sm text-content/65">
                   Six questions decide who you sit with. Without them we seat you at random.
                 </p>
                 <ButtonLink href="/dinners/quiz" className="mt-4">
@@ -140,17 +140,17 @@ export default async function ProfilePage() {
         <div className="surface-card p-6">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-xl font-semibold">Your reviews</h2>
-            <Link href="/businesses" className="text-sm font-semibold text-orchid-700 hover:underline">
+            <Link href="/businesses" className="text-sm font-semibold text-brand-700 hover:underline">
               Write another
             </Link>
           </div>
 
           {reviews.length === 0 ? (
-            <p className="mt-6 text-sm text-frost/60">
+            <p className="mt-6 text-sm text-content/60">
               You have not reviewed anywhere yet. The directory only works because people do.
             </p>
           ) : (
-            <ul className="mt-4 divide-y divide-frost/10">
+            <ul className="mt-4 divide-y divide-content/10">
               {reviews.map((review) => {
                 const business = byId.get(review.businessId);
                 return (
@@ -158,17 +158,17 @@ export default async function ProfilePage() {
                     <div className="flex items-center justify-between gap-3">
                       <Link
                         href={business ? `/businesses/${business.slug}` : '/businesses'}
-                        className="font-semibold hover:text-orchid"
+                        className="font-semibold hover:text-brand"
                       >
-                        {business?.name ?? 'A place on HomeMart'}
+                        {business?.name ?? 'A place on SitNext'}
                       </Link>
-                      <span className="shrink-0 text-xs text-frost/55">{relativeTime(review.createdAt)}</span>
+                      <span className="shrink-0 text-xs text-content/55">{relativeTime(review.createdAt)}</span>
                     </div>
                     <div className="mt-1.5 flex items-center gap-2">
                       <RatingStars value={review.rating} />
                       <span className="text-sm font-medium">{review.title}</span>
                     </div>
-                    <p className="mt-1.5 line-clamp-2 text-sm text-frost/65">{review.body}</p>
+                    <p className="mt-1.5 line-clamp-2 text-sm text-content/65">{review.body}</p>
                   </li>
                 );
               })}

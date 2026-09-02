@@ -1,0 +1,11 @@
+<!-- Favicon-scale variant. Six figures smear into a ring at 16px, so this keeps
+     the table and reduces the group to four heads — still people around a
+     table, with nothing left that cannot survive the size. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="SitNext">
+  <rect width="48" height="48" rx="13" fill="#0F0A08"/>
+  <circle cx="24" cy="24" r="9" fill="none" stroke="#EA6C3A" stroke-width="4"/>
+  <circle cx="24" cy="7.5" r="4.4" fill="#EA6C3A"/>
+  <circle cx="40.5" cy="24" r="4.4" fill="#F5B342"/>
+  <circle cx="24" cy="40.5" r="4.4" fill="#EA6C3A"/>
+  <circle cx="7.5" cy="24" r="4.4" fill="#F5B342"/>
+</svg>

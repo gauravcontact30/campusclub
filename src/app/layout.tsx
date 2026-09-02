@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { Providers } from './providers';
 import { SITE } from '@/lib/constants';
+import { THEME_INIT_SCRIPT } from '@/lib/theme';
 import './globals.css';
 
 const display = Bricolage_Grotesque({
@@ -32,11 +33,23 @@ export const metadata: Metadata = {
     type: 'website',
     url: SITE.url,
   },
-  icons: { icon: '/logo.svg' },
+  // The detailed mark loses its seats at favicon scale, so a simplified variant
+  // is offered for 16px and the full one for everything larger.
+  icons: {
+    icon: [
+      { url: '/icon-16.svg', sizes: '16x16', type: 'image/svg+xml' },
+      { url: '/logo.svg', sizes: 'any', type: 'image/svg+xml' },
+    ],
+    apple: '/logo.svg',
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0A0711',
+  // One per theme, so the browser chrome matches the page it frames.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FDF9F5' },
+    { media: '(prefers-color-scheme: dark)', color: '#0F0A08' },
+  ],
   width: 'device-width',
   initialScale: 1,
 };
@@ -49,12 +62,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       // back in, so route changes land instantly while in-page anchors glide.
       data-scroll-behavior="smooth"
       className={`${display.variable} ${sans.variable}`}
+      // The blocking script below sets this before paint; `suppressHydrationWarning`
+      // stops React complaining that the attribute it finds is not the one the
+      // server rendered, which is the entire point of setting it early.
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="flex min-h-dvh flex-col">
         <Providers>
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-orchid focus:px-5 focus:py-3 focus:text-frost"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand focus:px-5 focus:py-3 focus:text-content"
           >
             Skip to content
           </a>

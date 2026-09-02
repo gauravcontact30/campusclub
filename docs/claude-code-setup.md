@@ -1,4 +1,4 @@
-# Claude Code setup for HomeMart
+# Claude Code setup for SitNext
 
 Agent tooling for people working on this repo. Two of the six are **already
 wired into the repository**; the other four install into your own machine
@@ -137,7 +137,7 @@ mode for intercepting CLIs that ignore proxy environment variables.
 That means prompts and code you send through it leave for whichever provider it
 selects. It is a deliberate, account-wide decision about where your traffic goes
 — not a per-repo convenience — so it is documented here rather than configured
-for you. It also has nothing to do with the HomeMart application itself and is
+for you. It also has nothing to do with the SitNext application itself and is
 intentionally not a dependency of this project.
 
 ---

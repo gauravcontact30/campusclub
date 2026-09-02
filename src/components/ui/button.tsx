@@ -9,11 +9,11 @@ const base =
   'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]';
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-orchid text-frost hover:bg-orchid-600 shadow-[0_10px_28px_-12px_rgba(168,85,247,0.85)]',
-  secondary: 'bg-frost text-noir hover:bg-frost-200 border border-frost/10',
-  ghost: 'text-frost hover:bg-frost/10',
-  outline: 'border border-frost/25 text-frost hover:border-orchid hover:bg-orchid/15 hover:text-frost',
-  dark: 'bg-noir-600 text-frost border border-frost/15 hover:bg-noir-500',
+  primary: 'bg-brand text-content hover:bg-brand-600 shadow-[0_10px_28px_-12px_rgba(244,63,94,0.85)]',
+  secondary: 'bg-content text-canvas hover:bg-content-200 border border-content/10',
+  ghost: 'text-content hover:bg-content/10',
+  outline: 'border border-content/25 text-content hover:border-brand hover:bg-brand/15 hover:text-content',
+  dark: 'bg-canvas-600 text-content border border-content/15 hover:bg-canvas-500',
 };
 
 const sizes: Record<Size, string> = {

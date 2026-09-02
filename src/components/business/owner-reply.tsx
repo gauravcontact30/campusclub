@@ -63,23 +63,23 @@ export function OwnerReply({
 
   if (response) {
     return (
-      <div className="mt-4 rounded-2xl border-l-2 border-orchid bg-noir/[0.04] p-4">
+      <div className="mt-4 rounded-2xl border-l-2 border-brand bg-canvas/[0.04] p-4">
         <p className="flex flex-wrap items-center gap-2 text-sm font-semibold">
-          <Store size={15} className="text-orchid" />
+          <Store size={15} className="text-brand" />
           Response from {businessName}
-          {respondedAt && <span className="font-normal text-xs text-frost/55">{relativeTime(respondedAt)}</span>}
+          {respondedAt && <span className="font-normal text-xs text-content/55">{relativeTime(respondedAt)}</span>}
         </p>
-        <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-frost/75">{response}</p>
+        <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-content/75">{response}</p>
 
         {canRespond && (
           <div className="mt-3 flex gap-3">
-            <button onClick={() => setOpen((o) => !o)} className="text-xs font-semibold text-orchid-700 hover:underline">
+            <button onClick={() => setOpen((o) => !o)} className="text-xs font-semibold text-brand-700 hover:underline">
               Edit reply
             </button>
             <button
               onClick={withdraw}
               disabled={withdrawing}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-frost/55 hover:text-orchid"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-content/55 hover:text-brand"
             >
               <Trash2 size={12} /> Withdraw
             </button>
@@ -100,7 +100,7 @@ export function OwnerReply({
       ) : (
         <button
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full border border-frost/15 px-4 py-2 text-xs font-semibold hover:border-frost/45"
+          className="inline-flex items-center gap-2 rounded-full border border-content/15 px-4 py-2 text-xs font-semibold hover:border-content/45"
         >
           <MessageSquareReply size={14} />
           Respond as the owner

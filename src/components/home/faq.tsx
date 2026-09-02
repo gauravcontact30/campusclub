@@ -10,7 +10,7 @@ const FAQS = [
   },
   {
     q: 'How do I know where to go?',
-    a: 'The venue is revealed 36 hours before the dinner, by email and in your bookings page. It is always somewhere with a strong review record on HomeMart itself.',
+    a: 'The venue is revealed 36 hours before the dinner, by email and in your bookings page. It is always somewhere with a strong review record on SitNext itself.',
   },
   {
     q: 'What does it cost?',
@@ -48,21 +48,21 @@ export function Faq() {
           </p>
         </div>
 
-        <dl className="divide-y divide-frost/10 border-y border-frost/10">
+        <dl className="divide-y divide-content/10 border-y border-content/10">
           {FAQS.map((faq, i) => (
             <div key={faq.q}>
               <dt>
                 <button
                   onClick={() => setOpen(open === i ? null : i)}
                   aria-expanded={open === i}
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left font-display text-lg font-semibold hover:text-orchid"
+                  className="flex w-full items-center justify-between gap-4 py-5 text-left font-display text-lg font-semibold hover:text-brand"
                 >
                   {faq.q}
                   {open === i ? <Minus size={18} className="shrink-0" /> : <Plus size={18} className="shrink-0" />}
                 </button>
               </dt>
               {open === i && (
-                <dd className="animate-fade-in pb-5 text-sm leading-relaxed text-frost/65">{faq.a}</dd>
+                <dd className="animate-fade-in pb-5 text-sm leading-relaxed text-content/65">{faq.a}</dd>
               )}
             </div>
           ))}

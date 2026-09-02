@@ -1,5 +1,5 @@
 -- =============================================================================
--- HomeMart — row level security
+-- SitNext — row level security
 -- Public data stays readable by anyone; everything personal is owner-scoped.
 -- =============================================================================
 

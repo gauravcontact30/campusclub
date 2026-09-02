@@ -1,5 +1,5 @@
 -- =============================================================================
--- HomeMart — owner tools
+-- SitNext — owner tools
 -- Public right of reply on reviews, and an audit trail for listing claims.
 -- =============================================================================
 

@@ -56,20 +56,20 @@ export function ReviewCard({
   }
 
   return (
-    <article className="border-b border-frost/10 py-7 last:border-0">
+    <article className="border-b border-content/10 py-7 last:border-0">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
           <Avatar name={review.authorName} src={review.authorAvatar} size={44} />
           <div>
             <p className="font-semibold">{review.authorName}</p>
-            <p className="text-xs text-frost/55">{relativeTime(review.createdAt)}</p>
+            <p className="text-xs text-content/55">{relativeTime(review.createdAt)}</p>
           </div>
         </div>
         {isOwn && (
           <button
             onClick={remove}
             disabled={pending}
-            className="inline-flex items-center gap-1.5 rounded-full border border-frost/15 px-3 py-1.5 text-xs font-medium text-frost/60 hover:border-orchid hover:text-orchid"
+            className="inline-flex items-center gap-1.5 rounded-full border border-content/15 px-3 py-1.5 text-xs font-medium text-content/60 hover:border-brand hover:text-brand"
           >
             <Trash2 size={13} /> Delete
           </button>
@@ -81,12 +81,12 @@ export function ReviewCard({
         <h4 className="font-display text-lg font-semibold">{review.title}</h4>
       </div>
 
-      <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-frost/75">{review.body}</p>
+      <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-content/75">{review.body}</p>
 
       {review.photos.length > 0 && (
         <div className="mt-4 flex gap-2">
           {review.photos.map((photo, i) => (
-            <div key={photo + i} className="relative h-24 w-32 overflow-hidden rounded-2xl bg-frost/5">
+            <div key={photo + i} className="relative h-24 w-32 overflow-hidden rounded-2xl bg-content/5">
               <ImageWithFallback src={photo} alt="Review photo" fill sizes="128px" seed={photo} className="object-cover" />
             </div>
           ))}
@@ -97,7 +97,7 @@ export function ReviewCard({
         onClick={vote}
         disabled={pending}
         aria-pressed={voted}
-        className="mt-4 inline-flex items-center gap-2 rounded-full border border-frost/15 px-4 py-2 text-xs font-semibold transition-colors hover:border-frost/45 data-[voted=true]:border-orchid data-[voted=true]:text-orchid"
+        className="mt-4 inline-flex items-center gap-2 rounded-full border border-content/15 px-4 py-2 text-xs font-semibold transition-colors hover:border-content/45 data-[voted=true]:border-brand data-[voted=true]:text-brand"
         data-voted={voted}
       >
         <ThumbsUp size={14} />

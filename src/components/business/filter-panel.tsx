@@ -40,25 +40,25 @@ export function FilterPanel({
     <aside className="surface-card h-fit p-5 lg:sticky lg:top-24">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
-          <SlidersHorizontal size={18} className="text-orchid" />
+          <SlidersHorizontal size={18} className="text-brand" />
           Filters
         </h2>
         {activeCount > 0 && (
-          <button onClick={onReset} className="inline-flex items-center gap-1 text-xs font-semibold text-orchid-700">
+          <button onClick={onReset} className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700">
             <X size={13} /> Clear ({activeCount})
           </button>
         )}
       </div>
 
-      <p className="mt-1 text-xs text-frost/55">{total} places match</p>
+      <p className="mt-1 text-xs text-content/55">{total} places match</p>
 
       <div className="mt-6 space-y-6">
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-frost/55">City</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-content/55">City</h3>
           <select
             value={query.city ?? ''}
             onChange={(e) => onChange('city', e.target.value)}
-            className="mt-2 w-full rounded-2xl border border-frost/15 bg-noir px-3 py-2.5 text-sm focus:border-frost/45 focus:outline-none"
+            className="mt-2 w-full rounded-2xl border border-content/15 bg-canvas px-3 py-2.5 text-sm focus:border-content/45 focus:outline-none"
           >
             <option value="">All cities</option>
             {CITIES.map((c) => (
@@ -70,7 +70,7 @@ export function FilterPanel({
         </div>
 
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-frost/55">Category</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-content/55">Category</h3>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {CATEGORIES.map((c) => (
               <button
@@ -80,8 +80,8 @@ export function FilterPanel({
                 className={cn(
                   'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                   query.category === c.slug
-                    ? 'border-orchid bg-orchid text-frost'
-                    : 'border-frost/15 text-frost/70 hover:border-frost/40',
+                    ? 'border-brand bg-brand text-content'
+                    : 'border-content/15 text-content/70 hover:border-content/40',
                 )}
               >
                 {c.name}
@@ -91,7 +91,7 @@ export function FilterPanel({
         </div>
 
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-frost/55">Price</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-content/55">Price</h3>
           <div className="mt-2 flex gap-1.5">
             {([1, 2, 3, 4] as PriceLevel[]).map((level) => (
               <button
@@ -101,8 +101,8 @@ export function FilterPanel({
                 className={cn(
                   'flex-1 rounded-xl border py-2 text-sm font-semibold transition-colors',
                   query.price?.includes(level)
-                    ? 'border-orchid bg-orchid/10 text-orchid-700'
-                    : 'border-frost/15 text-frost/60 hover:border-frost/40',
+                    ? 'border-brand bg-brand/10 text-brand-700'
+                    : 'border-content/15 text-content/60 hover:border-content/40',
                 )}
               >
                 {priceLabel(level, activeCityName)}
@@ -112,7 +112,7 @@ export function FilterPanel({
         </div>
 
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-frost/55">Minimum rating</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-content/55">Minimum rating</h3>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {[0, 3, 3.5, 4, 4.5].map((rating) => (
               <button
@@ -122,8 +122,8 @@ export function FilterPanel({
                 className={cn(
                   'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                   (query.minRating ?? 0) === rating
-                    ? 'border-orchid bg-orchid text-frost'
-                    : 'border-frost/15 text-frost/70 hover:border-frost/40',
+                    ? 'border-brand bg-brand text-content'
+                    : 'border-content/15 text-content/70 hover:border-content/40',
                 )}
               >
                 {rating === 0 ? 'Any' : `${rating}+`}
@@ -132,25 +132,25 @@ export function FilterPanel({
           </div>
         </div>
 
-        <label className="flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-frost/15 px-4 py-3">
+        <label className="flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-content/15 px-4 py-3">
           <span className="text-sm font-medium">Open now</span>
           <input
             type="checkbox"
             checked={Boolean(query.openNow)}
             onChange={(e) => onChange('openNow', e.target.checked)}
-            className="h-5 w-9 cursor-pointer appearance-none rounded-full bg-frost/20 transition-colors checked:bg-orchid relative after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-noir after:transition-transform checked:after:translate-x-4"
+            className="h-5 w-9 cursor-pointer appearance-none rounded-full bg-content/20 transition-colors checked:bg-brand relative after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-canvas after:transition-transform checked:after:translate-x-4"
           />
         </label>
 
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-frost/55">Distance</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-content/55">Distance</h3>
           <button
             onClick={onUseMyLocation}
             disabled={locating}
             aria-pressed={Boolean(query.near)}
             className={cn(
               'mt-2 inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-semibold transition-colors',
-              query.near ? 'border-orchid bg-orchid/10 text-orchid-700' : 'border-frost/15 hover:border-frost/45',
+              query.near ? 'border-brand bg-brand/10 text-brand-700' : 'border-content/15 hover:border-content/45',
             )}
           >
             {locating ? <Loader2 size={15} className="animate-spin" /> : <LocateFixed size={15} />}
@@ -162,24 +162,24 @@ export function FilterPanel({
                 onChange('near', undefined);
                 if (query.sort === 'distance') onChange('sort', 'recommended');
               }}
-              className="mt-2 text-xs font-semibold text-frost/55 hover:text-orchid"
+              className="mt-2 text-xs font-semibold text-content/55 hover:text-brand"
             >
               Clear location
             </button>
           )}
           {locationError && (
-            <p role="alert" className="mt-2 text-xs text-orchid-700">
+            <p role="alert" className="mt-2 text-xs text-brand-700">
               {locationError}
             </p>
           )}
         </div>
 
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-frost/55">Sort by</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-content/55">Sort by</h3>
           <select
             value={query.sort ?? 'recommended'}
             onChange={(e) => onChange('sort', e.target.value as BusinessQuery['sort'])}
-            className="mt-2 w-full rounded-2xl border border-frost/15 bg-noir px-3 py-2.5 text-sm focus:border-frost/45 focus:outline-none"
+            className="mt-2 w-full rounded-2xl border border-content/15 bg-canvas px-3 py-2.5 text-sm focus:border-content/45 focus:outline-none"
           >
             {SORT_OPTIONS.filter((option) => !('needsLocation' in option && option.needsLocation) || query.near).map(
               (option) => (

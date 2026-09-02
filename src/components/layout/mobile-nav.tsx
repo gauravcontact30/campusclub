@@ -2,12 +2,15 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { NAV_LINKS } from './nav-links';
 import { useUiStore } from '@/store/ui-store';
 import { ButtonLink } from '@/components/ui/button';
 import { signOutAction } from '@/app/actions/auth';
+import { ThemeToggle } from './theme-toggle';
+import { PaletteRow } from './palette-row';
 import type { UserProfile } from '@/types';
 
 export function MobileNav({ user }: { user: UserProfile | null }) {
@@ -31,60 +34,80 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
         onClick={toggle}
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-frost/20 text-frost md:hidden"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content md:hidden"
       >
         {open ? <X size={18} /> : <Menu size={18} />}
       </button>
 
-      {open && (
-        <div className="fixed inset-x-0 bottom-0 top-[68px] z-50 animate-fade-in overflow-y-auto bg-noir px-5 pb-10 pt-6 md:hidden">
-          <nav className="flex flex-col gap-1">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="rounded-2xl px-4 py-4 font-display text-2xl text-frost hover:bg-frost/10"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+      {/* Portalled to <body> on purpose. The header sets `backdrop-blur`, and a
+          backdrop-filter makes an element the containing block for its fixed
+          descendants — so rendered in place, this panel resolved `bottom-0`
+          against the 68px header and collapsed to a sliver with the page
+          showing through. */}
+      {open &&
+        createPortal(
+          <div className="fixed inset-x-0 bottom-0 top-[68px] z-50 animate-fade-in overflow-y-auto bg-canvas px-5 pb-10 pt-6 md:hidden">
+            <nav className="flex flex-col gap-1">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-2xl px-4 py-4 font-display text-2xl text-content hover:bg-content/10"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
 
-          <div className="mt-8 space-y-3 border-t border-frost/15 pt-6">
-            {user ? (
-              <>
-                <p className="px-1 text-sm text-frost/60">Signed in as {user.email}</p>
-                <ButtonLink href="/profile" variant="secondary" full size="lg">
-                  Your profile
-                </ButtonLink>
-                <ButtonLink href="/saved" variant="ghost" full size="lg" className="text-frost hover:bg-frost/10">
-                  Saved places
-                </ButtonLink>
-                <ButtonLink href="/bookings" variant="ghost" full size="lg" className="text-frost hover:bg-frost/10">
-                  Your dinners
-                </ButtonLink>
-                <form action={signOutAction}>
-                  <button
-                    type="submit"
-                    className="w-full rounded-full px-5 py-3 text-sm font-semibold text-orchid hover:bg-frost/10"
+            <div className="mt-8 space-y-3 border-t border-content/15 pt-6">
+              <ThemeToggle
+                showLabel
+                className="flex w-full items-center gap-3 rounded-2xl border border-content/15 px-4 py-3.5 text-sm font-semibold text-content transition-colors hover:bg-content/10"
+              />
+
+              <PaletteRow />
+
+              {user ? (
+                <>
+                  <p className="px-1 text-sm text-content/60">Signed in as {user.email}</p>
+                  <ButtonLink href="/profile" variant="secondary" full size="lg">
+                    Your profile
+                  </ButtonLink>
+                  <ButtonLink href="/saved" variant="ghost" full size="lg" className="text-content hover:bg-content/10">
+                    Saved places
+                  </ButtonLink>
+                  <ButtonLink
+                    href="/bookings"
+                    variant="ghost"
+                    full
+                    size="lg"
+                    className="text-content hover:bg-content/10"
                   >
-                    Sign out
-                  </button>
-                </form>
-              </>
-            ) : (
-              <>
-                <ButtonLink href="/signup" full size="lg">
-                  Join a dinner
-                </ButtonLink>
-                <ButtonLink href="/login" variant="secondary" full size="lg">
-                  Sign in
-                </ButtonLink>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+                    Your dinners
+                  </ButtonLink>
+                  <form action={signOutAction}>
+                    <button
+                      type="submit"
+                      className="w-full rounded-full px-5 py-3 text-sm font-semibold text-brand hover:bg-content/10"
+                    >
+                      Sign out
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <ButtonLink href="/signup" full size="lg">
+                    Join a dinner
+                  </ButtonLink>
+                  <ButtonLink href="/login" variant="secondary" full size="lg">
+                    Sign in
+                  </ButtonLink>
+                </>
+              )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

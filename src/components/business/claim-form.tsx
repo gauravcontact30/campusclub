@@ -22,7 +22,7 @@ export function ClaimForm({ slug, businessName }: { slug: string; businessName: 
 
       <div>
         <h2 className="font-display text-xl font-semibold">Claim {businessName}</h2>
-        <p className="mt-1 text-sm text-frost/60">
+        <p className="mt-1 text-sm text-content/60">
           Claiming is instant while we are in beta. We spot-check by phone afterwards, and a disputed claim is reversed
           within one working day.
         </p>

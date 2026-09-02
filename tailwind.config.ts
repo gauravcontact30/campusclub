@@ -1,42 +1,51 @@
 import type { Config } from 'tailwindcss';
 
+/** Reads a channel-triplet custom property while preserving `/opacity` support. */
+const withAlpha = (variable: string) => `rgb(var(${variable}) / <alpha-value>)`;
+
 const config: Config = {
   content: ['./src/**/*.{ts,tsx,mdx}'],
   theme: {
     extend: {
       colors: {
-        /* The canvas: black cooled with violet so it never reads as flat #000 */
-        noir: {
-          DEFAULT: '#0A0711',
-          900: '#050308',
-          800: '#0A0711',
-          700: '#130D20',
-          600: '#1D1433',
-          500: '#2B1F4A',
+        /* Colours live as CSS custom properties in globals.css, one set per
+           theme, so the light/dark switch is a single attribute on <html>
+           rather than a `dark:` variant on 700-odd class names. Values are
+           space-separated RGB channels, which is what lets Tailwind's opacity
+           modifiers (`text-content/60`) keep working. */
+        canvas: {
+          DEFAULT: withAlpha('--canvas'),
+          900: withAlpha('--canvas-900'),
+          800: withAlpha('--canvas-800'),
+          700: withAlpha('--canvas-700'),
+          600: withAlpha('--canvas-600'),
+          500: withAlpha('--canvas-500'),
         },
-        /* Light foreground. Tinted toward violet so text belongs to the palette
-           instead of sitting on top of it as clinical white. */
-        frost: {
-          DEFAULT: '#F2EDFB',
-          100: '#FBF9FF',
-          200: '#DDD4F2',
-          300: '#B4A7D0',
+        content: {
+          DEFAULT: withAlpha('--content'),
+          100: withAlpha('--content-100'),
+          200: withAlpha('--content-200'),
+          300: withAlpha('--content-300'),
         },
-        /* Signature purple. The ramp runs BRIGHTER as the number rises: on a black
-           canvas emphasis means more light, not less. */
-        orchid: {
-          DEFAULT: '#A855F7',
-          600: '#BC7BFF',
-          700: '#D9B8FE',
-          200: '#2C1550',
+        /* Signature terracotta. Every token here is checked against Tailwind's
+           own palette first: `extend` deep-merges, so a token sharing a name
+           with a built-in scale (`rose`, `amber`, `orange`…) would leave
+           `-500` meaning Tailwind's and `-600` meaning ours. `brand`,
+           `signal` and `glint` collide with nothing. The ramp runs BRIGHTER
+           as the number rises in dark and DARKER in light — see globals.css. */
+        brand: {
+          DEFAULT: withAlpha('--brand'),
+          600: withAlpha('--brand-600'),
+          700: withAlpha('--brand-700'),
+          200: withAlpha('--brand-200'),
         },
-        /* Parrot green — the counterweight that keeps the purple from going gothic */
-        parrot: {
-          DEFAULT: '#4ADE64',
-          600: '#8DF5A6',
+        /* Warm gold. Carries the affirmative signal — open now, confirmed. */
+        signal: {
+          DEFAULT: withAlpha('--signal'),
+          600: withAlpha('--signal-600'),
         },
-        /* Lime highlight for ratings and small flourishes */
-        zest: '#C8F751',
+        /* The palest tint, for ratings and small flourishes */
+        glint: withAlpha('--glint'),
       },
       fontFamily: {
         display: ['var(--font-display)', 'Georgia', 'serif'],
@@ -47,10 +56,11 @@ const config: Config = {
         '5xl': '2.75rem',
       },
       boxShadow: {
-        /* Black drops nothing on black — depth has to come from a violet bloom */
-        card: '0 1px 2px rgba(0,0,0,0.6), 0 14px 34px -14px rgba(0,0,0,0.85)',
-        lift: '0 26px 64px -26px rgba(168,85,247,0.55)',
-        glow: '0 0 0 1px rgba(168,85,247,0.28), 0 14px 44px -14px rgba(168,85,247,0.55)',
+        /* Also per-theme: a shadow tuned for black is invisible on paper and a
+           shadow tuned for paper is mud on black. */
+        card: 'var(--shadow-card)',
+        lift: 'var(--shadow-lift)',
+        glow: 'var(--shadow-glow)',
       },
       maxWidth: {
         page: '1240px',

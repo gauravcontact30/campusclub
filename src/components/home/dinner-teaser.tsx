@@ -4,30 +4,30 @@ import { DinnerCard } from '@/components/dinners/dinner-card';
 
 export function DinnerTeaser({ events }: { events: DinnerEvent[] }) {
   return (
-    <section className="bg-noir py-20 text-frost sm:py-24">
+    <section className="bg-canvas py-20 text-content sm:py-24">
       <div className="container-page">
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="eyebrow">Wednesday dinners</p>
-            <h2 className="display-lg mt-3 text-frost">
+            <h2 className="display-lg mt-3 text-content">
               One table.
               <br />
               Six people who have never met.
             </h2>
-            <p className="lede mt-5 text-frost/70">
+            <p className="lede mt-5 text-content/70">
               You answer six questions. We handle the seating, the booking and the awkward first two minutes — there is
               a conversation deck on your phone at 8:15. All you do is show up hungry.
             </p>
 
-            <dl className="mt-9 grid grid-cols-2 gap-6 border-t border-frost/15 pt-8 sm:grid-cols-3">
+            <dl className="mt-9 grid grid-cols-2 gap-6 border-t border-content/15 pt-8 sm:grid-cols-3">
               {[
                 ['92%', 'would come again'],
                 ['6', 'seats per table'],
                 ['3 hrs', 'average dinner'],
               ].map(([stat, label]) => (
                 <div key={label}>
-                  <dt className="font-display text-3xl font-semibold text-parrot">{stat}</dt>
-                  <dd className="mt-1 text-sm text-frost/60">{label}</dd>
+                  <dt className="font-display text-3xl font-semibold text-signal">{stat}</dt>
+                  <dd className="mt-1 text-sm text-content/60">{label}</dd>
                 </div>
               ))}
             </dl>
@@ -42,7 +42,7 @@ export function DinnerTeaser({ events }: { events: DinnerEvent[] }) {
             </div>
           </div>
 
-          <div className="grid gap-4 text-frost sm:grid-cols-2">
+          <div className="grid gap-4 text-content sm:grid-cols-2">
             {events.slice(0, 4).map((event) => (
               <DinnerCard key={event.id} event={event} compact />
             ))}

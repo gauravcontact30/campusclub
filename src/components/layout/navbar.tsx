@@ -6,12 +6,14 @@ import { AccountMenu } from './account-menu';
 import { MobileNav } from './mobile-nav';
 import { NAV_LINKS } from './nav-links';
 import { Logo } from './logo';
+import { ThemeToggle } from './theme-toggle';
+import { ThemePicker } from './theme-picker';
 
 export async function Navbar() {
   const user = await getCurrentUser();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-frost/10 bg-noir/95 backdrop-blur supports-[backdrop-filter]:bg-noir/80">
+    <header className="sticky top-0 z-50 border-b border-content/10 bg-canvas/95 backdrop-blur supports-[backdrop-filter]:bg-canvas/80">
       <div className="container-page flex h-[68px] items-center justify-between gap-4">
         <div className="flex items-center gap-8">
           <Logo />
@@ -20,7 +22,7 @@ export async function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-full px-3.5 py-2 text-sm font-medium text-frost/80 transition-colors hover:bg-frost/10 hover:text-frost"
+                className="rounded-full px-3.5 py-2 text-sm font-medium text-content/80 transition-colors hover:bg-content/10 hover:text-content"
               >
                 {link.label}
               </Link>
@@ -29,10 +31,16 @@ export async function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
+          {/* Light/dark is a frequent action and stays one click. The palette is
+              a rare one, so it hides behind a menu — and on small screens it
+              hides entirely, because the drawer carries the same swatches. */}
+          <ThemePicker className="hidden sm:inline-flex" />
+
           <Link
             href="/businesses"
             aria-label="Search businesses"
-            className="hidden h-10 w-10 items-center justify-center rounded-full border border-frost/20 text-frost transition-colors hover:border-frost/50 sm:inline-flex"
+            className="hidden h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content transition-colors hover:border-content/50 sm:inline-flex"
           >
             <Search size={16} />
           </Link>
@@ -41,7 +49,7 @@ export async function Navbar() {
             <AccountMenu user={user} />
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
-              <ButtonLink href="/login" variant="ghost" size="sm" className="text-frost hover:bg-frost/10">
+              <ButtonLink href="/login" variant="ghost" size="sm" className="text-content hover:bg-content/10">
                 Sign in
               </ButtonLink>
               <ButtonLink href="/signup" size="sm">

@@ -31,7 +31,7 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
     return {
       id: user.id,
       email: user.email ?? '',
-      fullName: profile?.full_name ?? user.user_metadata?.full_name ?? 'HomeMart member',
+      fullName: profile?.full_name ?? user.user_metadata?.full_name ?? 'SitNext member',
       avatarUrl: profile?.avatar_url ?? null,
       city: profile?.city ?? '',
       bio: profile?.bio ?? '',
