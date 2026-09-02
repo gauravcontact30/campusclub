@@ -1,7 +1,12 @@
 import type { NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
-export async function middleware(request: NextRequest) {
+/**
+ * Next.js 16 renamed `middleware` to `proxy`. The runtime is Node.js and is not
+ * configurable, which suits us — refreshing the Supabase auth cookie needs no
+ * edge-specific behaviour.
+ */
+export async function proxy(request: NextRequest) {
   return updateSession(request);
 }
 

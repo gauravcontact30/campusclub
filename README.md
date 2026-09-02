@@ -166,13 +166,13 @@ home-mart/
 │   │   ├── validators.ts       Zod schemas shared by forms and actions
 │   │   └── env.ts              The single backend-mode decision
 │   ├── store/                  Zustand: ui-store, filters-store, quiz-store
-│   └── types/                  The domain model
+│   ├── types/                  The domain model
+│   └── proxy.ts                Refreshes the Supabase session cookie (Next 16 renamed middleware → proxy)
 ├── supabase/
 │   ├── migrations/             0001 schema · 0002 RLS · 0003 triggers and RPCs · 0004 owner tools
 │   ├── seed.sql                Category reference data
 │   └── README.md               Project setup, in order
 ├── tests/                      Vitest + React Testing Library
-├── middleware.ts               Refreshes the Supabase session cookie
 └── playwright.config.ts · vitest.config.ts · tailwind.config.ts · next.config.ts
 ```
 

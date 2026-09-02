@@ -43,7 +43,13 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable}`}>
+    <html
+      lang="en"
+      // Next 16 stopped overriding `scroll-behavior` on navigation; this opts
+      // back in, so route changes land instantly while in-page anchors glide.
+      data-scroll-behavior="smooth"
+      className={`${display.variable} ${sans.variable}`}
+    >
       <body className="flex min-h-dvh flex-col">
         <Providers>
           <a
