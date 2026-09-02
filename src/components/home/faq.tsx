@@ -48,21 +48,21 @@ export function Faq() {
           </p>
         </div>
 
-        <dl className="divide-y divide-ink/10 border-y border-ink/10">
+        <dl className="divide-y divide-frost/10 border-y border-frost/10">
           {FAQS.map((faq, i) => (
             <div key={faq.q}>
               <dt>
                 <button
                   onClick={() => setOpen(open === i ? null : i)}
                   aria-expanded={open === i}
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left font-display text-lg font-semibold hover:text-flame"
+                  className="flex w-full items-center justify-between gap-4 py-5 text-left font-display text-lg font-semibold hover:text-orchid"
                 >
                   {faq.q}
                   {open === i ? <Minus size={18} className="shrink-0" /> : <Plus size={18} className="shrink-0" />}
                 </button>
               </dt>
               {open === i && (
-                <dd className="animate-fade-in pb-5 text-sm leading-relaxed text-ink/65">{faq.a}</dd>
+                <dd className="animate-fade-in pb-5 text-sm leading-relaxed text-frost/65">{faq.a}</dd>
               )}
             </div>
           ))}

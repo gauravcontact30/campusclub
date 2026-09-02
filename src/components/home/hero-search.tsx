@@ -22,29 +22,29 @@ export function HeroSearch() {
   }
 
   return (
-    <div className="rounded-4xl border border-cream/15 bg-cream/5 p-5 backdrop-blur sm:p-7">
-      <p className="font-display text-lg font-semibold text-cream">What are you looking for tonight?</p>
-      <p className="mt-1 text-sm text-cream/60">Search 200+ reviewed places, or start with a category.</p>
+    <div className="rounded-4xl border border-frost/15 bg-frost/5 p-5 backdrop-blur sm:p-7">
+      <p className="font-display text-lg font-semibold text-frost">What are you looking for tonight?</p>
+      <p className="mt-1 text-sm text-frost/60">Search 200+ reviewed places, or start with a category.</p>
 
       <form onSubmit={submit} className="mt-5 space-y-3">
-        <div className="flex items-center gap-2 rounded-2xl bg-cream px-4 py-3">
-          <Search size={18} className="shrink-0 text-ink/40" />
+        <div className="flex items-center gap-2 rounded-2xl bg-noir px-4 py-3">
+          <Search size={18} className="shrink-0 text-frost/50" />
           <input
             value={term}
             onChange={(e) => setTerm(e.target.value)}
             placeholder="Tacos, barbers, pilates…"
             aria-label="What are you looking for?"
-            className="w-full bg-transparent text-sm text-ink placeholder:text-ink/40 focus:outline-none"
+            className="w-full bg-transparent text-sm text-frost placeholder:text-frost/50 focus:outline-none"
           />
         </div>
 
-        <div className="flex items-center gap-2 rounded-2xl bg-cream px-4 py-3">
-          <MapPin size={18} className="shrink-0 text-ink/40" />
+        <div className="flex items-center gap-2 rounded-2xl bg-noir px-4 py-3">
+          <MapPin size={18} className="shrink-0 text-frost/50" />
           <select
             value={city}
             onChange={(e) => setCity(e.target.value)}
             aria-label="City"
-            className="w-full bg-transparent text-sm text-ink focus:outline-none"
+            className="w-full bg-transparent text-sm text-frost focus:outline-none"
           >
             <option value="">Anywhere</option>
             {CITIES.map((c) => (
@@ -66,19 +66,19 @@ export function HeroSearch() {
             key={q}
             type="button"
             onClick={() => router.push(`/businesses?term=${encodeURIComponent(q)}`)}
-            className="rounded-full border border-cream/20 px-3 py-1.5 text-xs text-cream/80 transition-colors hover:border-flame hover:text-flame"
+            className="rounded-full border border-frost/20 px-3 py-1.5 text-xs text-frost/80 transition-colors hover:border-orchid hover:text-orchid"
           >
             {q}
           </button>
         ))}
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-1.5 border-t border-cream/10 pt-4">
+      <div className="mt-5 flex flex-wrap gap-1.5 border-t border-frost/10 pt-4">
         {CATEGORIES.slice(0, 4).map((c) => (
           <a
             key={c.slug}
             href={`/businesses?category=${c.slug}`}
-            className="rounded-full bg-cream/10 px-3 py-1.5 text-xs text-cream/70 hover:bg-cream/20"
+            className="rounded-full bg-frost/10 px-3 py-1.5 text-xs text-frost/70 hover:bg-frost/20"
           >
             {c.name}
           </a>

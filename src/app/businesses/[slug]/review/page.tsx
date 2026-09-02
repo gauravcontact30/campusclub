@@ -25,12 +25,12 @@ export default async function WriteReviewPage({ params }: { params: Promise<{ sl
 
   return (
     <div className="container-page max-w-3xl py-10">
-      <Link href={`/businesses/${slug}`} className="inline-flex items-center gap-2 text-sm text-ink/60 hover:text-ink">
+      <Link href={`/businesses/${slug}`} className="inline-flex items-center gap-2 text-sm text-frost/60 hover:text-frost">
         <ArrowLeft size={16} /> Back to {business.name}
       </Link>
 
       <div className="surface-card mt-6 flex items-center gap-4 p-5">
-        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-ink/5">
+        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-frost/5">
           <ImageWithFallback
             src={business.coverImage}
             alt={business.name}
@@ -42,12 +42,12 @@ export default async function WriteReviewPage({ params }: { params: Promise<{ sl
         </div>
         <div>
           <h1 className="font-display text-2xl font-semibold">{business.name}</h1>
-          <p className="text-sm text-ink/60">
+          <p className="text-sm text-frost/60">
             {business.neighborhood}, {business.city}
           </p>
           <div className="mt-1.5 flex items-center gap-2">
             <RatingStars value={business.rating} />
-            <span className="text-sm text-ink/55">{pluralize(business.reviewCount, 'review')}</span>
+            <span className="text-sm text-frost/60">{pluralize(business.reviewCount, 'review')}</span>
           </div>
         </div>
       </div>
@@ -56,8 +56,8 @@ export default async function WriteReviewPage({ params }: { params: Promise<{ sl
         <ReviewForm slug={slug} businessName={business.name} signedIn existing={existing} />
       </div>
 
-      <div className="mt-6 rounded-3xl bg-ink/5 p-6 text-sm leading-relaxed text-ink/65">
-        <p className="font-semibold text-ink">A good review, in three lines</p>
+      <div className="mt-6 rounded-3xl bg-frost/5 p-6 text-sm leading-relaxed text-frost/65">
+        <p className="font-semibold text-frost">A good review, in three lines</p>
         <ul className="mt-2 list-disc space-y-1 pl-5">
           <li>What you ordered or booked, and what it cost.</li>
           <li>What the service was like on the day — waiting times included.</li>

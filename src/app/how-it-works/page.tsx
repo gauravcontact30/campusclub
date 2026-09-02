@@ -24,11 +24,11 @@ const TRUST = [
 export default function HowItWorksPage() {
   return (
     <>
-      <section className="bg-ink py-16 text-cream sm:py-24">
+      <section className="bg-noir py-16 text-frost sm:py-24">
         <div className="container-page max-w-3xl">
           <p className="eyebrow">How it works</p>
-          <h1 className="display-lg mt-3 text-cream">A directory people trust, and a table worth turning up to.</h1>
-          <p className="lede mt-5 text-cream/70">
+          <h1 className="display-lg mt-3 text-frost">A directory people trust, and a table worth turning up to.</h1>
+          <p className="lede mt-5 text-frost/70">
             One product, two halves. The reviews decide where the dinners happen; the dinners produce the people who
             write the reviews. Here is the full loop.
           </p>
@@ -40,23 +40,23 @@ export default function HowItWorksPage() {
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {DINNER_STEPS.map((step) => (
             <div key={step.title} className="surface-card p-7">
-              <step.icon size={24} className="text-flame" />
+              <step.icon size={24} className="text-orchid" />
               <h3 className="mt-4 font-display text-xl font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink/65">{step.body}</p>
+              <p className="mt-2 text-sm leading-relaxed text-frost/65">{step.body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="bg-cream-200/60 py-20">
+      <section className="bg-noir-600/60 py-20">
         <div className="container-page">
           <h2 className="display-lg max-w-2xl">Why the reviews are worth reading</h2>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {TRUST.map((item) => (
-              <div key={item.title} className="rounded-3xl bg-cream-100 p-7">
-                <item.icon size={24} className="text-flame" />
+              <div key={item.title} className="rounded-3xl bg-noir-700 p-7">
+                <item.icon size={24} className="text-orchid" />
                 <h3 className="mt-4 font-display text-xl font-semibold">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink/65">{item.body}</p>
+                <p className="mt-2 text-sm leading-relaxed text-frost/65">{item.body}</p>
               </div>
             ))}
           </div>

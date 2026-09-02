@@ -14,13 +14,13 @@ export function OpenNowBadge({ hours, className }: { hours: WeekHours; className
   const label = useClientValue(() => openStatusLabel(hours));
 
   if (open === null || label === null) {
-    return <span className={cn('inline-block h-5 w-24 rounded-full bg-ink/5', className)} aria-hidden />;
+    return <span className={cn('inline-block h-5 w-24 rounded-full bg-frost/5', className)} aria-hidden />;
   }
 
   return (
     <span className={cn('inline-flex items-center gap-1.5 text-xs font-medium', className)}>
-      <span className={cn('h-1.5 w-1.5 rounded-full', open ? 'bg-sage-600' : 'bg-flame')} />
-      <span className={open ? 'text-sage-600' : 'text-ink/50'}>
+      <span className={cn('h-1.5 w-1.5 rounded-full', open ? 'bg-parrot-600' : 'bg-orchid')} />
+      <span className={open ? 'text-parrot-600' : 'text-frost/55'}>
         {open ? 'Open now' : 'Closed'} · {label}
       </span>
     </span>

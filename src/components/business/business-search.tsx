@@ -135,8 +135,8 @@ export function BusinessSearch({
         </div>
 
         <div className="flex w-full gap-2 lg:w-auto">
-          <div className="flex flex-1 items-center gap-2 rounded-2xl border border-ink/15 bg-cream-100 px-4 py-3 lg:w-96">
-            <Search size={18} className="shrink-0 text-ink/40" />
+          <div className="flex flex-1 items-center gap-2 rounded-2xl border border-frost/15 bg-noir-700 px-4 py-3 lg:w-96">
+            <Search size={18} className="shrink-0 text-frost/50" />
             <input
               value={termDraft}
               onChange={(e) => setTermDraft(e.target.value)}
@@ -146,7 +146,7 @@ export function BusinessSearch({
             />
             {termDraft && (
               <button onClick={() => setTermDraft('')} aria-label="Clear search">
-                <X size={16} className="text-ink/40 hover:text-ink" />
+                <X size={16} className="text-frost/50 hover:text-frost" />
               </button>
             )}
           </div>
@@ -173,7 +173,7 @@ export function BusinessSearch({
 
         <div>
           {isError && (
-            <p className="mb-4 rounded-2xl border border-flame/30 bg-flame/10 p-4 text-sm text-flame-700">
+            <p className="mb-4 rounded-2xl border border-orchid/30 bg-orchid/10 p-4 text-sm text-orchid-700">
               Something went wrong loading results. Try adjusting your filters.
             </p>
           )}
@@ -225,7 +225,7 @@ export function BusinessSearch({
                     aria-current={results.page === i + 1}
                     className={cn(
                       'h-9 w-9 rounded-full text-sm font-semibold transition-colors',
-                      results.page === i + 1 ? 'bg-ink text-cream' : 'text-ink/60 hover:bg-ink/5',
+                      results.page === i + 1 ? 'bg-orchid text-frost' : 'text-frost/60 hover:bg-frost/5',
                     )}
                   >
                     {i + 1}

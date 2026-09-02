@@ -38,12 +38,12 @@ export function ReviewForm({
     return (
       <div className="surface-card flex flex-col items-start gap-3 p-6">
         <h3 className="font-display text-xl font-semibold">Been to {businessName}?</h3>
-        <p className="text-sm text-ink/65">
+        <p className="text-sm text-frost/65">
           Sign in to leave a review. One review per person, editable whenever you change your mind.
         </p>
         <Link
           href={`/login?next=/businesses/${slug}`}
-          className="inline-flex h-11 items-center rounded-full bg-flame px-5 text-sm font-semibold text-cream hover:bg-flame-600"
+          className="inline-flex h-11 items-center rounded-full bg-orchid px-5 text-sm font-semibold text-frost hover:bg-orchid-600"
         >
           Sign in to review
         </Link>
@@ -59,7 +59,7 @@ export function ReviewForm({
         <h3 className="font-display text-xl font-semibold">
           {existing ? 'Update your review' : `Review ${businessName}`}
         </h3>
-        <p className="mt-1 text-sm text-ink/60">
+        <p className="mt-1 text-sm text-frost/60">
           Be specific — what you ordered, how long you waited, whether you would go back.
         </p>
       </div>

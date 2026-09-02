@@ -13,8 +13,16 @@
   }
 
   body {
-    @apply bg-cream text-ink antialiased;
+    @apply bg-noir text-frost antialiased;
     font-family: var(--font-sans);
+    /* Pure black goes dead. Two very low-opacity blooms — violet left, parrot
+       right — sit behind the top of the page so it has a floor to stand on.
+       Deliberately NOT background-attachment: fixed, which repaints the whole
+       viewport on every scroll frame. */
+    background-image:
+      radial-gradient(58rem 40rem at 8% -6%, rgba(168, 85, 247, 0.16), transparent 65%),
+      radial-gradient(46rem 34rem at 96% 4%, rgba(74, 222, 100, 0.08), transparent 60%);
+    background-repeat: no-repeat;
   }
 
   h1, h2, h3, h4 {
@@ -23,12 +31,12 @@
   }
 
   ::selection {
-    @apply bg-flame text-cream;
+    @apply bg-orchid text-frost;
   }
 
   /* Keyboard focus stays visible everywhere — pointer focus does not shout. */
   :focus-visible {
-    @apply outline-none ring-2 ring-flame ring-offset-2 ring-offset-cream;
+    @apply outline-none ring-2 ring-orchid ring-offset-2 ring-offset-noir;
   }
 }
 
@@ -50,19 +58,19 @@
   }
 
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.18em] text-flame;
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-orchid;
   }
 
   .lede {
-    @apply text-base sm:text-lg leading-relaxed text-ink/70;
+    @apply text-base sm:text-lg leading-relaxed text-frost/70;
   }
 
   .surface-card {
-    @apply rounded-3xl border border-ink/10 bg-cream-100 shadow-card;
+    @apply rounded-3xl border border-frost/10 bg-noir-700 shadow-card;
   }
 
   .link-underline {
-    @apply underline decoration-flame decoration-2 underline-offset-4 hover:decoration-ink;
+    @apply underline decoration-orchid decoration-2 underline-offset-4 hover:decoration-frost;
   }
 
   /* Hides scrollbars on the horizontal chip rails without killing scroll */
