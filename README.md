@@ -173,6 +173,9 @@ home-mart/
 │   ├── seed.sql                Category reference data
 │   └── README.md               Project setup, in order
 ├── tests/                      Vitest + React Testing Library
+├── docs/claude-code-setup.md   Agent tooling: Playwright MCP, Figma, design skills
+├── .mcp.json                   Project MCP servers (Playwright)
+├── .claude/settings.json       Project permissions for Claude Code
 └── playwright.config.ts · vitest.config.ts · tailwind.config.ts · next.config.ts
 ```
 
@@ -241,6 +244,20 @@ built mobile-first.
 Cover art and avatars are generated SVGs in `public/img/`, so the app has no
 external image dependency and never shows a broken tile. `ImageWithFallback`
 degrades any remote image to a deterministic brand gradient if it fails to load.
+
+---
+
+## Agent tooling
+
+`.mcp.json` registers the **Playwright MCP** server so Claude Code can drive a
+real browser against this app, and `.claude/settings.json` pre-approves the
+routine build/test commands while denying reads of `.env*`. The **Figma MCP** is
+an account-level connector and needs no repo config.
+
+Four further tools — Impeccable (design linting), Claude Mem, Find Skills and
+OmniRoute — install into your own machine rather than the repo.
+[`docs/claude-code-setup.md`](docs/claude-code-setup.md) has the verified
+commands and what each one does before you run it.
 
 ---
 
