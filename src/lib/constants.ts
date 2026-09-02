@@ -162,10 +162,14 @@ export const QUIZ_QUESTIONS = [
   },
 ];
 
+export const OWNER_ROLES = ['Owner', 'Manager', 'Marketing', 'Franchisee', 'Other'];
+
 export const SORT_OPTIONS = [
   { value: 'recommended', label: 'Recommended' },
   { value: 'rating', label: 'Highest rated' },
   { value: 'reviews', label: 'Most reviewed' },
   { value: 'price_asc', label: 'Price: low to high' },
   { value: 'price_desc', label: 'Price: high to low' },
+  /** Only offered once the visitor has shared their location. */
+  { value: 'distance', label: 'Nearest first', needsLocation: true },
 ] as const;

@@ -5,7 +5,7 @@ import { getCurrentUser } from '@/lib/auth/session';
 import { getReviewsByUser } from '@/lib/data/reviews';
 import { getSavedBusinesses } from '@/lib/data/saves';
 import { getBookingsForUser, getQuiz } from '@/lib/data/dinners';
-import { searchBusinesses } from '@/lib/data/businesses';
+import { getBusinessesOwnedBy, searchBusinesses } from '@/lib/data/businesses';
 import { ProfileForm } from '@/components/layout/profile-form';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -20,12 +20,13 @@ export default async function ProfilePage() {
   const user = await getCurrentUser();
   if (!user) redirect('/login?next=/profile');
 
-  const [reviews, saved, bookings, quiz, directory] = await Promise.all([
+  const [reviews, saved, bookings, quiz, directory, managed] = await Promise.all([
     getReviewsByUser(user.id),
     getSavedBusinesses(user.id),
     getBookingsForUser(user.id),
     getQuiz(user.id),
     searchBusinesses({ perPage: 500 }),
+    getBusinessesOwnedBy(user.id),
   ]);
 
   const plan = PLANS.find((p) => p.id === user.plan) ?? PLANS[0];
@@ -71,6 +72,37 @@ export default async function ProfilePage() {
       <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_1.3fr]">
         <div className="space-y-6">
           <ProfileForm user={user} />
+
+          <div className="surface-card p-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display text-xl font-semibold">Listings you manage</h2>
+              <Link href="/add-business" className="text-sm font-semibold text-flame-700 hover:underline">
+                Add one
+              </Link>
+            </div>
+
+            {managed.length === 0 ? (
+              <p className="mt-2 text-sm text-ink/65">
+                Claim your business from its listing page to reply to reviews and fix your own opening hours.
+              </p>
+            ) : (
+              <ul className="mt-4 space-y-3">
+                {managed.map((business) => (
+                  <li key={business.id} className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <Link href={`/businesses/${business.slug}`} className="font-semibold hover:text-flame">
+                        {business.name}
+                      </Link>
+                      <p className="truncate text-xs text-ink/50">
+                        {business.neighborhood}, {business.city} · {business.reviewCount} reviews
+                      </p>
+                    </div>
+                    <Badge tone="sage">Claimed</Badge>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           <div className="surface-card p-6">
             <h2 className="font-display text-xl font-semibold">Matching profile</h2>

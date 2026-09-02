@@ -44,7 +44,7 @@ describe('FilterPanel', () => {
     const onTogglePrice = vi.fn();
 
     render(
-      <FilterPanel query={baseQuery} total={24} onChange={onChange} onTogglePrice={onTogglePrice} onReset={vi.fn()} />,
+      <FilterPanel query={baseQuery} total={24} onChange={onChange} onTogglePrice={onTogglePrice} onReset={vi.fn()} onUseMyLocation={vi.fn()} />,
     );
 
     expect(screen.getByText('24 places match')).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe('FilterPanel', () => {
 
   it('offers a clear control only when filters are active', () => {
     const { rerender } = render(
-      <FilterPanel query={baseQuery} total={24} onChange={vi.fn()} onTogglePrice={vi.fn()} onReset={vi.fn()} />,
+      <FilterPanel query={baseQuery} total={24} onChange={vi.fn()} onTogglePrice={vi.fn()} onReset={vi.fn()} onUseMyLocation={vi.fn()} />,
     );
     expect(screen.queryByText(/Clear/)).not.toBeInTheDocument();
 
@@ -72,6 +72,7 @@ describe('FilterPanel', () => {
         onChange={vi.fn()}
         onTogglePrice={vi.fn()}
         onReset={vi.fn()}
+        onUseMyLocation={vi.fn()}
       />,
     );
     expect(screen.getByText('Clear (2)')).toBeInTheDocument();
@@ -85,6 +86,7 @@ describe('FilterPanel', () => {
         onChange={vi.fn()}
         onTogglePrice={vi.fn()}
         onReset={vi.fn()}
+        onUseMyLocation={vi.fn()}
       />,
     );
     expect(screen.getByRole('button', { name: '$$$' })).toBeInTheDocument();

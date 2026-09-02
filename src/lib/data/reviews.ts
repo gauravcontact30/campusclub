@@ -19,6 +19,8 @@ function fromRow(row: ReviewRow): Review {
     photos: (row.photos as string[]) ?? [],
     helpfulCount: Number(row.helpful_count ?? 0),
     createdAt: String(row.created_at),
+    ownerResponse: (row.owner_response as string | null) ?? null,
+    ownerResponseAt: (row.owner_response_at as string | null) ?? null,
   };
 }
 
@@ -115,6 +117,8 @@ export async function upsertReview(input: NewReviewInput): Promise<Review> {
     photos: [],
     helpfulCount: 0,
     createdAt: new Date().toISOString(),
+    ownerResponse: null,
+    ownerResponseAt: null,
   };
   store.reviews.unshift(review);
   return review;
@@ -153,6 +157,44 @@ export async function toggleHelpful(reviewId: string, userId: string): Promise<n
     review.helpfulCount += 1;
   }
   return review.helpfulCount;
+}
+
+export async function getReview(reviewId: string): Promise<Review | null> {
+  if (isSupabaseConfigured()) {
+    const supabase = await createSupabaseServerClient();
+    if (!supabase) return null;
+    const { data } = await supabase
+      .from('reviews')
+      .select('*, profiles(full_name, avatar_url)')
+      .eq('id', reviewId)
+      .maybeSingle();
+    return data ? fromRow(data) : null;
+  }
+  return db().reviews.find((r) => r.id === reviewId) ?? null;
+}
+
+/**
+ * Publishes (or, with `null`, withdraws) the owner's public reply.
+ * Callers must have already established that the user owns the business —
+ * RLS enforces the same rule on the Supabase side.
+ */
+export async function setOwnerResponse(reviewId: string, body: string | null): Promise<Review | null> {
+  const respondedAt = body ? new Date().toISOString() : null;
+
+  if (isSupabaseConfigured()) {
+    const supabase = await createSupabaseServerClient();
+    if (!supabase) return null;
+    // A security-definer RPC, so the ownership check lives next to the data.
+    const { error } = await supabase.rpc('set_owner_response', { p_review_id: reviewId, p_body: body });
+    if (error) throw new Error(error.message);
+    return getReview(reviewId);
+  }
+
+  const review = db().reviews.find((r) => r.id === reviewId);
+  if (!review) return null;
+  review.ownerResponse = body;
+  review.ownerResponseAt = respondedAt;
+  return review;
 }
 
 export function ratingBreakdown(reviews: Review[]) {

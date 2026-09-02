@@ -29,6 +29,20 @@ export const businessSchema = z.object({
   amenities: z.array(z.string()).default([]),
 });
 
+export const claimSchema = z.object({
+  role: z.string().min(2, 'Tell us your role at the business.'),
+  contactEmail: z.string().email('Use an email we can reach you on.'),
+  phone: z.string().min(6, 'Add a phone number we can verify on.'),
+  note: z.string().max(400, 'Keep the note under 400 characters.').default(''),
+});
+
+export const ownerResponseSchema = z.object({
+  body: z
+    .string()
+    .min(20, 'A reply worth reading is at least 20 characters.')
+    .max(1200, 'Keep replies under 1200 characters.'),
+});
+
 export const profileSchema = z.object({
   fullName: z.string().min(2, 'Name is required.'),
   city: z.string().min(2, 'City is required.'),
@@ -39,3 +53,4 @@ export type SignInInput = z.infer<typeof signInSchema>;
 export type SignUpInput = z.infer<typeof signUpSchema>;
 export type ReviewInput = z.infer<typeof reviewSchema>;
 export type BusinessInput = z.infer<typeof businessSchema>;
+export type ClaimInputForm = z.infer<typeof claimSchema>;

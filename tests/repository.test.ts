@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { searchBusinesses, getBusinessBySlug } from '@/lib/data/businesses';
-import { getReviews, ratingBreakdown, toggleHelpful, upsertReview } from '@/lib/data/reviews';
+import { claimBusiness, getBusinessBySlug, getBusinessesOwnedBy, searchBusinesses } from '@/lib/data/businesses';
+import { getReviews, ratingBreakdown, setOwnerResponse, toggleHelpful, upsertReview } from '@/lib/data/reviews';
 import { bookSeat, cancelBooking, getBookingsForUser, getDinners } from '@/lib/data/dinners';
 import { getSavedBusinessIds, toggleSave } from '@/lib/data/saves';
-import { resetDb } from '@/lib/data/store';
+import { db, resetDb } from '@/lib/data/store';
 
 // No Supabase env in tests, so every call exercises the demo adapter.
 beforeEach(() => {
@@ -169,5 +169,93 @@ describe('dinner bookings', () => {
     expect((await getDinners())[0].seatsTaken).toBe(taken - 1);
     const live = (await getBookingsForUser('u006')).filter((b) => b.status !== 'cancelled');
     expect(live).toHaveLength(0);
+  });
+});
+
+describe('claiming a listing', () => {
+  it('hands an unclaimed listing to the claimant and files the claim', async () => {
+    const business = (await getBusinessBySlug('nandini-dosa-camp-bengaluru'))!;
+    expect(business.ownerId).toBeNull();
+
+    const claimed = await claimBusiness({
+      businessId: business.id,
+      userId: 'u007',
+      role: 'Owner',
+      contactEmail: 'owner@dosa.example',
+      phone: '+91 80 1234 5678',
+      note: '',
+    });
+
+    expect(claimed?.ownerId).toBe('u007');
+    expect(claimed?.isClaimed).toBe(true);
+    expect(db().claims).toHaveLength(1);
+    expect((await getBusinessesOwnedBy('u007')).map((b) => b.id)).toContain(business.id);
+  });
+
+  it('refuses a listing that already has an owner', async () => {
+    const business = (await getBusinessBySlug('copper-rye-bengaluru'))!;
+    expect(business.ownerId).not.toBeNull();
+
+    const claimed = await claimBusiness({
+      businessId: business.id,
+      userId: 'u007',
+      role: 'Manager',
+      contactEmail: 'someone@else.example',
+      phone: '+91 80 0000 0000',
+      note: '',
+    });
+
+    expect(claimed).toBeNull();
+    expect((await getBusinessBySlug('copper-rye-bengaluru'))!.ownerId).toBe(business.ownerId);
+  });
+});
+
+describe('owner replies', () => {
+  it('publishes and withdraws a public response', async () => {
+    const business = (await getBusinessBySlug('peckham-roasters-london'))!;
+    const [review] = await getReviews(business.id);
+
+    const replied = await setOwnerResponse(review.id, 'Thanks — the second grinder lands next week.');
+    expect(replied?.ownerResponse).toContain('second grinder');
+    expect(replied?.ownerResponseAt).toBeTruthy();
+
+    const withdrawn = await setOwnerResponse(review.id, null);
+    expect(withdrawn?.ownerResponse).toBeNull();
+    expect(withdrawn?.ownerResponseAt).toBeNull();
+  });
+
+  it('leaves the review itself untouched', async () => {
+    const business = (await getBusinessBySlug('peckham-roasters-london'))!;
+    const [review] = await getReviews(business.id);
+
+    const replied = await setOwnerResponse(review.id, 'A reply that is comfortably long enough.');
+
+    expect(replied?.rating).toBe(review.rating);
+    expect(replied?.title).toBe(review.title);
+    expect(replied?.body).toBe(review.body);
+  });
+});
+
+describe('searching near a location', () => {
+  // Indiranagar, Bengaluru
+  const near = { lat: 12.9719, lng: 77.6412 };
+
+  it('tags every result with a distance', async () => {
+    const { items } = await searchBusinesses({ near, perPage: 5 });
+    for (const item of items) expect(typeof item.distanceKm).toBe('number');
+  });
+
+  it('orders by proximity and puts the local café first', async () => {
+    const { items } = await searchBusinesses({ near, sort: 'distance', perPage: 50 });
+    const distances = items.map((i) => i.distanceKm!);
+
+    expect([...distances].sort((a, b) => a - b)).toEqual(distances);
+    expect(items[0].city).toBe('Bengaluru');
+    expect(distances[0]).toBeLessThan(1);
+  });
+
+  it('omits distance when no coordinates are given', async () => {
+    const { items } = await searchBusinesses({ perPage: 3 });
+    for (const item of items) expect(item.distanceKm).toBeUndefined();
   });
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { SlidersHorizontal, X } from 'lucide-react';
+import { LocateFixed, Loader2, SlidersHorizontal, X } from 'lucide-react';
 import { CATEGORIES, CITIES, SORT_OPTIONS } from '@/lib/constants';
 import type { BusinessQuery, PriceLevel } from '@/types';
 import { cn, priceLabel } from '@/lib/utils';
@@ -11,9 +11,21 @@ export interface FilterPanelProps {
   onChange: <K extends keyof BusinessQuery>(key: K, value: BusinessQuery[K]) => void;
   onTogglePrice: (level: PriceLevel) => void;
   onReset: () => void;
+  onUseMyLocation: () => void;
+  locating?: boolean;
+  locationError?: string | null;
 }
 
-export function FilterPanel({ query, total, onChange, onTogglePrice, onReset }: FilterPanelProps) {
+export function FilterPanel({
+  query,
+  total,
+  onChange,
+  onTogglePrice,
+  onReset,
+  onUseMyLocation,
+  locating = false,
+  locationError,
+}: FilterPanelProps) {
   // Price tiers follow the currency of whichever city is being filtered.
   const activeCityName = CITIES.find((c) => c.slug === query.city)?.name;
 
@@ -131,17 +143,51 @@ export function FilterPanel({ query, total, onChange, onTogglePrice, onReset }: 
         </label>
 
         <div>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-ink/50">Distance</h3>
+          <button
+            onClick={onUseMyLocation}
+            disabled={locating}
+            aria-pressed={Boolean(query.near)}
+            className={cn(
+              'mt-2 inline-flex w-full items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-semibold transition-colors',
+              query.near ? 'border-flame bg-flame/10 text-flame-700' : 'border-ink/15 hover:border-ink',
+            )}
+          >
+            {locating ? <Loader2 size={15} className="animate-spin" /> : <LocateFixed size={15} />}
+            {query.near ? 'Using your location' : 'Search near me'}
+          </button>
+          {query.near && (
+            <button
+              onClick={() => {
+                onChange('near', undefined);
+                if (query.sort === 'distance') onChange('sort', 'recommended');
+              }}
+              className="mt-2 text-xs font-semibold text-ink/50 hover:text-flame"
+            >
+              Clear location
+            </button>
+          )}
+          {locationError && (
+            <p role="alert" className="mt-2 text-xs text-flame-700">
+              {locationError}
+            </p>
+          )}
+        </div>
+
+        <div>
           <h3 className="text-xs font-semibold uppercase tracking-widest text-ink/50">Sort by</h3>
           <select
             value={query.sort ?? 'recommended'}
             onChange={(e) => onChange('sort', e.target.value as BusinessQuery['sort'])}
             className="mt-2 w-full rounded-2xl border border-ink/15 bg-cream px-3 py-2.5 text-sm focus:border-ink focus:outline-none"
           >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
+            {SORT_OPTIONS.filter((option) => !('needsLocation' in option && option.needsLocation) || query.near).map(
+              (option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ),
+            )}
           </select>
         </div>
       </div>

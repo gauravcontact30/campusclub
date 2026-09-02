@@ -35,6 +35,8 @@ export function BusinessSearch({
   const [filters, setFilters] = useState<BusinessQuery>(initialQuery);
   const [termDraft, setTermDraft] = useState(initialQuery.term ?? '');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const debouncedTerm = useDebounce(termDraft, 350);
 
   const query = useMemo<BusinessQuery>(
@@ -75,9 +77,51 @@ export function BusinessSearch({
     });
   }
 
+  /**
+   * Asks the browser where the visitor is and switches the sort to nearest
+   * first. Nothing is stored: the coordinates live in the URL for this search.
+   */
+  function useMyLocation() {
+    if (!('geolocation' in navigator)) {
+      setLocationError('This browser cannot share a location.');
+      return;
+    }
+
+    setLocating(true);
+    setLocationError(null);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocating(false);
+        setFilters((f) => ({
+          ...f,
+          term: debouncedTerm,
+          near: { lat: position.coords.latitude, lng: position.coords.longitude },
+          sort: 'distance',
+          page: 1,
+        }));
+      },
+      () => {
+        setLocating(false);
+        setLocationError('We could not read your location. Check the browser permission and try again.');
+      },
+      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
+    );
+  }
+
   function reset() {
     setTermDraft('');
-    setFilters({ term: '', city: '', category: '', price: [], minRating: 0, openNow: false, sort: 'recommended', page: 1 });
+    setLocationError(null);
+    setFilters({
+      term: '',
+      city: '',
+      category: '',
+      price: [],
+      minRating: 0,
+      openNow: false,
+      sort: 'recommended',
+      page: 1,
+      near: undefined,
+    });
   }
 
   return (
@@ -121,6 +165,9 @@ export function BusinessSearch({
             onChange={update}
             onTogglePrice={togglePrice}
             onReset={reset}
+            onUseMyLocation={useMyLocation}
+            locating={locating}
+            locationError={locationError}
           />
         </div>
 

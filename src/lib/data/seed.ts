@@ -174,6 +174,15 @@ export const SEED_REVIEWS: Review[] = SEED_BUSINESSES.flatMap((biz, bi) => {
       photos: ri % 4 === 0 ? [biz.images[(ri + 1) % biz.images.length]] : [],
       helpfulCount: (bi * 7 + ri * 5) % 24,
       createdAt: new Date(Date.now() - daysAgo * 86_400_000).toISOString(),
+      // Owners who have claimed their listing reply to the occasional review.
+      ownerResponse:
+        SEED_BUSINESSES[bi].isClaimed && copy.rating <= 3
+          ? 'Thank you for writing this — we would rather hear it than not. That wait was on us; we have added a second person to the Friday shift since. Ask for the manager next time and the first round is on the house.'
+          : null,
+      ownerResponseAt:
+        SEED_BUSINESSES[bi].isClaimed && copy.rating <= 3
+          ? new Date(Date.now() - (daysAgo - 2) * 86_400_000).toISOString()
+          : null,
     } satisfies Review;
   }).filter((r): r is Review => r !== null);
 });

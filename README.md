@@ -59,8 +59,20 @@ cp .env.example .env.local
 - **Reviews**: five-star input with live labels, one review per person per
   business (editable, deletable), helpful votes, four sort orders and a rating
   distribution histogram.
+- **Search near me** — one tap shares the visitor's coordinates (kept in the URL,
+  never stored), sorts nearest-first and puts a distance on every card.
 - **Saved places** — bookmark anything, revisit it from your list.
 - **Add a business** — a validated listing form, claimable by its owner.
+
+### Owner tools
+
+- **Claim a listing** from its page: role, work email and phone are filed as a
+  claim record, and ownership transfers immediately (beta behaviour — the filed
+  claim is what gets spot-checked afterwards).
+- **A public right of reply** on every review, shown under the business name,
+  editable and withdrawable. Owners can never edit or delete the review itself.
+- Claimed listings carry a badge, and the owner sees how many reviews are still
+  waiting on an answer.
 
 ### The dinners (the Timeleft half)
 
@@ -132,7 +144,7 @@ home-mart/
 │   │   │   ├── businesses/     Search endpoint behind TanStack Query
 │   │   │   ├── dinners/        Dinner listing endpoint
 │   │   │   └── admin/seed/     Service-role seeder for Supabase
-│   │   ├── businesses/         Directory, listing page, write-a-review page
+│   │   ├── businesses/         Directory, listing page, write-a-review, claim
 │   │   ├── dinners/            Table list, table detail, matching questionnaire
 │   │   ├── about|how-it-works|pricing|add-business|profile|saved|bookings|login|signup
 │   │   ├── layout.tsx          Fonts, metadata, nav/footer shell, providers
@@ -142,7 +154,7 @@ home-mart/
 │   │   ├── ui/                 Button, Badge, Field, RatingStars, Avatar, Toaster, …
 │   │   ├── layout/             Navbar, mobile drawer, account menu, footer, auth shell
 │   │   ├── home/               Hero, how-it-works, categories, testimonials, FAQ, CTA
-│   │   ├── business/           Card, search, filters, gallery, hours, map, reviews
+│   │   ├── business/           Card, search, filters, gallery, hours, map, reviews, claim, owner reply
 │   │   └── dinners/            Dinner card, booking panel, table reveal, quiz, plans
 │   ├── hooks/                  use-debounce, use-media-query, use-client-value
 │   ├── lib/
@@ -156,7 +168,7 @@ home-mart/
 │   ├── store/                  Zustand: ui-store, filters-store, quiz-store
 │   └── types/                  The domain model
 ├── supabase/
-│   ├── migrations/             0001 schema · 0002 RLS · 0003 triggers and RPCs
+│   ├── migrations/             0001 schema · 0002 RLS · 0003 triggers and RPCs · 0004 owner tools
 │   ├── seed.sql                Category reference data
 │   └── README.md               Project setup, in order
 ├── tests/                      Vitest + React Testing Library
@@ -179,6 +191,13 @@ readable by anyone, everything personal is owner-scoped. `0003_functions.sql`
 adds the new-user profile trigger, the helpful-vote RPC and guarded seat
 counters.
 
+`0004_owner_tools.sql` adds the owner's reply columns and the `business_claims`
+audit table. Replies are written through a `security definer` function rather
+than a column grant: a grant is role-wide, so it would have let a reviewer forge
+an "owner response" on their own review under the existing edit-own-review
+policy. Claiming is a policy that only permits taking over a listing with no
+owner, and only by writing your own id to it.
+
 Notable constraints: one review per person per business, one live booking per
 person per table (a partial unique index that still allows re-booking after a
 cancellation), and seat counters that cannot oversell or go negative.
@@ -197,10 +216,11 @@ cancellation), and seat counters that cannot oversell or go negative.
 | `npm run test:e2e` | Playwright, desktop and mobile projects |
 
 Tests cover the opening-hours maths (including windows that cross midnight),
-query-string round-tripping, every repository behaviour (filtering, sorting,
-pagination, review upserts, helpful votes, save toggles, seat booking,
-waitlisting and cancellation), the interactive UI primitives, and the main
-end-to-end journeys.
+query-string round-tripping (coordinates included), every repository behaviour
+(filtering, sorting, pagination, distance search, review upserts, helpful votes,
+save toggles, listing claims, owner replies, seat booking, waitlisting and
+cancellation), the interactive UI primitives, and the main end-to-end journeys —
+including claim-then-reply and a geolocated near-me search.
 
 If Chromium already exists on the machine, point Playwright at it:
 

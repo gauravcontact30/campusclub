@@ -150,6 +150,14 @@ export function distanceKm(a: { lat: number; lng: number }, b: { lat: number; ln
   return 2 * R * Math.asin(Math.sqrt(h));
 }
 
+/** "Nearby" on the doorstep, "600 m" under a kilometre, "4.2 km" above it. */
+export function formatDistance(km: number) {
+  if (km < 0.05) return 'Nearby';
+  if (km < 1) return `${Math.round(km * 1000)} m`;
+  if (km < 10) return `${km.toFixed(1)} km`;
+  return `${Math.round(km)} km`;
+}
+
 export function initials(name: string) {
   return name
     .split(' ')

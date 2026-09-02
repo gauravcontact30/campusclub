@@ -48,6 +48,7 @@ test.describe('directory', () => {
   test('a listing page shows hours, contact and reviews', async ({ page }) => {
     await page.goto('/businesses');
     await page.locator('article a').first().click();
+    await page.waitForURL(/\/businesses\/[\w-]+/);
 
     await expect(page.getByRole('heading', { name: 'Opening hours' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Contact' })).toBeVisible();

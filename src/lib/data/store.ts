@@ -1,4 +1,4 @@
-import type { Business, DinnerBooking, QuizAnswers, Review, UserProfile } from '@/types';
+import type { Business, BusinessClaim, DinnerBooking, QuizAnswers, Review, UserProfile } from '@/types';
 import { SEED_BUSINESSES, SEED_DINNERS, SEED_REVIEWS, SEED_USERS } from './seed';
 
 /**
@@ -16,6 +16,7 @@ export interface DemoDb {
   saves: { userId: string; businessId: string }[];
   bookings: DinnerBooking[];
   quiz: Record<string, QuizAnswers>;
+  claims: BusinessClaim[];
   helpfulVotes: { reviewId: string; userId: string }[];
   dinners: typeof SEED_DINNERS;
 }
@@ -33,6 +34,7 @@ function createDb(): DemoDb {
     ],
     bookings: [],
     quiz: {},
+    claims: [],
     helpfulVotes: [],
     dinners: SEED_DINNERS.map((d) => ({ ...d })),
   };

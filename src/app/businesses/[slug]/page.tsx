@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Globe, Phone, Share2, Star } from 'lucide-react';
+import { Globe, Phone, Share2, ShieldCheck, Star } from 'lucide-react';
 import { getBusinessBySlug, getRelatedBusinesses, getAllBusinessSlugs } from '@/lib/data/businesses';
 import { getReviews, type ReviewSort } from '@/lib/data/reviews';
 import { getCurrentUser } from '@/lib/auth/session';
@@ -51,10 +51,10 @@ export default async function BusinessPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ sort?: string }>;
+  searchParams: Promise<{ sort?: string; claimed?: string }>;
 }) {
   const { slug } = await params;
-  const { sort } = await searchParams;
+  const { sort, claimed } = await searchParams;
   const business = await getBusinessBySlug(slug);
   if (!business) notFound();
 
@@ -67,6 +67,8 @@ export default async function BusinessPage({
   const savedIds = user ? await getSavedBusinessIds(user.id) : [];
   const ownReview = user ? reviews.find((r) => r.userId === user.id) ?? null : null;
   const category = CATEGORIES.find((c) => c.slug === business.categorySlug);
+  const isOwner = Boolean(user && business.ownerId === user.id);
+  const unanswered = reviews.filter((r) => !r.ownerResponse).length;
 
   return (
     <div className="container-page py-8 sm:py-10">
@@ -81,6 +83,23 @@ export default async function BusinessPage({
         <span>/</span>
         <span className="text-ink">{business.name}</span>
       </nav>
+
+      {isOwner && (
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-sage/50 bg-sage/15 px-5 py-4">
+          <p className="flex items-center gap-2 text-sm font-medium">
+            <ShieldCheck size={18} className="text-sage-600" />
+            {claimed === '1' ? `Claimed — ${business.name} is yours to manage.` : 'You manage this listing.'}
+            {unanswered > 0 && (
+              <span className="text-ink/60">
+                {unanswered} review{unanswered === 1 ? '' : 's'} without a reply.
+              </span>
+            )}
+          </p>
+          <a href="#reviews" className="text-sm font-semibold text-flame-700 hover:underline">
+            Respond to reviews →
+          </a>
+        </div>
+      )}
 
       <PhotoGallery images={business.images} name={business.name} />
 
@@ -180,7 +199,14 @@ export default async function BusinessPage({
                 </p>
               ) : (
                 reviews.map((review) => (
-                  <ReviewCard key={review.id} review={review} slug={slug} isOwn={review.userId === user?.id} />
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    slug={slug}
+                    businessName={business.name}
+                    isOwn={review.userId === user?.id}
+                    canRespond={isOwner}
+                  />
                 ))
               )}
             </div>
@@ -222,13 +248,16 @@ export default async function BusinessPage({
             </div>
           </div>
 
-          {!business.isClaimed && (
+          {!business.ownerId && (
             <div className="rounded-3xl border border-dashed border-ink/25 p-6">
               <h2 className="font-display text-lg font-semibold">Is this your business?</h2>
               <p className="mt-2 text-sm text-ink/65">
                 Claim the listing to respond to reviews, fix your hours and add photos.
               </p>
-              <Link href="/add-business" className="mt-3 inline-block text-sm font-semibold text-flame-700 hover:underline">
+              <Link
+                href={`/businesses/${slug}/claim`}
+                className="mt-3 inline-block text-sm font-semibold text-flame-700 hover:underline"
+              >
                 Claim {business.name} →
               </Link>
             </div>

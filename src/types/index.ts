@@ -49,6 +49,8 @@ export interface Business {
   /** Derived aggregates (view / computed) */
   rating: number;
   reviewCount: number;
+  /** Set only when a search supplied the visitor's coordinates. */
+  distanceKm?: number;
 }
 
 export interface Review {
@@ -62,6 +64,20 @@ export interface Review {
   body: string;
   photos: string[];
   helpfulCount: number;
+  createdAt: string;
+  /** A public reply from the verified owner of the business. */
+  ownerResponse: string | null;
+  ownerResponseAt: string | null;
+}
+
+export interface BusinessClaim {
+  id: string;
+  businessId: string;
+  userId: string;
+  role: string;
+  contactEmail: string;
+  phone: string;
+  note: string;
   createdAt: string;
 }
 
@@ -126,9 +142,11 @@ export interface BusinessQuery {
   price?: PriceLevel[];
   minRating?: number;
   openNow?: boolean;
-  sort?: 'recommended' | 'rating' | 'reviews' | 'price_asc' | 'price_desc';
+  sort?: 'recommended' | 'rating' | 'reviews' | 'price_asc' | 'price_desc' | 'distance';
   page?: number;
   perPage?: number;
+  /** The visitor's coordinates, when they have shared them. Enables distance sorting. */
+  near?: { lat: number; lng: number };
 }
 
 export interface Paginated<T> {

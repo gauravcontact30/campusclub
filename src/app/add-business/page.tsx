@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 };
 
 const PERKS = [
-  { icon: BadgeCheck, title: 'A claimed badge', body: 'Verified listings get a badge on every card and rank higher in "recommended".' },
-  { icon: MessagesSquare, title: 'Reply to reviews', body: 'Respond publicly once, under your business name. No pay-to-remove, ever.' },
+  { icon: BadgeCheck, title: 'A claimed badge', body: 'Claimed listings get a badge on every card and rank higher in "recommended".' },
+  { icon: MessagesSquare, title: 'Reply to reviews', body: 'Respond publicly under your business name. No pay-to-remove, ever — you get the last word, not an eraser.' },
   { icon: TrendingUp, title: 'Dinner partnerships', body: 'Well-reviewed venues get first refusal on hosting Wednesday tables.' },
 ];
 
@@ -40,8 +40,8 @@ export default async function AddBusinessPage() {
             </div>
           ))}
           <p className="px-2 text-xs leading-relaxed text-ink/50">
-            By listing you confirm you are authorised to represent the business. We verify by phone before granting
-            owner tools.
+            By listing you confirm you are authorised to represent the business. Owner tools unlock straight away; we
+            spot-check by phone afterwards and reverse a disputed claim within one working day.
           </p>
         </aside>
       </div>

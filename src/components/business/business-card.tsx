@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MapPin } from 'lucide-react';
+import { MapPin, Navigation } from 'lucide-react';
 import type { Business } from '@/types';
 import { CATEGORIES } from '@/lib/constants';
 import { ImageWithFallback } from '@/components/ui/image-with-fallback';
@@ -7,7 +7,7 @@ import { RatingStars } from '@/components/ui/rating-stars';
 import { Badge } from '@/components/ui/badge';
 import { OpenNowBadge } from './open-now-badge';
 import { SaveButton } from './save-button';
-import { formatCount, priceLabel } from '@/lib/utils';
+import { formatCount, formatDistance, priceLabel } from '@/lib/utils';
 
 export function BusinessCard({
   business,
@@ -79,9 +79,14 @@ export function BusinessCard({
         <div className="mt-4 flex items-center justify-between gap-2">
           <OpenNowBadge hours={business.hours} />
           <div className="hidden gap-1.5 sm:flex">
-            {business.tags.slice(0, 1).map((tag) => (
-              <Badge key={tag}>{tag}</Badge>
-            ))}
+            {typeof business.distanceKm === 'number' ? (
+              <Badge tone="sage">
+                <Navigation size={11} />
+                {formatDistance(business.distanceKm)}
+              </Badge>
+            ) : (
+              business.tags.slice(0, 1).map((tag) => <Badge key={tag}>{tag}</Badge>)
+            )}
           </div>
         </div>
       </div>

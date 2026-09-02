@@ -7,17 +7,23 @@ import { Avatar } from '@/components/ui/avatar';
 import { RatingStars } from '@/components/ui/rating-stars';
 import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 import { toggleHelpfulAction, deleteReviewAction } from '@/app/actions/reviews';
+import { OwnerReply } from './owner-reply';
 import { useUiStore } from '@/store/ui-store';
 import { relativeTime } from '@/lib/utils';
 
 export function ReviewCard({
   review,
   slug,
+  businessName,
   isOwn = false,
+  canRespond = false,
 }: {
   review: Review;
   slug: string;
+  businessName: string;
   isOwn?: boolean;
+  /** True when the signed-in user is the verified owner of this listing. */
+  canRespond?: boolean;
 }) {
   const [count, setCount] = useState(review.helpfulCount);
   const [voted, setVoted] = useState(false);
@@ -97,6 +103,8 @@ export function ReviewCard({
         <ThumbsUp size={14} />
         Helpful ({count})
       </button>
+
+      <OwnerReply review={review} slug={slug} businessName={businessName} canRespond={canRespond} />
     </article>
   );
 }

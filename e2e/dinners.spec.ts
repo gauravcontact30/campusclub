@@ -30,6 +30,7 @@ test('a member can claim a seat and see it in their bookings', async ({ page }, 
   await page.getByLabel('Email').fill(ACCOUNTS[testInfo.project.name] ?? ACCOUNTS.desktop);
   await page.getByLabel('Password').fill('password123');
   await page.getByRole('button', { name: 'Sign in' }).click();
+  await expect(page).toHaveURL('/');
 
   await page.goto('/dinners');
   await page.locator('article').first().getByRole('link', { name: /Claim a seat|Join waitlist/ }).click();

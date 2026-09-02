@@ -34,8 +34,28 @@ describe('business query serialisation', () => {
     expect(params.toString()).toBe('term=tacos');
   });
 
+  it('reads coordinates when both halves are valid', () => {
+    expect(parseBusinessQuery({ lat: '12.9719', lng: '77.6412' }).near).toEqual({ lat: 12.9719, lng: 77.6412 });
+  });
+
+  it('ignores half-supplied or impossible coordinates', () => {
+    expect(parseBusinessQuery({ lat: '12.9719' }).near).toBeUndefined();
+    expect(parseBusinessQuery({ lat: 'north', lng: '77.6' }).near).toBeUndefined();
+    expect(parseBusinessQuery({ lat: '120', lng: '77.6' }).near).toBeUndefined();
+  });
+
   it('round-trips a full query', () => {
-    const original = { term: 'bar', city: 'lisbon', category: 'bars', price: [3 as PriceLevel], minRating: 4, openNow: true, sort: 'reviews' as const, page: 3 };
+    const original = {
+      term: 'bar',
+      city: 'lisbon',
+      category: 'bars',
+      price: [3 as PriceLevel],
+      minRating: 4,
+      openNow: true,
+      sort: 'reviews' as const,
+      page: 3,
+      near: { lat: 38.7071, lng: -9.1449 },
+    };
     expect(parseBusinessQuery(Object.fromEntries(toSearchParams(original)))).toMatchObject(original);
   });
 });

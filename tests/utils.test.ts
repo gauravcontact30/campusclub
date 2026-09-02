@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   distanceKm,
+  formatDistance,
   formatMoneyForCity,
   hashIndex,
   initials,
@@ -98,5 +99,14 @@ describe('misc helpers', () => {
     expect(pluralize(1, 'review')).toBe('1 review');
     expect(pluralize(4, 'review')).toBe('4 reviews');
     expect(initials('Priya Nair')).toBe('PN');
+  });
+});
+
+describe('formatDistance', () => {
+  it('switches from metres to kilometres', () => {
+    expect(formatDistance(0.01)).toBe('Nearby');
+    expect(formatDistance(0.42)).toBe('420 m');
+    expect(formatDistance(4.23)).toBe('4.2 km');
+    expect(formatDistance(48.6)).toBe('49 km');
   });
 });
