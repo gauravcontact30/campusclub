@@ -23,7 +23,7 @@ Either with the CLI:
 
 ```bash
 supabase link --project-ref <ref>
-supabase db push          # runs migrations/0001 → 0008
+supabase db push          # runs migrations/0001 → 0009
 psql "$DATABASE_URL" -f supabase/seed.sql
 ```
 
@@ -39,7 +39,8 @@ psql "$DATABASE_URL" -f supabase/seed.sql
 | `migrations/0006_rename_to_vibeclub.sql` | brand rename to VibeClub — same |
 | `migrations/0007_meetups.sql` | **the current model**: `meetups`, `joins`, `payments`, `vouches`, the three stats views, seat and credit functions, RLS — and it retires the directory and supper-club tables at the end |
 | `migrations/0008_rename_to_campusclub.sql` | brand rename to CampusClub: the `profiles.full_name` default, the placeholder rows, and the signup trigger |
-| `seed.sql` | the eight fixed categories |
+| `migrations/0009_more_categories.sql` | sixteen more categories alongside the original eight — movies, gaming, book club, cycling, and the rest of `src/lib/constants.ts`'s `CATEGORIES` |
+| `seed.sql` | all 24 fixed categories, for a fresh project seeded outside the migration chain |
 
 `0007` is a forward migration, so an existing database migrates rather than
 being rebuilt: members' old plans are carried across to the new pass tiers

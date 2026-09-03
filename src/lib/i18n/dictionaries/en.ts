@@ -40,6 +40,7 @@ export const en = {
     secondaryCta: 'Host your own',
     statJoins: '41,200 joins',
     statJoinsSuffix: 'paid for since we started.',
+    categoriesHeading: 'Or just pick what you’re into.',
   },
   heroSearch: {
     title: 'What do you want to do this week?',

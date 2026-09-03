@@ -11,13 +11,12 @@ import { getVouches } from '@/lib/data/vouches';
 import { getSavedMeetupIds } from '@/lib/data/saves';
 import { getCurrentUser } from '@/lib/auth/session';
 import { parseMeetupQuery, toSearchParams } from '@/lib/query-string';
-import { categoryBySlug, cityBySlug } from '@/lib/constants';
+import { CITIES, categoryBySlug, cityBySlug } from '@/lib/constants';
 import { pluralize } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'What’s on',
-  description:
-    'Every meetup you can join right now — study tables, gym slots, sport, dinners and runs across six cities. Pay only the join fee for the one you go to.',
+  description: `Every meetup you can join right now — study tables, gym slots, sport, dinners and runs across ${CITIES.length} cities. Pay only the join fee for the one you go to.`,
 };
 
 export default async function MeetupsPage({

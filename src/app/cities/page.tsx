@@ -7,7 +7,7 @@ import { pluralize } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Cities',
-  description: 'CampusClub runs in Bengaluru, Mumbai, Delhi, Pune, Hyderabad and Chennai — see what is on in yours.',
+  description: `CampusClub runs in ${CITIES.length} cities across India, from Bengaluru and Mumbai to Guwahati and Kochi — see what is on in yours.`,
 };
 
 export default async function CitiesPage() {
@@ -17,7 +17,7 @@ export default async function CitiesPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Six cities"
+        eyebrow={`${CITIES.length} cities`}
         title="Wherever you already live."
         lede={`${pluralize(total, 'meetup')} on the board right now. We open a city when about forty people there have asked for one — not before, because a board with three things on it is worse than no board.`}
       />

@@ -82,7 +82,10 @@ export async function Hero({
           </div>
         </div>
 
-        <CategoryRail className="mt-12" />
+        <div className="mt-14">
+          <p className="text-center text-sm font-semibold text-content/60">{t.hero.categoriesHeading}</p>
+          <CategoryRail variant="mosaic" className="mt-5" />
+        </div>
       </div>
     </section>
   );

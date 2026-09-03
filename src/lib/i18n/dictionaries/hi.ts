@@ -41,6 +41,7 @@ export const hi: Dictionary = {
     secondaryCta: 'अपना मीटअप बनाएँ',
     statJoins: '41,200 जॉइन',
     statJoinsSuffix: 'अब तक हो चुके हैं।',
+    categoriesHeading: 'या बस वही चुनिए जो आपको पसंद है।',
   },
   heroSearch: {
     title: 'इस हफ़्ते आप क्या करना चाहेंगे?',

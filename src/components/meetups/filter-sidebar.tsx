@@ -23,6 +23,13 @@ export function FilterSidebar({ query, resultCount }: { query: MeetupQuery; resu
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [cityFilter, setCityFilter] = useState('');
+
+  const visibleCities = useMemo(() => {
+    const q = cityFilter.trim().toLowerCase();
+    if (!q) return CITIES;
+    return CITIES.filter((c) => c.name.toLowerCase().includes(q) || c.state.toLowerCase().includes(q));
+  }, [cityFilter]);
 
   const push = useMemo(
     () => (patch: Partial<MeetupQuery>) => {
@@ -77,11 +84,27 @@ export function FilterSidebar({ query, resultCount }: { query: MeetupQuery; resu
         <Row active={!query.city} onClick={() => push({ city: '' })}>
           Any city
         </Row>
-        {CITIES.map((c) => (
-          <Row key={c.slug} active={query.city === c.slug} onClick={() => push({ city: c.slug })}>
-            {c.name}
-          </Row>
-        ))}
+        {/* 44 cities do not fit as a flat list, so a search narrows it and a
+            capped, scrollable list carries the rest — the same "one choice
+            per axis" shape as every other filter, just with a way in. */}
+        <input
+          type="text"
+          value={cityFilter}
+          onChange={(e) => setCityFilter(e.target.value)}
+          placeholder="Search cities…"
+          className="mb-1 w-full rounded-lg border border-content/15 bg-transparent px-2.5 py-1.5 text-sm text-content placeholder:text-content/45 focus:border-brand/50 focus:outline-none"
+        />
+        <div className="max-h-52 overflow-y-auto pr-1">
+          {visibleCities.length ? (
+            visibleCities.map((c) => (
+              <Row key={c.slug} active={query.city === c.slug} onClick={() => push({ city: c.slug })}>
+                {c.name}
+              </Row>
+            ))
+          ) : (
+            <p className="px-2.5 py-1.5 text-sm text-content/50">No city matches “{cityFilter}”.</p>
+          )}
+        </div>
         <button
           type="button"
           onClick={useMyLocation}

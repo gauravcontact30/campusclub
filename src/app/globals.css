@@ -96,6 +96,66 @@
     --shadow-glow: 0 0 0 1px rgba(240, 110, 80, 0.28), 0 12px 40px -16px rgba(240, 110, 80, 0.5);
   }
 
+  /* ------------------------------------------------------- category tints --
+     A dozen light "sticker" colours for the activity catalogue, one theme
+     pair each. Unlike the five palettes above, these do NOT change with
+     `data-palette` — a rainbow of 24 different activities is legible
+     precisely because it stays the same rainbow no matter which single-hue
+     palette the rest of the page is wearing. Only light/dark varies. */
+  :root {
+    --tint-rose: 254 226 230;
+    --tint-rose-ink: 190 24 93;
+    --tint-amber: 254 243 199;
+    --tint-amber-ink: 146 90 6;
+    --tint-lime: 236 252 203;
+    --tint-lime-ink: 77 124 15;
+    --tint-teal: 204 251 241;
+    --tint-teal-ink: 15 118 110;
+    --tint-sky: 224 242 254;
+    --tint-sky-ink: 3 105 161;
+    --tint-violet: 237 233 254;
+    --tint-violet-ink: 109 40 217;
+    --tint-fuchsia: 250 232 255;
+    --tint-fuchsia-ink: 162 28 175;
+    --tint-orange: 255 237 213;
+    --tint-orange-ink: 194 65 12;
+    --tint-emerald: 209 250 229;
+    --tint-emerald-ink: 4 120 87;
+    --tint-indigo: 224 231 255;
+    --tint-indigo-ink: 67 56 202;
+    --tint-cyan: 207 250 254;
+    --tint-cyan-ink: 14 116 144;
+    --tint-yellow: 254 249 195;
+    --tint-yellow-ink: 133 100 4;
+  }
+
+  :root[data-theme='dark'] {
+    --tint-rose: 72 20 38;
+    --tint-rose-ink: 251 182 206;
+    --tint-amber: 69 49 10;
+    --tint-amber-ink: 252 211 120;
+    --tint-lime: 36 54 16;
+    --tint-lime-ink: 190 230 120;
+    --tint-teal: 10 54 50;
+    --tint-teal-ink: 135 231 214;
+    --tint-sky: 12 44 66;
+    --tint-sky-ink: 145 207 250;
+    --tint-violet: 44 30 74;
+    --tint-violet-ink: 196 181 253;
+    --tint-fuchsia: 60 20 64;
+    --tint-fuchsia-ink: 240 171 252;
+    --tint-orange: 66 32 10;
+    --tint-orange-ink: 253 186 140;
+    --tint-emerald: 10 54 38;
+    --tint-emerald-ink: 110 231 183;
+    --tint-indigo: 30 32 74;
+    --tint-indigo-ink: 165 180 252;
+    --tint-cyan: 10 50 58;
+    --tint-cyan-ink: 103 232 249;
+    --tint-yellow: 60 52 10;
+    --tint-yellow-ink: 240 220 110;
+  }
+
   /* ------------------------------------------------------- palette swatches --
      Four alternates. The selectors are deliberately over-qualified:
      `:root[data-palette='x']` and `:root[data-theme='dark']` have identical

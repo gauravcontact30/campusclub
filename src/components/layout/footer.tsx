@@ -8,7 +8,10 @@ import { PAYMENT_MODE } from '@/lib/payments/config';
 const columns = [
   {
     title: 'Do',
-    links: CATEGORIES.slice(0, 5).map((c) => ({ href: `/meetups?category=${c.slug}`, label: c.name })),
+    links: [
+      ...CATEGORIES.slice(0, 6).map((c) => ({ href: `/meetups?category=${c.slug}`, label: c.name })),
+      { href: '/meetups', label: `All ${CATEGORIES.length} activities →` },
+    ],
   },
   {
     title: 'Members',
@@ -22,7 +25,12 @@ const columns = [
   },
   {
     title: 'Cities',
-    links: CITIES.map((c) => ({ href: `/meetups?city=${c.slug}`, label: c.name })),
+    // The rest of the 40-plus cities live at /cities — a footer column is a
+    // wayfinding aid, not the whole directory.
+    links: [
+      ...CITIES.slice(0, 7).map((c) => ({ href: `/meetups?city=${c.slug}`, label: c.name })),
+      { href: '/cities', label: `All ${CITIES.length} cities →` },
+    ],
   },
   {
     title: 'Hosts',
