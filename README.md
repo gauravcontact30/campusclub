@@ -329,22 +329,24 @@ pills, and every section is built mobile-first.
 
 ### The mark
 
-Six people seated around a round table, seen from above: each is a head with a
-shoulder cap curving behind it, facing in. The seats alternate between the two
-warm tones and between two silhouettes — a plain head, and a head with hair
-gathered above it — so the group reads as mixed rather than as six copies of
-one person.
+Two circles: places, and people. SitNext is both — a directory of somewhere to
+go, and a table of who to go with — and the business is the part where they
+meet, so the overlap is the only element filled in.
 
-Two decisions carry the drawing. The shoulder cap is struck about the head
-rather than about the table, which is what stops it drifting off as a crescent.
-And the hair is a separate small disc rather than a wider head: at 32px a wider
-head just reads as a bigger head, while a detached mark still reads as a
-different hairstyle.
+The geometry is derived rather than eyeballed: equal radii of 11 on centres
+twelve apart put the intersections at `x = 20`, `y = 20 ± √(11² − 6²)`, and each
+side of the lens spans 114°, which is why both arcs carry `large-arc-flag 0`.
 
-It ships in two files, because six figures smear into a ring at favicon size:
-`public/logo.svg` is the full mark, and `public/icon-16.svg` keeps the table
-and reduces the group to four heads. `layout.tsx` offers both and lets the
-browser pick by size.
+Two properties matter more than the drawing. Everything is `currentColor`, so
+one file serves the brand lockup and both monochrome uses — a letterhead, a
+stamped receipt, a partner's press page and a disabled state all get one colour.
+And the lens is a closed path, not a shape painted in the page colour: a
+knockout filled with the background stops being a logo the moment it lands on a
+surface nobody anticipated.
+
+Because it survives 16px in a single colour, `public/logo.svg` is the only icon
+file — the previous mark needed a simplified favicon variant beside it, and this
+one does not.
 
 Cover art and avatars are generated SVGs in `public/img/`, so the app has no
 external image dependency and never shows a broken tile. `ImageWithFallback`

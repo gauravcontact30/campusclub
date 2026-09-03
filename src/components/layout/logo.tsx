@@ -2,50 +2,28 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 /**
- * Six people seated around a round table, seen from above: each is a head with
- * a shoulder cap curving behind it, facing in.
+ * Two circles: places, and people. SitNext is both — a directory of somewhere to
+ * go, and a table of who to go with — and the business is the part where they
+ * meet. So the overlap is the only thing filled in.
  *
- * The seats alternate between the two warm tones and between two silhouettes —
- * a plain head, and a head with hair gathered above it — so the group reads as
- * mixed rather than as six copies of one person. The hair is a separate small
- * disc rather than a wider head, because at 32px a wider head just reads as a
- * bigger head; a detached mark still reads as a different hairstyle.
+ * Geometry is exact rather than eyeballed. Equal radii of 11 on centres twelve
+ * apart put the intersections at x = 20, y = 20 ± sqrt(11² − 6²), and each side
+ * of the lens spans 114°, which is why both arcs take large-arc-flag 0.
  *
- * Every seat is the same figure rotated about the table centre, so the ring
- * stays perfectly even however the geometry is tuned. The shoulder cap is
- * struck about the head, not about the table, which is what stops it drifting
- * off as a crescent.
+ * Everything is `currentColor` and the lens is a closed path rather than a shape
+ * painted in the page colour — the mark is genuinely one colour on any ground,
+ * which is what lets it survive a letterhead, a receipt, or a favicon.
  */
-const SEATS = [0, 60, 120, 180, 240, 300];
-
-function Seat({ angle, index }: { angle: number; index: number }) {
-  const gathered = index % 2 === 1;
-  // Palette utilities rather than literal hexes, so the mark re-colours with
-  // the theme instead of staying at its dark-mode values on a light page.
-  const tone = gathered ? 'text-signal' : 'text-brand';
-  return (
-    <g transform={`rotate(${angle} 20 20)`} className={tone}>
-      <path
-        d="M16.5 6 A3.5 3.5 0 0 1 23.5 6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-      />
-      {gathered && <circle cx="20" cy="2.9" r="1.1" fill="currentColor" />}
-      <circle cx="20" cy="6" r="2" fill="currentColor" />
-    </g>
-  );
-}
-
-function TableMark({ className }: { className?: string }) {
+function OverlapMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" aria-hidden className={cn('h-9 w-9', className)}>
-      <circle cx="20" cy="20" r="8.6" className="fill-brand/20" />
-      <circle cx="20" cy="20" r="8.6" fill="none" strokeWidth="1.9" className="stroke-brand" />
-      {SEATS.map((angle, i) => (
-        <Seat key={angle} angle={angle} index={i} />
-      ))}
+      <circle cx="14" cy="20" r="11" fill="none" stroke="currentColor" strokeWidth="3" />
+      <circle cx="26" cy="20" r="11" fill="none" stroke="currentColor" strokeWidth="3" />
+      <path
+        d="M20 10.78 A11 11 0 0 1 20 29.22 A11 11 0 0 1 20 10.78 Z"
+        fill="currentColor"
+        className="origin-center transition-transform duration-500 group-hover:scale-110"
+      />
     </svg>
   );
 }
@@ -60,8 +38,7 @@ export function Logo({ className }: { className?: string }) {
         className,
       )}
     >
-      {/* The table turns on hover — the one animation the mark asks for */}
-      <TableMark className="transition-transform duration-500 group-hover:rotate-[60deg]" />
+      <OverlapMark className="text-brand" />
       <span>
         Sit<span className="text-brand">Next</span>
       </span>
