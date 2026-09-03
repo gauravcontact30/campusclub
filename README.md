@@ -329,17 +329,23 @@ pills, and every section is built mobile-first.
 
 ### The mark
 
-A V inside a ring — the members-club badge, which is the register the name asks
-for. The ring is the club; the V is the name.
+Two rings, and the overlap filled. A club is not one circle of people but two
+that found each other — the vibe is the part they share, so it is the only
+element solid.
 
-The V is drawn as three points rather than a glyph, so it never depends on a
-font being present, and it sits slightly below the ring's centre: a V carries
-its visual weight high, so it is optically centred rather than mathematically.
+The geometry is derived rather than eyeballed: equal radii of 11 on centres
+twelve apart put the intersections at `x = 20`, `y = 20 ± √(11² − 6²)`, and each
+side of the lens spans 114°, which is why both arcs carry `large-arc-flag 0`.
 
-Everything is `currentColor` at a single stroke weight, so one file serves the
-header lockup, the favicon and any monochrome use — a letterhead, a stamped
-receipt, a disabled state. `public/logo.svg` is the only icon file; the mark is
-legible at 16px unmodified, so no simplified favicon variant exists.
+Two properties matter more than the drawing. Everything is `currentColor`, so
+one file serves the brand lockup and both monochrome uses — a letterhead, a
+stamped receipt, a partner's press page and a disabled state all get one colour.
+And the lens is a closed path, not a shape painted in the page colour: a
+knockout filled with the background stops being a logo the moment it lands on a
+surface nobody anticipated.
+
+Because it survives 16px in a single colour, `public/logo.svg` is the only icon
+file — no simplified favicon variant is needed beside it.
 
 Cover art and avatars are generated SVGs in `public/img/`, so the app has no
 external image dependency and never shows a broken tile. `ImageWithFallback`
