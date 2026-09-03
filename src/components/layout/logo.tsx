@@ -2,40 +2,34 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 /**
- * A table seen from above: a heavy ring of seats with one place still open, and
- * the person about to take it sitting in the gap. The silhouette is a C, so it
- * doubles as the monogram.
+ * Three people arriving from three directions and just touching: not a fused
+ * huddle, which reads as one smudged blob at 16px, but three discrete discs
+ * pulled in until their edges meet. That is the whole idea in one shape —
+ * separate people, converging — and it is what a ring or a single monogram
+ * cannot say.
  *
- * The weight is the point. A hairline outline disappears against a strong red
- * at 16px and reads as timid at any size, so the ring is stroked at 6 on r=12 —
- * a solid band rather than a line — which is what lets the mark sit beside a
- * serif wordmark without looking like a diagram of one.
+ * Colour carries the same hierarchy the rest of the product uses: brand for
+ * the one in front, ink for the one it just meets, signal for the one still
+ * arriving. Ink rather than a second brand tint, because two reds a step
+ * apart collapse into each other at favicon size, where the point is three
+ * legible people, not a gradient.
  *
- * The geometry is derived, not eyeballed: a 52° opening centred on 3 o'clock
- * puts the arc's ends at 26° and 334°, giving 308° of sweep — hence
- * large-arc-flag 1 — and a chord of 10.52 across the gap. The dot is 8 across,
- * so it clears the band by 1.26 on each side: near enough to belong to the
- * opening, far enough not to weld shut when the whole thing is 16 pixels wide.
- *
- * Everything is `currentColor` and nothing is knocked out in the page colour,
- * so one file serves the brand lockup, a stamped receipt and a disabled state.
+ * The pairwise gaps are −0.1 to 2.4 units — deliberately near zero rather than
+ * generously overlapped or generously spaced, so the cluster survives being
+ * shrunk to a 16px tab icon without either fusing into a blob or scattering
+ * into three unrelated dots.
  */
 function CampusMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" aria-hidden className={cn('h-8 w-8', className)}>
-      <path
-        d="M30.79 25.26 A12 12 0 1 1 30.79 14.74"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
+      <circle cx="21" cy="10" r="6" fill="rgb(var(--signal))" />
+      <circle cx="29" cy="22" r="8.5" fill="rgb(var(--content))" />
       <circle
-        cx="32"
-        cy="20"
-        r="4"
-        fill="currentColor"
-        className="origin-center transition-transform duration-500 group-hover:scale-[1.15]"
+        cx="13"
+        cy="24"
+        r="10"
+        fill="rgb(var(--brand))"
+        className="origin-[13px_24px] transition-transform duration-500 group-hover:scale-[1.06]"
       />
     </svg>
   );

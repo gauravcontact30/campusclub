@@ -24,9 +24,13 @@ export default async function HomePage() {
   const homeCity = user?.city && counts[user.city] ? user.city : undefined;
   const upcoming = await getUpcomingMeetups(6, homeCity ? homeCity.toLowerCase().replace(/\s+/g, '-') : undefined);
 
+  // A handful of the hosts already on the board — real faces (or their
+  // initials) behind the join count, rather than the number standing alone.
+  const heroHosts = Array.from(new Map(upcoming.map((m) => [m.host.id, m.host])).values()).slice(0, 5);
+
   return (
     <>
-      <Hero meetupCount={all.total} cityCount={CITIES.length} />
+      <Hero meetupCount={all.total} cityCount={CITIES.length} hosts={heroHosts} />
       <Upcoming
         meetups={upcoming}
         savedIds={savedIds}
