@@ -1,73 +1,46 @@
-'use client';
-
-import { useState } from 'react';
-import { Minus, Plus } from 'lucide-react';
-
 const FAQS = [
   {
-    q: 'Who else is at the table?',
-    a: 'Five people matched to you on conversational energy, language, age spread and what you like to talk about. We never seat colleagues or exes together — you can block a contact before the reveal.',
+    q: 'Do I have to buy a subscription?',
+    a: 'No. The default is paying the join fee for the one meetup you want, and nothing else. Passes exist because people who go three times a week end up wanting them — they pre-buy joins at a lower unit price. You can use VibeClub for a year without ever holding one.',
   },
   {
-    q: 'How do I know where to go?',
-    a: 'The venue is revealed 36 hours before the dinner, by email and in your bookings page. It is always somewhere with a strong review record on VibeClub itself.',
+    q: 'What does the join fee actually pay for?',
+    a: 'The host’s real costs: court hire, a gym day pass, the study room, the food. Hosts set their own fee and the listing shows exactly what is included. Meetups where the fee looks like profit get very few joins, which sorts it out faster than any rule we could write.',
   },
   {
-    q: 'What does it cost?',
-    a: 'The seat fee covers the matching and the reservation. Food and drink are paid at the venue, split however the table decides. Membership plans bring the per-seat price down.',
+    q: 'Can I get my money back?',
+    a: 'Cancel more than six hours before it starts and the fee comes back automatically. Inside six hours it does not, because the host has usually already paid for the court or the table. If a host cancels, everyone is refunded in full, always.',
   },
   {
-    q: 'Are the reviews moderated?',
-    a: 'Every review is tied to a verified account, one per business, editable but never anonymous to us. Owners can respond publicly once they have claimed the listing.',
+    q: 'What if the meetup is full?',
+    a: 'Join the waitlist — it costs nothing. You are only charged if a spot opens up and you take it. Pass holders move up the waitlist first.',
   },
   {
-    q: 'Can I list my own business?',
-    a: 'Yes — add it from the "List your business" page. Claiming gives you the response tools, opening hours control and a claimed badge on your card.',
+    q: 'Is it safe to meet strangers?',
+    a: 'Every host has a verified phone number and a public rating from people who actually attended. Meetups happen in public venues, the attendee list is visible before you commit, and there are women-only options in every category. Report anything and we act the same day.',
   },
   {
-    q: 'What if I need to cancel?',
-    a: 'Cancel up to 24 hours before and the seat goes back to the waitlist at no charge. After that we hold the seat fee, because the venue is already holding the table.',
+    q: 'Can I host something myself?',
+    a: 'Yes, and it is free to list. Set the spots and the fee, and we handle the payments, the waitlist and the refunds. Most hosts start by putting the thing they were already doing alone on the board.',
   },
 ];
 
 export function Faq() {
-  const [open, setOpen] = useState<number | null>(0);
-
   return (
-    <section className="container-page py-20 sm:py-24">
-      <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-        <div>
-          <p className="eyebrow">Questions</p>
-          <h2 className="display-lg mt-3">Before you book.</h2>
-          <p className="lede mt-4">
-            Still unsure? Everything else lives in{' '}
-            <a href="/how-it-works" className="link-underline">
-              how it works
-            </a>
-            .
-          </p>
-        </div>
+    <section className="container-page py-20" aria-labelledby="faq-heading">
+      <p className="eyebrow">Straight answers</p>
+      <h2 id="faq-heading" className="display-lg mt-2 text-content">
+        The things people ask before joining.
+      </h2>
 
-        <dl className="divide-y divide-content/10 border-y border-content/10">
-          {FAQS.map((faq, i) => (
-            <div key={faq.q}>
-              <dt>
-                <button
-                  onClick={() => setOpen(open === i ? null : i)}
-                  aria-expanded={open === i}
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left font-display text-lg font-semibold hover:text-brand"
-                >
-                  {faq.q}
-                  {open === i ? <Minus size={18} className="shrink-0" /> : <Plus size={18} className="shrink-0" />}
-                </button>
-              </dt>
-              {open === i && (
-                <dd className="animate-fade-in pb-5 text-sm leading-relaxed text-content/65">{faq.a}</dd>
-              )}
-            </div>
-          ))}
-        </dl>
-      </div>
+      <dl className="mt-10 grid gap-4 md:grid-cols-2">
+        {FAQS.map((faq) => (
+          <div key={faq.q} className="surface-card p-6">
+            <dt className="font-display text-base font-bold text-content">{faq.q}</dt>
+            <dd className="mt-2 text-sm leading-relaxed text-content/70">{faq.a}</dd>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
  * is deliberately narrow: paragraphs, bullet lines, and in-app links. No
  * markdown parser, and no `dangerouslySetInnerHTML` anywhere near model output.
  */
-const LINK = /(\/(?:businesses|dinners|pricing|how-it-works|about|saved|bookings|signup|login)[\w/-]*)/g;
+const LINK = /(\/(?:meetups|passes|host|my-meetups|how-it-works|about|saved|profile|signup|login)[\w/-]*)/g;
 
 function withLinks(text: string, onNavigate: () => void) {
   return text.split(LINK).map((part, i) =>

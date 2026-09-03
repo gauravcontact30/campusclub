@@ -41,7 +41,7 @@ export async function Navbar() {
           <ThemePicker className="hidden sm:inline-flex" />
 
           <Link
-            href="/businesses"
+            href="/meetups"
             aria-label={t.header.search}
             className="hidden h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content transition-colors hover:border-content/50 sm:inline-flex"
           >

@@ -12,15 +12,15 @@ export default async function SignupPage({
   searchParams: Promise<{ next?: string }>;
 }) {
   const user = await getCurrentUser();
-  if (user) redirect('/dinners');
+  if (user) redirect('/meetups');
   const { next } = await searchParams;
 
   return (
     <AuthShell
-      title="Two minutes to your first table."
-      subtitle="Create an account, answer six questions, and pick the Wednesday that suits you."
+      title="Two minutes, then pick something."
+      subtitle="Free to create. You only ever pay the join fee for the meetups you actually go to."
     >
-      <AuthForm mode="signup" next={next ?? '/dinners/quiz'} />
+      <AuthForm mode="signup" next={next ?? '/profile/interests'} />
     </AuthShell>
   );
 }

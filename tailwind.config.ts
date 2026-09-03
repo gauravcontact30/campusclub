@@ -27,7 +27,8 @@ const config: Config = {
           200: withAlpha('--content-200'),
           300: withAlpha('--content-300'),
         },
-        /* Signature terracotta. Every token here is checked against Tailwind's
+        /* The signature hue — indigo in the default Court palette. Every token
+           here is checked against Tailwind's
            own palette first: `extend` deep-merges, so a token sharing a name
            with a built-in scale (`rose`, `amber`, `orange`…) would leave
            `-500` meaning Tailwind's and `-600` meaning ours. `brand`,
@@ -46,7 +47,8 @@ const config: Config = {
            of `content` in both cases. Using `content` measured 3.13:1 and
            3.67:1, below the 4.5:1 AA floor for normal text. */
         'on-brand': withAlpha('--on-brand'),
-        /* Warm gold. Carries the affirmative signal — open now, confirmed. */
+        /* The supporting hue. Carries the affirmative signal — spots left,
+           confirmed, refunded. */
         signal: {
           DEFAULT: withAlpha('--signal'),
           600: withAlpha('--signal-600'),
@@ -55,7 +57,7 @@ const config: Config = {
         glint: withAlpha('--glint'),
       },
       fontFamily: {
-        display: ['var(--font-display)', 'Georgia', 'serif'],
+        display: ['var(--font-display)', 'Segoe UI', 'sans-serif'],
         sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
@@ -85,11 +87,18 @@ const config: Config = {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
         },
+        /* The join button's confirmation beat — one pulse, not a loop. */
+        stamp: {
+          '0%': { transform: 'scale(0.86)', opacity: '0' },
+          '60%': { transform: 'scale(1.04)', opacity: '1' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
       },
       animation: {
         'fade-up': 'fade-up .5s cubic-bezier(.22,1,.36,1) both',
         'fade-in': 'fade-in .4s ease both',
         marquee: 'marquee 28s linear infinite',
+        stamp: 'stamp .45s cubic-bezier(.22,1,.36,1) both',
       },
     },
   },

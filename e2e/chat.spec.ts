@@ -1,47 +1,47 @@
 import { expect, test } from '@playwright/test';
 
-test('the assistant answers from the real directory and links into the app', async ({ page }) => {
+test('the assistant answers from the real board and links into the app', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: /Ask the VibeClub assistant/i }).click();
 
   const panel = page.getByRole('dialog', { name: 'Ask VibeClub' });
   await expect(panel).toBeVisible();
 
-  await page.getByRole('button', { name: 'Best-rated coffee in Bengaluru' }).click();
+  await page.getByRole('button', { name: 'Study meetups in Bengaluru this week' }).click();
 
-  // The answer has to name a real seeded listing, not a plausible-sounding one.
-  await expect(panel.getByText('Third Wave Filter Room')).toBeVisible({ timeout: 15_000 });
+  // The answer has to link to a real seeded meetup, not a plausible-sounding one.
+  const link = panel.getByRole('link', { name: /^\/meetups\/[a-z0-9-]+$/ }).first();
+  await expect(link).toBeVisible({ timeout: 15_000 });
 
-  const link = panel.getByRole('link', { name: '/businesses/third-wave-filter-room-bengaluru' });
-  await expect(link).toBeVisible();
+  const href = await link.getAttribute('href');
   await link.click();
-  await expect(page).toHaveURL(/third-wave-filter-room-bengaluru/);
+  await expect(page).toHaveURL(new RegExp(`${href}$`));
   // Following a link closes the panel — otherwise it covers the page it opened.
   await expect(panel).toBeHidden();
 });
 
-test('a typed question streams an answer back', async ({ page }) => {
+test('a typed question about money streams an answer back', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: /Ask the VibeClub assistant/i }).click();
 
-  await page.getByLabel('Your question').fill('How do the Wednesday dinners work?');
+  await page.getByLabel('Your question').fill('How much does it cost to join a meetup?');
   await page.getByRole('button', { name: 'Send' }).click();
 
   const panel = page.getByRole('dialog', { name: 'Ask VibeClub' });
-  await expect(panel.getByText(/seats left/).first()).toBeVisible({ timeout: 15_000 });
+  await expect(panel.getByText(/join fee/i).first()).toBeVisible({ timeout: 15_000 });
 });
 
 test('the transcript can be cleared and the panel closed', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: /Ask the VibeClub assistant/i }).click();
-  await page.getByRole('button', { name: 'What does membership cost?' }).click();
+  await page.getByRole('button', { name: 'How do the passes work?' }).click();
 
   const panel = page.getByRole('dialog', { name: 'Ask VibeClub' });
-  await expect(panel.getByText('Explorer')).toBeVisible({ timeout: 15_000 });
+  await expect(panel.getByText(/Starter/).first()).toBeVisible({ timeout: 15_000 });
 
   await page.getByRole('button', { name: 'Start a new conversation' }).click();
-  await expect(panel.getByText('Explorer')).toBeHidden();
-  await expect(page.getByRole('button', { name: 'What does membership cost?' })).toBeVisible();
+  await expect(panel.getByText(/Starter/)).toBeHidden();
+  await expect(page.getByRole('button', { name: 'How do the passes work?' })).toBeVisible();
 
   await page.keyboard.press('Escape');
   await expect(panel).toBeHidden();

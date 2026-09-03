@@ -1,37 +1,44 @@
 import { Hero } from '@/components/home/hero';
 import { HowItWorks } from '@/components/home/how-it-works';
-import { CategoryGrid } from '@/components/home/category-grid';
-import { FeaturedBusinesses } from '@/components/home/featured-businesses';
-import { DinnerTeaser } from '@/components/home/dinner-teaser';
-import { Testimonials } from '@/components/home/testimonials';
+import { Upcoming } from '@/components/home/upcoming';
+import { Proof } from '@/components/home/proof';
 import { CityStrip } from '@/components/home/city-strip';
 import { Faq } from '@/components/home/faq';
 import { CtaBand } from '@/components/home/cta-band';
-import { countBusinessesByCity, getFeaturedBusinesses, searchBusinesses } from '@/lib/data/businesses';
-import { getDinners } from '@/lib/data/dinners';
+import { countMeetupsByCity, getUpcomingMeetups, searchMeetups } from '@/lib/data/meetups';
 import { getCurrentUser } from '@/lib/auth/session';
-import { getSavedBusinessIds } from '@/lib/data/saves';
+import { getSavedMeetupIds } from '@/lib/data/saves';
 import { CITIES } from '@/lib/constants';
 
 export default async function HomePage() {
-  const [featured, dinners, counts, user, all] = await Promise.all([
-    getFeaturedBusinesses(6),
-    getDinners(),
-    countBusinessesByCity(),
-    getCurrentUser(),
-    searchBusinesses({ perPage: 1 }),
+  const user = await getCurrentUser();
+
+  // A signed-in member's home page leads with their own city — everything else
+  // on the board is one click away, but the first thing they see is reachable.
+  const [all, counts, savedIds] = await Promise.all([
+    searchMeetups({ perPage: 1 }),
+    countMeetupsByCity(),
+    user ? getSavedMeetupIds(user.id) : Promise.resolve<string[]>([]),
   ]);
 
-  const savedIds = user ? await getSavedBusinessIds(user.id) : [];
+  const homeCity = user?.city && counts[user.city] ? user.city : undefined;
+  const upcoming = await getUpcomingMeetups(6, homeCity ? homeCity.toLowerCase().replace(/\s+/g, '-') : undefined);
 
   return (
     <>
-      <Hero businessCount={all.total} cityCount={CITIES.length} />
+      <Hero meetupCount={all.total} cityCount={CITIES.length} />
+      <Upcoming
+        meetups={upcoming}
+        savedIds={savedIds}
+        title={homeCity ? `Happening in ${homeCity}` : 'Happening this week'}
+        subtitle={
+          homeCity
+            ? 'The next few things you could be at, all within your city.'
+            : 'Every one of these still has a spot open. Pick one and pay for that one.'
+        }
+      />
       <HowItWorks />
-      <CategoryGrid />
-      <FeaturedBusinesses businesses={featured} savedIds={savedIds} />
-      <DinnerTeaser events={dinners} />
-      <Testimonials />
+      <Proof />
       <CityStrip counts={counts} />
       <Faq />
       <CtaBand />

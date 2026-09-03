@@ -5,8 +5,8 @@ import type { Dictionary } from '@/lib/i18n/dictionaries/en';
  * never means editing this file — and a key that stops existing is a type error.
  */
 export const NAV_LINKS = [
-  { href: '/businesses', key: 'businesses' },
-  { href: '/dinners', key: 'dinners' },
+  { href: '/meetups', key: 'meetups' },
+  { href: '/host', key: 'host' },
+  { href: '/passes', key: 'passes' },
   { href: '/how-it-works', key: 'howItWorks' },
-  { href: '/pricing', key: 'pricing' },
 ] as const satisfies readonly { href: string; key: keyof Dictionary['nav'] }[];

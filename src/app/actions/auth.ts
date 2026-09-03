@@ -2,13 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { signIn, signOut, signUp, updateProfile, getCurrentUser, setPlan } from '@/lib/auth/session';
+import { getCurrentUser, signIn, signOut, signUp, updateProfile } from '@/lib/auth/session';
 import { profileSchema, signInSchema, signUpSchema } from '@/lib/validators';
-import type { ActionResult, SubscriptionPlanId } from '@/types';
-
-function fieldErrors(error: { issues: { path: (string | number)[]; message: string }[] }) {
-  return Object.fromEntries(error.issues.map((i) => [String(i.path[0]), i.message]));
-}
+import { CATEGORY_SLUGS } from '@/lib/constants';
+import { fieldErrors } from '@/lib/form';
+import type { ActionResult } from '@/types';
 
 export async function signInAction(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
   const parsed = signInSchema.safeParse(Object.fromEntries(formData));
@@ -18,8 +16,7 @@ export async function signInAction(_prev: ActionResult | null, formData: FormDat
   if (!result.ok) return { ok: false, message: result.message };
 
   revalidatePath('/', 'layout');
-  const next = String(formData.get('next') ?? '/');
-  redirect(next);
+  redirect(String(formData.get('next') ?? '/'));
 }
 
 export async function signUpAction(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
@@ -30,7 +27,9 @@ export async function signUpAction(_prev: ActionResult | null, formData: FormDat
   if (!result.ok) return { ok: false, message: result.message };
 
   revalidatePath('/', 'layout');
-  redirect(String(formData.get('next') ?? '/dinners/quiz'));
+  // Straight into picking interests — the feed is much better with them, and
+  // this is the one moment a new member is willing to answer four questions.
+  redirect(String(formData.get('next') ?? '/profile/interests'));
 }
 
 export async function signOutAction() {
@@ -53,14 +52,15 @@ export async function updateProfileAction(_prev: ActionResult | null, formData: 
   return { ok: true, message: 'Profile updated.' };
 }
 
-export async function choosePlanAction(plan: SubscriptionPlanId): Promise<ActionResult> {
+export async function saveInterestsAction(interests: string[]): Promise<ActionResult> {
   const user = await getCurrentUser();
-  if (!user) return { ok: false, message: 'Create an account to pick a plan.' };
+  if (!user) return { ok: false, message: 'Sign in first.' };
 
-  const result = await setPlan(user.id, plan);
+  // Never trust a client list of slugs — anything not in the catalogue is dropped.
+  const clean = interests.filter((slug) => CATEGORY_SLUGS.includes(slug)).slice(0, 8);
+  const result = await updateProfile(user.id, { interests: clean });
   if (!result.ok) return { ok: false, message: result.message };
 
-  revalidatePath('/pricing');
-  revalidatePath('/profile');
-  return { ok: true, message: 'Plan updated.' };
+  revalidatePath('/', 'layout');
+  return { ok: true, message: 'Saved.' };
 }

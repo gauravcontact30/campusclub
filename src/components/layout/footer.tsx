@@ -3,32 +3,34 @@ import { Instagram, Linkedin, Twitter } from 'lucide-react';
 import { CATEGORIES, CITIES, SITE } from '@/lib/constants';
 import { Logo } from './logo';
 import { BACKEND_MODE } from '@/lib/env';
+import { PAYMENT_MODE } from '@/lib/payments/config';
 
 const columns = [
   {
-    title: 'Discover',
-    links: CATEGORIES.slice(0, 5).map((c) => ({ href: `/businesses?category=${c.slug}`, label: c.name })),
+    title: 'Do',
+    links: CATEGORIES.slice(0, 5).map((c) => ({ href: `/meetups?category=${c.slug}`, label: c.name })),
   },
   {
-    title: 'Dinners',
+    title: 'Members',
     links: [
-      { href: '/dinners', label: 'Upcoming tables' },
-      { href: '/dinners/quiz', label: 'Matching questionnaire' },
-      { href: '/pricing', label: 'Membership plans' },
-      { href: '/how-it-works', label: 'How a dinner works' },
-      { href: '/bookings', label: 'Your bookings' },
+      { href: '/meetups', label: 'What’s on' },
+      { href: '/passes', label: 'Passes & join fees' },
+      { href: '/my-meetups', label: 'Your meetups' },
+      { href: '/saved', label: 'Saved meetups' },
+      { href: '/how-it-works', label: 'How joining works' },
     ],
   },
   {
     title: 'Cities',
-    links: CITIES.map((c) => ({ href: `/businesses?city=${c.slug}`, label: c.name })),
+    links: CITIES.map((c) => ({ href: `/meetups?city=${c.slug}`, label: c.name })),
   },
   {
-    title: 'Company',
+    title: 'Hosts',
     links: [
+      { href: '/host', label: 'Host a meetup' },
+      { href: '/how-it-works#hosting', label: 'What hosts earn' },
+      { href: '/how-it-works#safety', label: 'Trust & safety' },
       { href: '/about', label: 'About VibeClub' },
-      { href: '/add-business', label: 'List your business' },
-      { href: '/how-it-works', label: 'Trust & safety' },
       { href: '/signup', label: 'Create an account' },
     ],
   },
@@ -78,9 +80,17 @@ export function Footer() {
           <p>
             © {new Date().getFullYear()} {SITE.name}. Built with Next.js, React and Supabase.
           </p>
-          <p className="flex items-center gap-2">
-            <span className="inline-flex h-2 w-2 rounded-full bg-brand" aria-hidden />
-            Data source: {BACKEND_MODE === 'supabase' ? 'Supabase Postgres' : 'seeded demo dataset'}
+          {/* Two honest labels rather than a fake "secure payments" badge: this
+              says out loud which database answered and which gateway is wired. */}
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="flex items-center gap-2">
+              <span className="inline-flex h-2 w-2 rounded-full bg-brand" aria-hidden />
+              Data: {BACKEND_MODE === 'supabase' ? 'Supabase Postgres' : 'seeded demo dataset'}
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="inline-flex h-2 w-2 rounded-full bg-signal" aria-hidden />
+              Payments: {PAYMENT_MODE === 'razorpay' ? 'Razorpay' : 'demo gateway, nothing is charged'}
+            </span>
           </p>
         </div>
       </div>

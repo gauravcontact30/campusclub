@@ -1,5 +1,5 @@
 export type Theme = 'light' | 'dark';
-export type PaletteId = 'ember' | 'saffron' | 'olive' | 'nightshade' | 'sage';
+export type PaletteId = 'court' | 'turf' | 'dusk' | 'tide' | 'ember';
 
 export const THEME_STORAGE_KEY = 'vibeclub-theme';
 export const PALETTE_STORAGE_KEY = 'vibeclub-palette';
@@ -10,11 +10,11 @@ export const PALETTE_STORAGE_KEY = 'vibeclub-palette';
  * values so the chips read the same whichever theme is active.
  */
 export const PALETTES: { id: PaletteId; name: string; blurb: string; swatch: [string, string] }[] = [
+  { id: 'court', name: 'Court', blurb: 'Indigo and amber', swatch: ['#8A7CFF', '#F5B642'] },
+  { id: 'turf', name: 'Turf', blurb: 'Pitch green and lime', swatch: ['#58D68D', '#D6E85A'] },
+  { id: 'dusk', name: 'Dusk', blurb: 'Plum and rose', swatch: ['#E07AC8', '#FAA082'] },
+  { id: 'tide', name: 'Tide', blurb: 'Teal and sky', swatch: ['#3ED1C8', '#7EBAFA'] },
   { id: 'ember', name: 'Ember', blurb: 'Terracotta and gold', swatch: ['#EA6C3A', '#F5B342'] },
-  { id: 'saffron', name: 'Ink & Saffron', blurb: 'Marigold on ink', swatch: ['#F2A918', '#E07A3C'] },
-  { id: 'olive', name: 'Olive & Amber', blurb: 'Bistro green', swatch: ['#9ABE60', '#ECB04A'] },
-  { id: 'nightshade', name: 'Nightshade', blurb: 'Indigo and coral', swatch: ['#FF7A59', '#7C98FF'] },
-  { id: 'sage', name: 'Sage & Clay', blurb: 'Muted and editorial', swatch: ['#C67A5C', '#96B49E'] },
 ];
 
 const IDS = PALETTES.map((p) => p.id);
@@ -25,14 +25,14 @@ const IDS = PALETTES.map((p) => p.id);
  * execute ahead of React — and deliberately kept tiny, since it blocks parsing.
  *
  * Theme authority: an explicit choice, then the operating system, then dark.
- * Palette authority: an explicit choice, then Ember, which is the default
+ * Palette authority: an explicit choice, then Court, which is the default
  * already baked into the stylesheet and so needs no attribute.
  */
 export const THEME_INIT_SCRIPT = `(function(){try{
 var d=document.documentElement,s=localStorage.getItem('${THEME_STORAGE_KEY}');
 d.dataset.theme=s==='light'||s==='dark'?s:(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
 var p=localStorage.getItem('${PALETTE_STORAGE_KEY}');
-if(p&&${JSON.stringify(IDS)}.indexOf(p)>-1&&p!=='ember')d.dataset.palette=p;
+if(p&&${JSON.stringify(IDS)}.indexOf(p)>-1&&p!=='court')d.dataset.palette=p;
 }catch(e){document.documentElement.dataset.theme='dark';}})();`;
 
 export function currentTheme(): Theme {
@@ -46,7 +46,7 @@ export function applyTheme(theme: Theme) {
 
 export function currentPalette(): PaletteId {
   const value = document.documentElement.dataset.palette;
-  return IDS.includes(value as PaletteId) ? (value as PaletteId) : 'ember';
+  return IDS.includes(value as PaletteId) ? (value as PaletteId) : 'court';
 }
 
 /**
@@ -62,9 +62,9 @@ export function subscribePalette(onChange: () => void) {
 }
 
 export function applyPalette(palette: PaletteId) {
-  // Ember is the stylesheet's default, so it is expressed as the absence of the
+  // Court is the stylesheet's default, so it is expressed as the absence of the
   // attribute rather than as a fifth block that repeats what is already there.
-  if (palette === 'ember') delete document.documentElement.dataset.palette;
+  if (palette === 'court') delete document.documentElement.dataset.palette;
   else document.documentElement.dataset.palette = palette;
   remember(PALETTE_STORAGE_KEY, palette);
   window.dispatchEvent(new Event(PALETTE_EVENT));

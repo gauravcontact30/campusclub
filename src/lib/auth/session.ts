@@ -1,10 +1,10 @@
 import { cookies } from 'next/headers';
-import type { SubscriptionPlanId, UserProfile } from '@/types';
+import type { PassId, UserProfile } from '@/types';
 import { isSupabaseConfigured } from '@/lib/env';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { db, nextId } from '@/lib/data/store';
 
-export const DEMO_COOKIE = 'hm_demo_session';
+export const DEMO_COOKIE = 'vc_demo_session';
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -35,7 +35,9 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
       avatarUrl: profile?.avatar_url ?? null,
       city: profile?.city ?? '',
       bio: profile?.bio ?? '',
-      plan: (profile?.plan as SubscriptionPlanId) ?? 'free',
+      pass: (profile?.pass as PassId) ?? 'payg',
+      credits: Number(profile?.credits ?? 0),
+      interests: (profile?.interests as string[]) ?? [],
       createdAt: profile?.created_at ?? user.created_at,
     };
   }
@@ -110,10 +112,14 @@ export async function signUp(input: {
     email: input.email.trim().toLowerCase(),
     password: input.password,
     fullName: input.fullName,
-    avatarUrl: `/img/avatars/a-0${(store.users.length % 8) + 1}.svg`,
+    // Left null so the Avatar renders token-coloured initials, which follow
+    // whichever theme the visitor is in.
+    avatarUrl: null,
     city: input.city,
     bio: '',
-    plan: 'free' as SubscriptionPlanId,
+    pass: 'payg' as PassId,
+    credits: 0,
+    interests: [],
     createdAt: new Date().toISOString(),
   };
   store.users.push(user);
@@ -132,14 +138,14 @@ export async function signOut() {
 
 export async function updateProfile(
   userId: string,
-  patch: Partial<Pick<UserProfile, 'fullName' | 'city' | 'bio'>>,
+  patch: Partial<Pick<UserProfile, 'fullName' | 'city' | 'bio' | 'interests'>>,
 ): Promise<AuthOutcome> {
   if (isSupabaseConfigured()) {
     const supabase = await createSupabaseServerClient();
     if (!supabase) return { ok: false, message: 'Auth unavailable.' };
     const { error } = await supabase
       .from('profiles')
-      .update({ full_name: patch.fullName, city: patch.city, bio: patch.bio })
+      .update({ full_name: patch.fullName, city: patch.city, bio: patch.bio, interests: patch.interests })
       .eq('id', userId);
     return error ? { ok: false, message: error.message } : { ok: true };
   }
@@ -150,15 +156,21 @@ export async function updateProfile(
   return { ok: true };
 }
 
-export async function setPlan(userId: string, plan: SubscriptionPlanId): Promise<AuthOutcome> {
+/**
+ * Activates a pass and tops the member's credit balance up to what it includes.
+ * `unlimited` carries no balance — `passCoversJoin` short-circuits on it — so
+ * the credit count is left at zero rather than at a lie.
+ */
+export async function grantPass(userId: string, pass: PassId, credits: number | null): Promise<AuthOutcome> {
   if (isSupabaseConfigured()) {
     const supabase = await createSupabaseServerClient();
     if (!supabase) return { ok: false, message: 'Auth unavailable.' };
-    const { error } = await supabase.from('profiles').update({ plan }).eq('id', userId);
+    const { error } = await supabase.from('profiles').update({ pass, credits: credits ?? 0 }).eq('id', userId);
     return error ? { ok: false, message: error.message } : { ok: true };
   }
   const user = db().users.find((u) => u.id === userId);
   if (!user) return { ok: false, message: 'Profile not found.' };
-  user.plan = plan;
+  user.pass = pass;
+  user.credits = credits ?? 0;
   return { ok: true };
 }

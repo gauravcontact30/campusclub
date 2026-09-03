@@ -1,78 +1,167 @@
 import type { Metadata } from 'next';
-import { ClipboardList, HeartHandshake, MapPinned, MessageSquareQuote, ShieldCheck, Star } from 'lucide-react';
+import { CalendarCheck, CreditCard, HeartHandshake, IndianRupee, MapPinned, RotateCcw, Search, ShieldCheck, Users } from 'lucide-react';
 import { ButtonLink } from '@/components/ui/button';
 import { Faq } from '@/components/home/faq';
+import { FREE_CANCELLATION_HOURS } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'How it works',
-  description: 'How VibeClub matches six strangers to one table — and how the review directory stays honest.',
+  description: 'How joining works, what the join fee pays for, what hosts earn, and how VibeClub keeps meetups safe.',
 };
 
-const DINNER_STEPS = [
-  { icon: ClipboardList, title: '1. The questionnaire', body: 'Six questions about energy, curiosity, food and how late you stay. Two minutes, no photos, nothing public.' },
-  { icon: HeartHandshake, title: '2. The matching', body: 'Every Monday the algorithm builds tables of six: balanced age spread, shared language, complementary conversational energy. Colleagues and blocked contacts are never seated together.' },
-  { icon: MapPinned, title: '3. The reveal', body: 'Thirty-six hours before, the venue lands in your bookings page and inbox. It is always somewhere with a strong review record here.' },
-  { icon: MessageSquareQuote, title: '4. The dinner', body: 'Arrive at 8. The conversation deck unlocks at 8:15 with a question nobody can answer in one word. Three hours later the bill splits evenly.' },
+const JOINING = [
+  {
+    icon: Search,
+    title: 'Find it',
+    body: 'Filter the board by what you want to do, when you are free and how far you will go. Everything listed is inside your city, and most of it is inside your neighbourhood.',
+  },
+  {
+    icon: CreditCard,
+    title: 'Pay the join fee',
+    body: 'One payment, for one meetup, through Razorpay. The listing shows the exact amount before you commit and says what it covers. No subscription is required.',
+  },
+  {
+    icon: MapPinned,
+    title: 'Get the address',
+    body: 'The exact street address is released to you the moment you join — never published on the listing, because it is often somebody’s home.',
+  },
+  {
+    icon: CalendarCheck,
+    title: 'Turn up, then say how it went',
+    body: 'Only people whose join was confirmed and whose meetup has finished can leave feedback. That single rule is why the ratings here are worth reading.',
+  },
 ];
 
-const TRUST = [
-  { icon: ShieldCheck, title: 'One account, one review', body: 'Reviews are tied to a verified account and capped at one per business. Editing is fine; anonymity is not.' },
-  { icon: Star, title: 'No paid placement', body: 'Owners cannot buy rank or delete criticism. Claimed listings get a badge and a public right of reply, nothing more.' },
-  { icon: HeartHandshake, title: 'Safety at the table', body: 'Every venue is public and staffed. You can block a contact before the reveal, and report a guest afterwards — we act within 24 hours.' },
+const MONEY = [
+  {
+    icon: IndianRupee,
+    title: 'What the fee pays for',
+    body: 'The host’s real costs — court hire, a gym day pass, the study room, the food. Hosts set it themselves, between free and ₹5,000, and the whole amount goes to them.',
+  },
+  {
+    icon: RotateCcw,
+    title: 'Cancelling',
+    body: `Cancel more than ${FREE_CANCELLATION_HOURS} hours before the start and the fee is refunded automatically, or the pass credit returns to your balance. Inside that window it is not, because the host has usually already paid for the venue. If a host cancels, everyone is refunded in full.`,
+  },
+  {
+    icon: Users,
+    title: 'Waitlists',
+    body: 'A full meetup still takes your name, at no cost. You are only charged if a spot opens and you take it. Pass holders move up the list first.',
+  },
+];
+
+const SAFETY = [
+  {
+    icon: ShieldCheck,
+    title: 'Hosts are verified',
+    body: 'A verified badge means a confirmed phone number and a public rating built from people who actually attended. A host with no history says so plainly rather than looking established.',
+  },
+  {
+    icon: Users,
+    title: 'You see who is coming',
+    body: 'First names and how many spots are gone, before you pay. Women-only meetups exist in every category and are set by the host, not by us.',
+  },
+  {
+    icon: HeartHandshake,
+    title: 'Report anything',
+    body: 'One report gets a human reading it the same day. Hosts and members are both removable, and a removed host’s upcoming meetups are cancelled and refunded in full.',
+  },
 ];
 
 export default function HowItWorksPage() {
   return (
     <>
-      <section className="bg-canvas py-16 text-content sm:py-24">
+      <section className="border-b border-content/10 py-16 sm:py-24">
         <div className="container-page max-w-3xl">
           <p className="eyebrow">How it works</p>
-          <h1 className="display-lg mt-3 text-content">A directory people trust, and a table worth turning up to.</h1>
-          <p className="lede mt-5 text-content/70">
-            One product, two halves. The reviews decide where the dinners happen; the dinners produce the people who
-            write the reviews. Here is the full loop.
+          <h1 className="display-lg mt-3 text-balance text-content">
+            Pay for the one thing you are going to. Nothing else.
+          </h1>
+          <p className="lede mt-5">
+            VibeClub is a board of things happening near you, run by people who live near you. Every meetup carries a
+            join fee its host sets, and that fee is the entire transaction — there is no membership standing between
+            you and the first one.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <ButtonLink href="/meetups" size="lg">
+              See what’s on
+            </ButtonLink>
+            <ButtonLink href="/host" variant="outline" size="lg">
+              Host a meetup
+            </ButtonLink>
+          </div>
+        </div>
+      </section>
+
+      <Section id="joining" eyebrow="Joining" title="Four steps, and you only pay at the second one." items={JOINING} ordered />
+      <Section id="money" eyebrow="The money" title="Where every rupee goes." items={MONEY} />
+      <Section id="hosting" eyebrow="Hosting" title="Free to list, and you keep the fee." items={SAFETY.slice(0, 0)}>
+        <div className="grid gap-6 md:grid-cols-2">
+          <p className="text-base leading-relaxed text-content/75">
+            Listing costs nothing and we take no commission while the product is finding its feet — the join fee goes
+            to the host in full. In exchange, hosts carry the parts that make a meetup work: turning up early, starting
+            on time, and telling people honestly what the session is.
+          </p>
+          <p className="text-base leading-relaxed text-content/75">
+            We handle the payments, the waitlist, the refunds when somebody drops out, and the reminder the night
+            before. A host who cancels refunds everyone automatically — there is no discretion in it, and no way to
+            keep the money.
           </p>
         </div>
-      </section>
-
-      <section className="container-page py-20">
-        <h2 className="display-lg max-w-2xl">The dinner, end to end</h2>
-        <div className="mt-10 grid gap-5 md:grid-cols-2">
-          {DINNER_STEPS.map((step) => (
-            <div key={step.title} className="surface-card p-7">
-              <step.icon size={24} className="text-brand" />
-              <h3 className="mt-4 font-display text-xl font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-content/65">{step.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-canvas-600/60 py-20">
-        <div className="container-page">
-          <h2 className="display-lg max-w-2xl">Why the reviews are worth reading</h2>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {TRUST.map((item) => (
-              <div key={item.title} className="rounded-3xl bg-canvas-700 p-7">
-                <item.icon size={24} className="text-brand" />
-                <h3 className="mt-4 font-display text-xl font-semibold">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-content/65">{item.body}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink href="/dinners/quiz" size="lg">
-              Start the questionnaire
-            </ButtonLink>
-            <ButtonLink href="/businesses" variant="outline" size="lg">
-              Read some reviews first
-            </ButtonLink>
-          </div>
-        </div>
-      </section>
+      </Section>
+      <Section id="safety" eyebrow="Trust & safety" title="What we check, and what we do not." items={SAFETY} />
 
       <Faq />
     </>
+  );
+}
+
+function Section({
+  id,
+  eyebrow,
+  title,
+  items,
+  ordered = false,
+  children,
+}: {
+  id: string;
+  eyebrow: string;
+  title: string;
+  items: { icon: typeof Users; title: string; body: string }[];
+  ordered?: boolean;
+  children?: React.ReactNode;
+}) {
+  const List = ordered ? 'ol' : 'ul';
+
+  return (
+    <section id={id} className="container-page scroll-mt-24 py-16" aria-labelledby={`${id}-heading`}>
+      <p className="eyebrow">{eyebrow}</p>
+      <h2 id={`${id}-heading`} className="display-md mt-2 max-w-2xl text-balance text-content">
+        {title}
+      </h2>
+
+      {children}
+
+      {items.length > 0 && (
+        <List className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {items.map((item, i) => (
+            <li key={item.title} className="surface-card space-y-3 p-6">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand/12 text-brand">
+                  <item.icon size={19} />
+                </span>
+                {ordered && (
+                  <span className="font-display text-sm font-bold tabular-nums text-content/35">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                )}
+              </div>
+              <h3 className="font-display text-base font-bold text-content">{item.title}</h3>
+              <p className="text-sm leading-relaxed text-content/70">{item.body}</p>
+            </li>
+          ))}
+        </List>
+      )}
+    </section>
   );
 }

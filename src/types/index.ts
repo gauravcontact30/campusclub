@@ -1,85 +1,41 @@
 /**
  * Domain model shared by the Supabase adapter and the demo (in-memory) adapter.
  * Keeping one set of types means pages never care which backend answered.
+ *
+ * The product is a pay-per-join meetup platform: a member creates a meetup
+ * (a study session, a gym slot, a dinner), other members nearby pay that
+ * meetup's join fee to take one of its spots.
  */
 
-export type PriceLevel = 1 | 2 | 3 | 4;
+/* ------------------------------------------------------------------ */
+/* Catalogue                                                           */
+/* ------------------------------------------------------------------ */
 
 export interface Category {
   id: string;
   slug: string;
   name: string;
+  /** lucide-react icon name, resolved in category-icon.tsx */
   icon: string;
   blurb: string;
+  /** Short verb used in copy: "Study together", "Eat together"… */
+  verb: string;
 }
 
-export interface DayHours {
-  /** 24h "09:00" — null/null means closed that day */
-  open: string | null;
-  close: string | null;
-}
-
-/** Monday-first week */
-export type WeekHours = [DayHours, DayHours, DayHours, DayHours, DayHours, DayHours, DayHours];
-
-export interface Business {
-  id: string;
+export interface City {
   slug: string;
   name: string;
-  categorySlug: string;
-  tags: string[];
-  description: string;
-  phone: string;
-  website: string;
-  address: string;
-  neighborhood: string;
-  city: string;
   state: string;
-  postalCode: string;
+  blurb: string;
   lat: number;
   lng: number;
-  priceLevel: PriceLevel;
-  coverImage: string;
-  images: string[];
-  hours: WeekHours;
-  amenities: string[];
-  ownerId: string | null;
-  isClaimed: boolean;
-  createdAt: string;
-  /** Derived aggregates (view / computed) */
-  rating: number;
-  reviewCount: number;
-  /** Set only when a search supplied the visitor's coordinates. */
-  distanceKm?: number;
 }
 
-export interface Review {
-  id: string;
-  businessId: string;
-  userId: string;
-  authorName: string;
-  authorAvatar: string | null;
-  rating: number;
-  title: string;
-  body: string;
-  photos: string[];
-  helpfulCount: number;
-  createdAt: string;
-  /** A public reply from the verified owner of the business. */
-  ownerResponse: string | null;
-  ownerResponseAt: string | null;
-}
+/* ------------------------------------------------------------------ */
+/* People                                                              */
+/* ------------------------------------------------------------------ */
 
-export interface BusinessClaim {
-  id: string;
-  businessId: string;
-  userId: string;
-  role: string;
-  contactEmail: string;
-  phone: string;
-  note: string;
-  createdAt: string;
-}
+export type PassId = 'payg' | 'starter' | 'regular' | 'unlimited';
 
 export interface UserProfile {
   id: string;
@@ -88,64 +44,189 @@ export interface UserProfile {
   avatarUrl: string | null;
   city: string;
   bio: string;
-  plan: SubscriptionPlanId;
+  /** Which pass they hold. `payg` = no pass, they pay each join outright. */
+  pass: PassId;
+  /** Pre-bought joins left on the pass. `unlimited` ignores this. */
+  credits: number;
+  /** Categories they want in their feed — set during onboarding. */
+  interests: string[];
   createdAt: string;
 }
 
-export interface DinnerEvent {
+/** The public face of a member when they are hosting. */
+export interface HostSummary {
   id: string;
+  name: string;
+  avatarUrl: string | null;
   city: string;
-  neighborhood: string;
-  venueName: string;
-  venueRevealAt: string;
-  startsAt: string;
-  seatsTotal: number;
-  seatsTaken: number;
-  priceCents: number;
-  language: string;
-  vibe: string;
-  coverImage: string;
-  hostNotes: string;
+  bio: string;
+  hostedCount: number;
+  rating: number;
+  /** Phone/ID verified — shown as a badge, gates nothing in the demo. */
+  verified: boolean;
+  memberSince: string;
 }
 
-export type BookingStatus = 'confirmed' | 'waitlisted' | 'cancelled';
+/* ------------------------------------------------------------------ */
+/* Meetups                                                             */
+/* ------------------------------------------------------------------ */
 
-export interface DinnerBooking {
+/** How demanding the meetup is, so nobody turns up to the wrong room. */
+export type Level = 'any' | 'beginner' | 'intermediate' | 'serious';
+
+/** Who the host is opening the meetup to. */
+export type Audience = 'everyone' | 'women' | 'men';
+
+export type Cadence = 'once' | 'weekly' | 'daily';
+
+export interface Meetup {
   id: string;
-  eventId: string;
+  slug: string;
+  title: string;
+  categorySlug: string;
+  hostId: string;
+  /** What the meetup is, in the host's words. */
+  description: string;
+  /** The run of play — three or four beats. */
+  agenda: string[];
+  /** What to turn up with. */
+  bring: string[];
+  venueName: string;
+  address: string;
+  area: string;
+  city: string;
+  state: string;
+  lat: number;
+  lng: number;
+  startsAt: string;
+  endsAt: string;
+  spotsTotal: number;
+  spotsTaken: number;
+  /** The whole business model: what one seat at this meetup costs. */
+  joinFeeCents: number;
+  level: Level;
+  audience: Audience;
+  language: string;
+  cadence: Cadence;
+  /** A host-uploaded photo. Null is the norm — cards then draw a generated
+   *  cover from the category, which follows the theme instead of fighting it. */
+  coverImage: string | null;
+  tags: string[];
+  createdAt: string;
+  /** Set only when a search supplied the visitor's coordinates. */
+  distanceKm?: number;
+  /** Derived aggregates — never stored, so they cannot drift. */
+  rating: number;
+  vouchCount: number;
+}
+
+/** A meetup with its host resolved — what detail pages and cards render. */
+export interface MeetupWithHost extends Meetup {
+  host: HostSummary;
+}
+
+export type JoinStatus = 'confirmed' | 'waitlisted' | 'cancelled';
+
+export interface Join {
+  id: string;
+  meetupId: string;
   userId: string;
-  status: BookingStatus;
-  seatNumber: number;
+  status: JoinStatus;
+  spotNumber: number;
+  /** What they actually paid, in paise. 0 when a pass credit covered it. */
+  amountCents: number;
+  /** 'credit' when a pass covered the join, otherwise the payment id. */
+  paymentId: string | null;
   createdAt: string;
 }
 
-export interface QuizAnswers {
-  [questionId: string]: string;
+export interface JoinWithMeetup extends Join {
+  meetup: MeetupWithHost;
 }
 
-export type SubscriptionPlanId = 'free' | 'monthly' | 'quarterly' | 'annual';
+/* ------------------------------------------------------------------ */
+/* Money                                                               */
+/* ------------------------------------------------------------------ */
 
-export interface SubscriptionPlan {
-  id: SubscriptionPlanId;
+export type PaymentProvider = 'razorpay' | 'demo';
+export type PaymentStatus = 'created' | 'paid' | 'failed' | 'refunded';
+/** A join fee, or a pass top-up. */
+export type PaymentPurpose = 'join' | 'pass';
+
+export interface Payment {
+  id: string;
+  userId: string;
+  provider: PaymentProvider;
+  purpose: PaymentPurpose;
+  /** Razorpay order id, or a demo stand-in. */
+  orderId: string;
+  /** Set once the gateway confirms. */
+  gatewayPaymentId: string | null;
+  amountCents: number;
+  currency: string;
+  status: PaymentStatus;
+  /** The meetup being joined, or null for a pass purchase. */
+  meetupId: string | null;
+  /** The pass being bought, or null for a join. */
+  passId: PassId | null;
+  createdAt: string;
+}
+
+export interface Pass {
+  id: PassId;
   name: string;
   priceCents: number;
+  /** Joins included. `null` means unlimited. */
+  credits: number | null;
   cadence: string;
   tagline: string;
   perks: string[];
   highlight?: boolean;
 }
 
-export interface BusinessQuery {
+/* ------------------------------------------------------------------ */
+/* Feedback                                                            */
+/* ------------------------------------------------------------------ */
+
+/** Left after a meetup runs, about how the meetup actually went. */
+export interface Vouch {
+  id: string;
+  meetupId: string;
+  userId: string;
+  authorName: string;
+  authorAvatar: string | null;
+  rating: number;
+  body: string;
+  /** Quick chips the attendee ticked — "started on time", "welcoming"… */
+  highlights: string[];
+  createdAt: string;
+  hostReply: string | null;
+  hostReplyAt: string | null;
+}
+
+/* ------------------------------------------------------------------ */
+/* Queries                                                             */
+/* ------------------------------------------------------------------ */
+
+/** Time windows the browse page offers. */
+export type WhenFilter = 'any' | 'today' | 'tomorrow' | 'weekend' | 'week';
+
+export type MeetupSort = 'soonest' | 'nearest' | 'cheapest' | 'rating' | 'filling';
+
+export interface MeetupQuery {
   term?: string;
   city?: string;
   category?: string;
-  price?: PriceLevel[];
-  minRating?: number;
-  openNow?: boolean;
-  sort?: 'recommended' | 'rating' | 'reviews' | 'price_asc' | 'price_desc' | 'distance';
+  level?: Level;
+  when?: WhenFilter;
+  /** Upper bound on the join fee, in paise. */
+  maxFeeCents?: number;
+  /** Only meetups that still have an open spot. */
+  hasSpots?: boolean;
+  sort?: MeetupSort;
   page?: number;
   perPage?: number;
-  /** The visitor's coordinates, when they have shared them. Enables distance sorting. */
+  /** The visitor's coordinates, when they have shared them. */
   near?: { lat: number; lng: number };
 }
 

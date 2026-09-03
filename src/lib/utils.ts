@@ -1,7 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import type { WeekHours } from '@/types';
-import { CITY_CURRENCY, DEFAULT_CURRENCY } from '@/lib/constants';
+import { CURRENCY } from '@/lib/constants';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -16,40 +15,77 @@ export function slugify(input: string) {
     .replace(/-+/g, '-');
 }
 
-export function formatMoney(cents: number, currency = 'INR', locale = 'en-IN') {
-  return new Intl.NumberFormat(locale, {
+/* ------------------------------------------------------------------ */
+/* Money — everything is stored in paise, formatted once, here         */
+/* ------------------------------------------------------------------ */
+
+export function formatMoney(cents: number) {
+  return new Intl.NumberFormat(CURRENCY.locale, {
     style: 'currency',
-    currency,
-    maximumFractionDigits: 0,
+    currency: CURRENCY.code,
+    maximumFractionDigits: cents % 100 === 0 ? 0 : 2,
   }).format(cents / 100);
 }
 
-/** Same amount, formatted in the currency the city actually charges in. */
-export function formatMoneyForCity(cents: number, city: string) {
-  const currency = CITY_CURRENCY[city] ?? DEFAULT_CURRENCY;
-  return formatMoney(cents, currency.code, currency.locale);
-}
-
-/** "$$$" / "₹₹" — the price tier in the local currency symbol. */
-export function priceLabel(level: number, city?: string) {
-  const symbol = (city && CITY_CURRENCY[city]?.symbol) ?? DEFAULT_CURRENCY.symbol;
-  return symbol.repeat(Math.max(1, Math.min(4, level)));
+/** "Free" reads better than "₹0" on a card, and it is the honest word. */
+export function formatFee(cents: number) {
+  return cents === 0 ? 'Free' : formatMoney(cents);
 }
 
 export function formatCount(n: number) {
-  return new Intl.NumberFormat('en-US', { notation: n >= 10000 ? 'compact' : 'standard' }).format(n);
+  return new Intl.NumberFormat('en-IN', { notation: n >= 10000 ? 'compact' : 'standard' }).format(n);
 }
 
-/** "3 Sep, 8:00 PM" */
-export function formatDateTime(iso: string, locale = 'en-GB') {
-  const d = new Date(iso);
+/* ------------------------------------------------------------------ */
+/* Time                                                                */
+/* ------------------------------------------------------------------ */
+
+/** "Thu 4 Sep, 8:00 PM" */
+export function formatDateTime(iso: string, locale = 'en-IN') {
   return new Intl.DateTimeFormat(locale, {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
     hour: 'numeric',
     minute: '2-digit',
-  }).format(d);
+  }).format(new Date(iso));
+}
+
+/** "8:00 PM" */
+export function formatTime(iso: string, locale = 'en-IN') {
+  return new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
+}
+
+/** "Thu 4 Sep" */
+export function formatDay(iso: string, locale = 'en-IN') {
+  return new Intl.DateTimeFormat(locale, { weekday: 'short', day: 'numeric', month: 'short' }).format(
+    new Date(iso),
+  );
+}
+
+/**
+ * "Today" / "Tomorrow" / "Thu 4 Sep" — the label on a meetup card's date chip.
+ * Compared on calendar days, not on elapsed hours, so 11pm tonight and 1am
+ * tomorrow do not both read as "in 2 hours' time, today".
+ */
+export function dayLabel(iso: string, now = new Date()) {
+  const target = new Date(iso);
+  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const days = Math.round((startOfDay(target) - startOfDay(now)) / 86_400_000);
+  if (days === 0) return 'Today';
+  if (days === 1) return 'Tomorrow';
+  if (days === -1) return 'Yesterday';
+  return formatDay(iso);
+}
+
+/** "1 hr 30 min" from two ISO timestamps. */
+export function durationLabel(startsAt: string, endsAt: string) {
+  const mins = Math.max(0, Math.round((+new Date(endsAt) - +new Date(startsAt)) / 60_000));
+  const hours = Math.floor(mins / 60);
+  const rest = mins % 60;
+  if (!hours) return `${rest} min`;
+  if (!rest) return `${hours} hr`;
+  return `${hours} hr ${rest} min`;
 }
 
 export function relativeTime(iso: string) {
@@ -66,78 +102,44 @@ export function relativeTime(iso: string) {
   return rtf.format(-Math.round(months / 12), 'year');
 }
 
-/** Monday-first index for JS getDay() (0 = Sunday) */
-export function weekIndex(date = new Date()) {
-  return (date.getDay() + 6) % 7;
+export function hasStarted(iso: string, now = new Date()) {
+  return new Date(iso) <= now;
 }
 
-/** Minutes-since-midnight window for a day, unfolded past midnight when needed. */
-function dayWindow(day: WeekHours[number] | undefined) {
-  if (!day?.open || !day?.close) return null;
-  const [oh, om] = day.open.split(':').map(Number);
-  const [ch, cm] = day.close.split(':').map(Number);
-  const start = oh * 60 + om;
-  let end = ch * 60 + cm;
-  if (end <= start) end += 24 * 60; // spills past midnight
-  return { start, end };
+/* ------------------------------------------------------------------ */
+/* Spots                                                               */
+/* ------------------------------------------------------------------ */
+
+export interface SpotsState {
+  left: number;
+  taken: number;
+  total: number;
+  full: boolean;
+  /** Under a quarter of the spots left, and at least one gone. */
+  scarce: boolean;
+  label: string;
+  fraction: number;
 }
 
-/**
- * The window a venue is currently inside, or null when it is shut.
- * Checks yesterday too, so a bar that opened at 18:00 and closes at 02:00 still
- * reads as open at one in the morning.
- */
-export function currentOpenWindow(hours: WeekHours, now = new Date()) {
-  const minutes = now.getHours() * 60 + now.getMinutes();
-  const todayIndex = weekIndex(now);
-
-  const today = dayWindow(hours[todayIndex]);
-  if (today && minutes >= today.start && minutes <= today.end) {
-    return { dayIndex: todayIndex, closesAt: hours[todayIndex].close! };
-  }
-
-  const yesterdayIndex = (todayIndex + 6) % 7;
-  const yesterday = dayWindow(hours[yesterdayIndex]);
-  const carried = minutes + 24 * 60;
-  if (yesterday && carried >= yesterday.start && carried <= yesterday.end) {
-    return { dayIndex: yesterdayIndex, closesAt: hours[yesterdayIndex].close! };
-  }
-
-  return null;
+export function spotsState(taken: number, total: number): SpotsState {
+  const safeTotal = Math.max(1, total);
+  const left = Math.max(0, safeTotal - taken);
+  const full = left === 0;
+  const scarce = !full && taken > 0 && left / safeTotal <= 0.25;
+  return {
+    left,
+    taken,
+    total: safeTotal,
+    full,
+    scarce,
+    fraction: Math.min(1, taken / safeTotal),
+    label: full ? 'Full — join the waitlist' : left === 1 ? '1 spot left' : `${left} spots left`,
+  };
 }
 
-export function isOpenNow(hours: WeekHours, now = new Date()) {
-  return currentOpenWindow(hours, now) !== null;
-}
-
-/** "Open until 9:00 PM" / "Opens Mon 9:00 AM" — one primitive, safe to snapshot. */
-export function openStatusLabel(hours: WeekHours, now = new Date()) {
-  const open = currentOpenWindow(hours, now);
-  if (open) return `Open until ${to12h(open.closesAt)}`;
-
-  const next = nextOpening(hours, now);
-  if (!next) return 'Temporarily closed';
-  if (next.offset === 0) return `Opens ${to12h(next.open)}`;
-
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  return `Opens ${days[next.dayIndex]} ${to12h(next.open)}`;
-}
-
-export function nextOpening(hours: WeekHours, now = new Date()) {
-  for (let offset = 0; offset < 7; offset++) {
-    const idx = (weekIndex(now) + offset) % 7;
-    const day = hours[idx];
-    if (day?.open) return { dayIndex: idx, open: day.open, offset };
-  }
-  return null;
-}
-
-export function to12h(time: string) {
-  const [h, m] = time.split(':').map(Number);
-  const suffix = h >= 12 ? 'PM' : 'AM';
-  const hour = h % 12 === 0 ? 12 : h % 12;
-  return `${hour}:${String(m).padStart(2, '0')} ${suffix}`;
-}
+/* ------------------------------------------------------------------ */
+/* Geography                                                           */
+/* ------------------------------------------------------------------ */
 
 /** Haversine distance in km — powers the "x km away" chips */
 export function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
@@ -158,6 +160,10 @@ export function formatDistance(km: number) {
   return `${Math.round(km)} km`;
 }
 
+/* ------------------------------------------------------------------ */
+/* Odds and ends                                                       */
+/* ------------------------------------------------------------------ */
+
 export function initials(name: string) {
   return name
     .split(' ')
@@ -167,7 +173,7 @@ export function initials(name: string) {
     .join('');
 }
 
-/** Deterministic 0..n-1 bucket from a string — used for placeholder gradients */
+/** Deterministic 0..n-1 bucket from a string — used for generated artwork */
 export function hashIndex(seed: string, buckets: number) {
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;

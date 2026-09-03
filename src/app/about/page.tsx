@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
 import { ButtonLink } from '@/components/ui/button';
-import { CITIES } from '@/lib/constants';
+import { CATEGORIES, CITIES } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Why VibeClub exists: better local recommendations, and somebody to use them with.',
+  description: 'Why VibeClub exists: cities full of people doing the same things alone, twenty minutes apart.',
 };
 
-const MILESTONES = [
-  ['2023', 'Six friends, one long table in Bengaluru, a spreadsheet doing the matching.'],
-  ['2024', 'The directory opens — reviews written by people who came to dinner.'],
-  ['2025', 'London, New York and Lisbon join. 18,400 seats filled.'],
-  ['Today', 'Six cities, 200+ reviewed venues, one Wednesday at a time.'],
+const MILESTONES: [string, string][] = [
+  ['2024', 'A WhatsApp group of nine people in Indiranagar who kept turning up to the same 6am run.'],
+  ['Early 2025', 'The group hit its cap. We started charging ₹40 a head to cover the chai and nobody minded — that was the whole insight.'],
+  ['Mid 2025', 'Study tables, gym slots and badminton courts. Pune and Hyderabad open.'],
+  ['Today', 'Six cities, eight kinds of meetup, and a rule that only people who went can rate it.'],
 ];
 
 export default function AboutPage() {
@@ -20,55 +20,89 @@ export default function AboutPage() {
       <section className="container-page py-16 sm:py-24">
         <div className="max-w-3xl">
           <p className="eyebrow">About VibeClub</p>
-          <h1 className="display-xl mt-4">Cities are full of good places and lonely people.</h1>
+          <h1 className="display-xl mt-4 text-balance text-content">
+            A city is thousands of people doing the same thing alone.
+          </h1>
           <p className="lede mt-6">
-            We started with a spreadsheet and a booking for six. The idea has not changed since: the internet is very
-            good at telling you where to eat and terrible at giving you someone to eat with. VibeClub does both, and
-            each half makes the other better — our reviews come from people who actually sat down, and our dinners
-            happen in places those reviews vouch for.
+            Someone within a kilometre of you is revising for the same exam, going to the same gym at the same hour,
+            eating the same dinner by themselves. The distance between you is not geography — it is that neither of you
+            has a reason to say so out loud. VibeClub is the reason: a board of things happening near you, that you can
+            pay to be part of, one at a time.
           </p>
         </div>
       </section>
 
-      <section className="bg-canvas py-20 text-content">
-        <div className="container-page grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="border-y border-content/10 bg-canvas-900/40 py-16" aria-labelledby="belief-heading">
+        <div className="container-page grid gap-10 lg:grid-cols-[1fr_1fr]">
           <div>
-            <h2 className="display-lg text-content">How we got here</h2>
-            <p className="lede mt-4 text-content/70">
-              No growth hacks, no fake reviews, no paid placement. Just a table that keeps getting longer.
+            <h2 id="belief-heading" className="display-md text-balance text-content">
+              Why the fee is the point, not the friction.
+            </h2>
+            <p className="lede mt-4">
+              Free groups fill up with people who said yes and meant maybe. A ₹149 join fee is small enough that nobody
+              has to think about it and large enough that everyone turns up — and it means the host can book the court
+              without being out of pocket.
             </p>
           </div>
-          <ol className="space-y-6">
-            {MILESTONES.map(([year, text]) => (
-              <li key={year} className="flex gap-6 border-b border-content/15 pb-6 last:border-0">
-                <span className="w-20 shrink-0 font-display text-xl font-semibold text-brand">{year}</span>
-                <span className="text-sm leading-relaxed text-content/75">{text}</span>
-              </li>
-            ))}
-          </ol>
+          <div className="space-y-4 text-base leading-relaxed text-content/75">
+            <p>
+              We do not take a cut of it while the product is finding its feet. The host sets the fee, the host keeps
+              the fee, and we carry the payments, the waitlist and the refunds.
+            </p>
+            <p>
+              There is no membership standing between you and your first meetup. Passes exist because the people who go
+              three times a week asked for them, not because the business needed a subscription to work.
+            </p>
+          </div>
         </div>
       </section>
 
-      <section className="container-page py-20">
-        <h2 className="display-lg">Where you will find us</h2>
-        <div className="mt-8 flex flex-wrap gap-2">
-          {CITIES.map((city) => (
-            <span key={city.slug} className="rounded-full border border-content/15 px-4 py-2 text-sm font-medium">
-              {city.name}
-            </span>
+      <section className="container-page py-16" aria-labelledby="what-heading">
+        <p className="eyebrow">Eight things</p>
+        <h2 id="what-heading" className="display-md mt-2 text-content">
+          What people actually meet up to do.
+        </h2>
+        <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {CATEGORIES.map((c) => (
+            <li key={c.slug} className="surface-card p-5">
+              <p className="font-display text-base font-bold text-content">{c.verb}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-content/65">{c.blurb}</p>
+            </li>
           ))}
-          <span className="rounded-full border border-dashed border-content/25 px-4 py-2 text-sm text-content/55">
-            Your city next?
-          </span>
-        </div>
+        </ul>
+      </section>
 
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/signup" size="lg">
-            Join VibeClub
-          </ButtonLink>
-          <ButtonLink href="/add-business" variant="outline" size="lg">
-            List your business
-          </ButtonLink>
+      <section className="container-page pb-16" aria-labelledby="story-heading">
+        <p className="eyebrow">How we got here</p>
+        <h2 id="story-heading" className="display-md mt-2 text-content">
+          It started as a WhatsApp group that got too big.
+        </h2>
+        {/* A real timeline, so the dates carry information rather than decorating. */}
+        <ol className="mt-8 space-y-0 border-l border-content/15 pl-6">
+          {MILESTONES.map(([year, note]) => (
+            <li key={year} className="relative pb-8 last:pb-0">
+              <span className="absolute -left-[1.72rem] top-1.5 h-3 w-3 rounded-full border-2 border-canvas bg-brand" />
+              <p className="font-display text-sm font-bold uppercase tracking-[0.14em] text-brand">{year}</p>
+              <p className="mt-1.5 text-base leading-relaxed text-content/75">{note}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="container-page pb-24">
+        <div className="surface-card bg-brand/10 p-10 sm:p-14">
+          <h2 className="display-md max-w-2xl text-balance text-content">
+            Live in {CITIES.map((c) => c.name).slice(0, 3).join(', ')} or {CITIES[CITIES.length - 1].name}? Something is
+            on tonight.
+          </h2>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <ButtonLink href="/meetups" size="lg">
+              See what’s on
+            </ButtonLink>
+            <ButtonLink href="/host" variant="outline" size="lg">
+              Host your own
+            </ButtonLink>
+          </div>
         </div>
       </section>
     </>

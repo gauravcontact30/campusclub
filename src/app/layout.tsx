@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Bricolage_Grotesque, Noto_Sans_Devanagari, Plus_Jakarta_Sans } from 'next/font/google';
+import { Manrope, Noto_Sans_Devanagari, Sora } from 'next/font/google';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
@@ -11,13 +11,18 @@ import { getDictionary, getLocale } from '@/lib/i18n/server';
 import { LocaleProvider } from '@/lib/i18n/client';
 import './globals.css';
 
-const display = Bricolage_Grotesque({
+/**
+ * Sora for headings — geometric, slightly technical, and it holds up at the
+ * weight the display sizes need. Manrope underneath it for running text, which
+ * is quieter and has the wider apertures small copy wants.
+ */
+const display = Sora({
   subsets: ['latin'],
   variable: '--font-display',
   display: 'swap',
 });
 
-const sans = Plus_Jakarta_Sans({
+const sans = Manrope({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
@@ -57,8 +62,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   // One per theme, so the browser chrome matches the page it frames.
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#FDF9F5' },
-    { media: '(prefers-color-scheme: dark)', color: '#0F0A08' },
+    { media: '(prefers-color-scheme: light)', color: '#F7F7FB' },
+    { media: '(prefers-color-scheme: dark)', color: '#0C0E14' },
   ],
   width: 'device-width',
   initialScale: 1,

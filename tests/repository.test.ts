@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { claimBusiness, getBusinessBySlug, getBusinessesOwnedBy, searchBusinesses } from '@/lib/data/businesses';
-import { getReviews, ratingBreakdown, setOwnerResponse, toggleHelpful, upsertReview } from '@/lib/data/reviews';
-import { bookSeat, cancelBooking, getBookingsForUser, getDinners } from '@/lib/data/dinners';
-import { getSavedBusinessIds, toggleSave } from '@/lib/data/saves';
+import { countMeetupsByCity, getMeetupBySlug, getMeetupsHostedBy, searchMeetups, whenRange } from '@/lib/data/meetups';
+import { cancelJoin, commitJoin, getJoin, getUpcomingJoins, isRefundable, passCoversJoin, spendCredit } from '@/lib/data/joins';
+import { getVouches, ratingBreakdown, topHighlights } from '@/lib/data/vouches';
+import { getSavedMeetupIds, toggleSave } from '@/lib/data/saves';
 import { db, resetDb } from '@/lib/data/store';
 
 // No Supabase env in tests, so every call exercises the demo adapter.
@@ -10,252 +10,299 @@ beforeEach(() => {
   resetDb();
 });
 
-describe('searchBusinesses', () => {
+describe('searchMeetups', () => {
   it('paginates', async () => {
-    const page1 = await searchBusinesses({ perPage: 5, page: 1 });
-    const page2 = await searchBusinesses({ perPage: 5, page: 2 });
+    const page1 = await searchMeetups({ perPage: 5, page: 1 });
+    const page2 = await searchMeetups({ perPage: 5, page: 2 });
 
     expect(page1.items).toHaveLength(5);
     expect(page1.pages).toBe(Math.ceil(page1.total / 5));
     expect(page1.items[0].id).not.toBe(page2.items[0].id);
   });
 
-  it('filters by free-text term across name, tags and neighbourhood', async () => {
-    const { items } = await searchBusinesses({ term: 'coffee', perPage: 50 });
+  it('only ever returns meetups that have not started', async () => {
+    const { items } = await searchMeetups({ perPage: 100 });
+    for (const item of items) {
+      expect(+new Date(item.startsAt)).toBeGreaterThanOrEqual(Date.now() - 1000);
+    }
+  });
+
+  it('matches a free-text term across title, description, area and tags', async () => {
+    const { items } = await searchMeetups({ term: 'badminton', perPage: 50 });
     expect(items.length).toBeGreaterThan(0);
     for (const item of items) {
-      const haystack = [item.name, item.description, item.categorySlug, item.neighborhood, ...item.tags].join(' ').toLowerCase();
-      expect(haystack).toContain('coffee');
+      const haystack = [item.title, item.description, item.area, item.city, item.categorySlug, ...item.tags]
+        .join(' ')
+        .toLowerCase();
+      expect(haystack).toContain('badminton');
     }
   });
 
-  it('filters by city, category and price together', async () => {
-    const { items } = await searchBusinesses({ city: 'london', category: 'cafes', price: [2], perPage: 50 });
+  it('requires every word of a multi-word term, not just one', async () => {
+    const { total } = await searchMeetups({ term: 'badminton zeppelin', perPage: 50 });
+    expect(total).toBe(0);
+  });
+
+  it('filters by city, category and fee ceiling together', async () => {
+    const { items } = await searchMeetups({
+      city: 'bengaluru',
+      category: 'group-study',
+      maxFeeCents: 14900,
+      perPage: 50,
+    });
+    expect(items.length).toBeGreaterThan(0);
     for (const item of items) {
-      expect(item.city).toBe('London');
-      expect(item.categorySlug).toBe('cafes');
-      expect(item.priceLevel).toBe(2);
+      expect(item.city).toBe('Bengaluru');
+      expect(item.categorySlug).toBe('group-study');
+      expect(item.joinFeeCents).toBeLessThanOrEqual(14900);
     }
   });
 
-  it('sorts by rating descending', async () => {
-    const { items } = await searchBusinesses({ sort: 'rating', perPage: 10 });
-    const ratings = items.map((i) => i.rating);
-    expect([...ratings].sort((a, b) => b - a)).toEqual(ratings);
+  it('hides full meetups when asked', async () => {
+    const { items } = await searchMeetups({ hasSpots: true, perPage: 100 });
+    for (const item of items) expect(item.spotsTaken).toBeLessThan(item.spotsTotal);
+
+    const all = await searchMeetups({ perPage: 100 });
+    expect(all.total).toBeGreaterThan(items.length);
   });
 
-  it('derives rating and review count from reviews', async () => {
-    const business = await getBusinessBySlug('third-wave-filter-room-bengaluru');
-    const reviews = await getReviews(business!.id);
-    const average = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+  it('sorts cheapest by fee and soonest by start time', async () => {
+    const cheap = await searchMeetups({ sort: 'cheapest', perPage: 100 });
+    const fees = cheap.items.map((m) => m.joinFeeCents);
+    expect([...fees].sort((a, b) => a - b)).toEqual(fees);
 
-    expect(business!.reviewCount).toBe(reviews.length);
-    expect(business!.rating).toBeCloseTo(Math.round(average * 10) / 10, 1);
+    const soon = await searchMeetups({ sort: 'soonest', perPage: 100 });
+    const times = soon.items.map((m) => +new Date(m.startsAt));
+    expect([...times].sort((a, b) => a - b)).toEqual(times);
+  });
+
+  it('sorts "filling" by proportion, so a 7/8 beats a 12/20', async () => {
+    const { items } = await searchMeetups({ sort: 'filling', perPage: 100 });
+    const ratios = items.map((m) => m.spotsTaken / m.spotsTotal);
+    expect([...ratios].sort((a, b) => b - a)).toEqual(ratios);
+  });
+
+  it('attaches the host to every result', async () => {
+    const { items } = await searchMeetups({ perPage: 5 });
+    for (const item of items) {
+      expect(item.host.id).toBe(item.hostId);
+      expect(item.host.name).not.toBe('');
+    }
+  });
+
+  it('adds a distance only when coordinates were supplied', async () => {
+    const plain = await searchMeetups({ perPage: 3 });
+    expect(plain.items[0].distanceKm).toBeUndefined();
+
+    const near = await searchMeetups({ perPage: 3, near: { lat: 12.9716, lng: 77.5946 }, sort: 'nearest' });
+    expect(near.items[0].distanceKm).toBeGreaterThanOrEqual(0);
+    const distances = near.items.map((m) => m.distanceKm!);
+    expect([...distances].sort((a, b) => a - b)).toEqual(distances);
   });
 });
 
-describe('reviews', () => {
-  it('upserts one review per user and recomputes the rating', async () => {
-    const business = (await getBusinessBySlug('nandini-dosa-camp-bengaluru'))!;
-    const before = business.reviewCount;
-
-    await upsertReview({
-      businessId: business.id,
-      userId: 'test-user',
-      authorName: 'Test User',
-      authorAvatar: null,
-      rating: 5,
-      title: 'Excellent',
-      body: 'A very long and detailed review body that easily clears the minimum length.',
-    });
-
-    const afterFirst = (await getBusinessBySlug('nandini-dosa-camp-bengaluru'))!;
-    expect(afterFirst.reviewCount).toBe(before + 1);
-
-    // Second submission edits rather than duplicates.
-    await upsertReview({
-      businessId: business.id,
-      userId: 'test-user',
-      authorName: 'Test User',
-      authorAvatar: null,
-      rating: 2,
-      title: 'Changed my mind',
-      body: 'A very long and detailed review body that easily clears the minimum length.',
-    });
-
-    const afterSecond = (await getBusinessBySlug('nandini-dosa-camp-bengaluru'))!;
-    expect(afterSecond.reviewCount).toBe(before + 1);
-    expect(afterSecond.rating).toBeLessThan(afterFirst.rating);
+describe('whenRange', () => {
+  it('bounds "today" to the end of the day, not 24 hours out', () => {
+    const now = new Date(2026, 8, 3, 14, 0);
+    const { to } = whenRange('today', now);
+    expect(to.getDate()).toBe(3);
+    expect(to.getHours()).toBe(23);
   });
 
-  it('toggles a helpful vote on and off', async () => {
-    const business = (await getBusinessBySlug('copper-rye-bengaluru'))!;
-    const [review] = await getReviews(business.id);
-
-    const up = await toggleHelpful(review.id, 'voter-1');
-    expect(up).toBe(review.helpfulCount + 1);
-
-    const down = await toggleHelpful(review.id, 'voter-1');
-    expect(down).toBe(review.helpfulCount);
+  it('puts "tomorrow" on the next calendar day only', () => {
+    const now = new Date(2026, 8, 3, 23, 30);
+    const { from, to } = whenRange('tomorrow', now);
+    expect(from.getDate()).toBe(4);
+    expect(to.getDate()).toBe(4);
   });
 
-  it('builds a five-row rating breakdown', async () => {
-    const business = (await getBusinessBySlug('copper-rye-bengaluru'))!;
-    const breakdown = ratingBreakdown(await getReviews(business.id));
+  it('finds the coming Saturday and Sunday from midweek', () => {
+    // 2026-09-03 is a Thursday.
+    const { from, to } = whenRange('weekend', new Date(2026, 8, 3, 10, 0));
+    expect(from.getDay()).toBe(6);
+    expect(to.getDay()).toBe(0);
+  });
+});
 
-    expect(breakdown).toHaveLength(5);
-    expect(breakdown[0].star).toBe(5);
-    expect(breakdown.reduce((sum, row) => sum + row.count, 0)).toBe(business.reviewCount);
+describe('getMeetupBySlug', () => {
+  it('resolves the host and the derived rating', async () => {
+    const { items } = await searchMeetups({ perPage: 1 });
+    const meetup = await getMeetupBySlug(items[0].slug);
+
+    expect(meetup).not.toBeNull();
+    expect(meetup!.host.name).not.toBe('');
+    const vouches = await getVouches(meetup!.id);
+    const average = vouches.reduce((sum, v) => sum + v.rating, 0) / vouches.length;
+    expect(meetup!.rating).toBeCloseTo(Math.round(average * 10) / 10, 5);
   });
 
-  it('sorts reviews by the requested order', async () => {
-    const business = (await getBusinessBySlug('copper-rye-bengaluru'))!;
-    const helpful = await getReviews(business.id, 'helpful');
-    const counts = helpful.map((r) => r.helpfulCount);
+  it('returns null for a slug that does not exist', async () => {
+    expect(await getMeetupBySlug('no-such-meetup')).toBeNull();
+  });
+});
+
+describe('joining', () => {
+  const user = 'u004';
+
+  async function firstOpenMeetup() {
+    const { items } = await searchMeetups({ hasSpots: true, perPage: 1 });
+    return items[0];
+  }
+
+  it('takes a spot and decrements what is left', async () => {
+    const meetup = await firstOpenMeetup();
+    const before = meetup.spotsTaken;
+
+    const join = await commitJoin({ userId: user, meetupId: meetup.id, amountCents: meetup.joinFeeCents, paymentId: 'pay-1' });
+
+    expect(join.status).toBe('confirmed');
+    expect(db().meetups.find((m) => m.id === meetup.id)!.spotsTaken).toBe(before + 1);
+  });
+
+  it('is idempotent — a double submit does not buy two spots', async () => {
+    const meetup = await firstOpenMeetup();
+    const before = db().meetups.find((m) => m.id === meetup.id)!.spotsTaken;
+
+    const a = await commitJoin({ userId: user, meetupId: meetup.id, amountCents: 100, paymentId: 'p1' });
+    const b = await commitJoin({ userId: user, meetupId: meetup.id, amountCents: 100, paymentId: 'p2' });
+
+    expect(b.id).toBe(a.id);
+    expect(db().meetups.find((m) => m.id === meetup.id)!.spotsTaken).toBe(before + 1);
+  });
+
+  it('waitlists on a full meetup, and charges nothing for it', async () => {
+    const full = db().meetups.find((m) => m.spotsTaken >= m.spotsTotal)!;
+    const join = await commitJoin({ userId: user, meetupId: full.id, amountCents: full.joinFeeCents, paymentId: 'p3' });
+
+    expect(join.status).toBe('waitlisted');
+    expect(join.amountCents).toBe(0);
+    expect(join.paymentId).toBeNull();
+  });
+
+  it('refuses a meetup that has already started', async () => {
+    const meetup = db().meetups[0];
+    meetup.startsAt = new Date(Date.now() - 3_600_000).toISOString();
+
+    await expect(
+      commitJoin({ userId: user, meetupId: meetup.id, amountCents: 0, paymentId: null }),
+    ).rejects.toThrow(/already started/);
+  });
+
+  it('frees the spot again on cancellation', async () => {
+    const meetup = await firstOpenMeetup();
+    const before = db().meetups.find((m) => m.id === meetup.id)!.spotsTaken;
+
+    const join = await commitJoin({ userId: user, meetupId: meetup.id, amountCents: 100, paymentId: 'p4' });
+    await cancelJoin(user, join.id);
+
+    expect(db().meetups.find((m) => m.id === meetup.id)!.spotsTaken).toBe(before);
+    expect(await getJoin(user, meetup.id)).toBeNull();
+  });
+
+  it('drops a cancelled join out of the upcoming list', async () => {
+    const meetup = await firstOpenMeetup();
+    const join = await commitJoin({ userId: user, meetupId: meetup.id, amountCents: 100, paymentId: 'p5' });
+
+    expect((await getUpcomingJoins(user)).map((j) => j.id)).toContain(join.id);
+    await cancelJoin(user, join.id);
+    expect((await getUpcomingJoins(user)).map((j) => j.id)).not.toContain(join.id);
+  });
+
+  it('returns a credit to the balance when a credit-covered join is cancelled', async () => {
+    const member = db().users.find((u) => u.id === 'u002')!;
+    member.credits = 3;
+
+    const meetup = await firstOpenMeetup();
+    const join = await commitJoin({ userId: member.id, meetupId: meetup.id, amountCents: 0, paymentId: 'credit' });
+    await cancelJoin(member.id, join.id);
+
+    expect(member.credits).toBe(4);
+  });
+});
+
+describe('refund window', () => {
+  it('refunds outside the window and not inside it', () => {
+    const now = new Date(2026, 8, 3, 12, 0);
+    const tomorrow = new Date(2026, 8, 4, 12, 0).toISOString();
+    const inTwoHours = new Date(2026, 8, 3, 14, 0).toISOString();
+
+    expect(isRefundable(tomorrow, now)).toBe(true);
+    expect(isRefundable(inTwoHours, now)).toBe(false);
+  });
+});
+
+describe('passes and credits', () => {
+  it('unlimited always covers a join and never spends a credit', async () => {
+    const member = db().users.find((u) => u.id === 'u003')!;
+    member.pass = 'unlimited';
+    member.credits = 0;
+
+    expect(passCoversJoin(member)).toBe(true);
+    expect(await spendCredit(member.id)).toBe(true);
+    expect(member.credits).toBe(0);
+  });
+
+  it('spends one credit at a time and refuses at zero', async () => {
+    const member = db().users.find((u) => u.id === 'u003')!;
+    member.pass = 'starter';
+    member.credits = 1;
+
+    expect(await spendCredit(member.id)).toBe(true);
+    expect(member.credits).toBe(0);
+    expect(await spendCredit(member.id)).toBe(false);
+    expect(passCoversJoin(member)).toBe(false);
+  });
+});
+
+describe('vouches', () => {
+  it('breaks a rating down into a histogram that adds up', async () => {
+    const { items } = await searchMeetups({ perPage: 1 });
+    const vouches = await getVouches(items[0].id);
+    const rows = ratingBreakdown(vouches);
+
+    expect(rows).toHaveLength(5);
+    expect(rows.reduce((sum, row) => sum + row.count, 0)).toBe(vouches.length);
+    expect(rows.reduce((sum, row) => sum + row.share, 0)).toBeCloseTo(1, 5);
+  });
+
+  it('ranks the highlights attendees ticked most often', async () => {
+    const { items } = await searchMeetups({ perPage: 1 });
+    const top = topHighlights(await getVouches(items[0].id));
+    const counts = top.map((h) => h.count);
     expect([...counts].sort((a, b) => b - a)).toEqual(counts);
+  });
+
+  it('sorts by recency by default', async () => {
+    const { items } = await searchMeetups({ perPage: 1 });
+    const vouches = await getVouches(items[0].id);
+    const times = vouches.map((v) => +new Date(v.createdAt));
+    expect([...times].sort((a, b) => b - a)).toEqual(times);
   });
 });
 
 describe('saves', () => {
-  it('toggles a bookmark for one user only', async () => {
-    const business = (await getBusinessBySlug('peckham-roasters-london'))!;
+  it('toggles on and off', async () => {
+    const { items } = await searchMeetups({ perPage: 1 });
+    const id = items[0].id;
 
-    expect(await toggleSave('u002', business.id)).toBe(true);
-    expect(await getSavedBusinessIds('u002')).toContain(business.id);
-    expect(await getSavedBusinessIds('u003')).not.toContain(business.id);
+    expect(await toggleSave('u005', id)).toBe(true);
+    expect(await getSavedMeetupIds('u005')).toContain(id);
 
-    expect(await toggleSave('u002', business.id)).toBe(false);
-    expect(await getSavedBusinessIds('u002')).not.toContain(business.id);
+    expect(await toggleSave('u005', id)).toBe(false);
+    expect(await getSavedMeetupIds('u005')).not.toContain(id);
   });
 });
 
-describe('dinner bookings', () => {
-  it('confirms a seat and increments the counter', async () => {
-    const [event] = await getDinners();
-    const before = event.seatsTaken;
-
-    const booking = await bookSeat('u003', event.id);
-    expect(booking.status).toBe('confirmed');
-
-    const [after] = await getDinners();
-    expect(after.seatsTaken).toBe(before + 1);
+describe('aggregates', () => {
+  it('counts upcoming meetups per city', async () => {
+    const counts = await countMeetupsByCity();
+    const { total } = await searchMeetups({ perPage: 1000 });
+    expect(Object.values(counts).reduce((sum, n) => sum + n, 0)).toBe(total);
   });
 
-  it('waitlists once the table is full', async () => {
-    const events = await getDinners();
-    const full = events.find((e) => e.seatsTaken >= e.seatsTotal)!;
-
-    const booking = await bookSeat('u004', full.id);
-    expect(booking.status).toBe('waitlisted');
-  });
-
-  it('is idempotent — booking twice keeps one seat', async () => {
-    const [event] = await getDinners();
-    const first = await bookSeat('u005', event.id);
-    const second = await bookSeat('u005', event.id);
-
-    expect(second.id).toBe(first.id);
-    const bookings = await getBookingsForUser('u005');
-    expect(bookings).toHaveLength(1);
-  });
-
-  it('releases the seat on cancellation', async () => {
-    const [event] = await getDinners();
-    const booking = await bookSeat('u006', event.id);
-    const taken = (await getDinners())[0].seatsTaken;
-
-    await cancelBooking('u006', booking.id);
-
-    expect((await getDinners())[0].seatsTaken).toBe(taken - 1);
-    const live = (await getBookingsForUser('u006')).filter((b) => b.status !== 'cancelled');
-    expect(live).toHaveLength(0);
-  });
-});
-
-describe('claiming a listing', () => {
-  it('hands an unclaimed listing to the claimant and files the claim', async () => {
-    const business = (await getBusinessBySlug('nandini-dosa-camp-bengaluru'))!;
-    expect(business.ownerId).toBeNull();
-
-    const claimed = await claimBusiness({
-      businessId: business.id,
-      userId: 'u007',
-      role: 'Owner',
-      contactEmail: 'owner@dosa.example',
-      phone: '+91 80 1234 5678',
-      note: '',
-    });
-
-    expect(claimed?.ownerId).toBe('u007');
-    expect(claimed?.isClaimed).toBe(true);
-    expect(db().claims).toHaveLength(1);
-    expect((await getBusinessesOwnedBy('u007')).map((b) => b.id)).toContain(business.id);
-  });
-
-  it('refuses a listing that already has an owner', async () => {
-    const business = (await getBusinessBySlug('copper-rye-bengaluru'))!;
-    expect(business.ownerId).not.toBeNull();
-
-    const claimed = await claimBusiness({
-      businessId: business.id,
-      userId: 'u007',
-      role: 'Manager',
-      contactEmail: 'someone@else.example',
-      phone: '+91 80 0000 0000',
-      note: '',
-    });
-
-    expect(claimed).toBeNull();
-    expect((await getBusinessBySlug('copper-rye-bengaluru'))!.ownerId).toBe(business.ownerId);
-  });
-});
-
-describe('owner replies', () => {
-  it('publishes and withdraws a public response', async () => {
-    const business = (await getBusinessBySlug('peckham-roasters-london'))!;
-    const [review] = await getReviews(business.id);
-
-    const replied = await setOwnerResponse(review.id, 'Thanks — the second grinder lands next week.');
-    expect(replied?.ownerResponse).toContain('second grinder');
-    expect(replied?.ownerResponseAt).toBeTruthy();
-
-    const withdrawn = await setOwnerResponse(review.id, null);
-    expect(withdrawn?.ownerResponse).toBeNull();
-    expect(withdrawn?.ownerResponseAt).toBeNull();
-  });
-
-  it('leaves the review itself untouched', async () => {
-    const business = (await getBusinessBySlug('peckham-roasters-london'))!;
-    const [review] = await getReviews(business.id);
-
-    const replied = await setOwnerResponse(review.id, 'A reply that is comfortably long enough.');
-
-    expect(replied?.rating).toBe(review.rating);
-    expect(replied?.title).toBe(review.title);
-    expect(replied?.body).toBe(review.body);
-  });
-});
-
-describe('searching near a location', () => {
-  // Indiranagar, Bengaluru
-  const near = { lat: 12.9719, lng: 77.6412 };
-
-  it('tags every result with a distance', async () => {
-    const { items } = await searchBusinesses({ near, perPage: 5 });
-    for (const item of items) expect(typeof item.distanceKm).toBe('number');
-  });
-
-  it('orders by proximity and puts the local café first', async () => {
-    const { items } = await searchBusinesses({ near, sort: 'distance', perPage: 50 });
-    const distances = items.map((i) => i.distanceKm!);
-
-    expect([...distances].sort((a, b) => a - b)).toEqual(distances);
-    expect(items[0].city).toBe('Bengaluru');
-    expect(distances[0]).toBeLessThan(1);
-  });
-
-  it('omits distance when no coordinates are given', async () => {
-    const { items } = await searchBusinesses({ perPage: 3 });
-    for (const item of items) expect(item.distanceKm).toBeUndefined();
+  it('lists what a member hosts, and nobody else', async () => {
+    const hosted = await getMeetupsHostedBy('u003');
+    expect(hosted.length).toBeGreaterThan(0);
+    for (const meetup of hosted) expect(meetup.hostId).toBe('u003');
   });
 });

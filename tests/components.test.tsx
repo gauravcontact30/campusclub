@@ -3,9 +3,57 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RatingInput, RatingStars } from '@/components/ui/rating-stars';
 import { Badge } from '@/components/ui/badge';
-import { FilterPanel } from '@/components/business/filter-panel';
-import { OpenNowBadge } from '@/components/business/open-now-badge';
-import type { WeekHours } from '@/types';
+import { CategoryIcon } from '@/components/ui/category-icon';
+import { MeetupCard } from '@/components/meetups/meetup-card';
+import { VouchSummary } from '@/components/meetups/vouch-list';
+import type { MeetupWithHost, Vouch } from '@/types';
+
+function meetup(overrides: Partial<MeetupWithHost> = {}): MeetupWithHost {
+  const startsAt = new Date(Date.now() + 86_400_000).toISOString();
+  return {
+    id: 'm1',
+    slug: 'a-test-meetup-bengaluru',
+    title: 'Deep work table',
+    categorySlug: 'group-study',
+    hostId: 'u1',
+    description: 'Three silent blocks.',
+    agenda: [],
+    bring: [],
+    venueName: 'Third Wave',
+    address: '12 100 Feet Road',
+    area: 'Indiranagar',
+    city: 'Bengaluru',
+    state: 'Karnataka',
+    lat: 12.97,
+    lng: 77.64,
+    startsAt,
+    endsAt: new Date(+new Date(startsAt) + 5_400_000).toISOString(),
+    spotsTotal: 8,
+    spotsTaken: 6,
+    joinFeeCents: 14900,
+    level: 'serious',
+    audience: 'everyone',
+    language: 'English',
+    cadence: 'once',
+    coverImage: null,
+    tags: ['Silent'],
+    createdAt: new Date().toISOString(),
+    rating: 4.8,
+    vouchCount: 12,
+    host: {
+      id: 'u1',
+      name: 'Kabir Shah',
+      avatarUrl: null,
+      city: 'Bengaluru',
+      bio: '',
+      hostedCount: 46,
+      rating: 5,
+      verified: true,
+      memberSince: new Date().toISOString(),
+    },
+    ...overrides,
+  };
+}
 
 describe('RatingStars', () => {
   it('exposes the score to assistive tech', () => {
@@ -29,75 +77,76 @@ describe('RatingInput', () => {
 });
 
 describe('Badge', () => {
-  it('renders its children', () => {
-    render(<Badge tone="brand">2 seats left</Badge>);
-    expect(screen.getByText('2 seats left')).toBeInTheDocument();
+  it('renders its children with a tone', () => {
+    render(<Badge tone="signal">Waitlisted</Badge>);
+    expect(screen.getByText('Waitlisted')).toBeInTheDocument();
   });
 });
 
-describe('FilterPanel', () => {
-  const baseQuery = { term: '', city: '', category: '', price: [] as never[], minRating: 0, openNow: false, sort: 'recommended' as const, page: 1 };
-
-  it('reports the result count and raises filter changes', async () => {
-    const user = userEvent.setup();
-    const onChange = vi.fn();
-    const onTogglePrice = vi.fn();
-
-    render(
-      <FilterPanel query={baseQuery} total={24} onChange={onChange} onTogglePrice={onTogglePrice} onReset={vi.fn()} onUseMyLocation={vi.fn()} />,
-    );
-
-    expect(screen.getByText('24 places match')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: 'Restaurants' }));
-    expect(onChange).toHaveBeenCalledWith('category', 'restaurants');
-
-    await user.click(screen.getByRole('button', { name: '₹₹' }));
-    expect(onTogglePrice).toHaveBeenCalledWith(2);
-
-    await user.click(screen.getByRole('checkbox'));
-    expect(onChange).toHaveBeenCalledWith('openNow', true);
-  });
-
-  it('offers a clear control only when filters are active', () => {
-    const { rerender } = render(
-      <FilterPanel query={baseQuery} total={24} onChange={vi.fn()} onTogglePrice={vi.fn()} onReset={vi.fn()} onUseMyLocation={vi.fn()} />,
-    );
-    expect(screen.queryByText(/Clear/)).not.toBeInTheDocument();
-
-    rerender(
-      <FilterPanel
-        query={{ ...baseQuery, category: 'cafes', openNow: true }}
-        total={4}
-        onChange={vi.fn()}
-        onTogglePrice={vi.fn()}
-        onReset={vi.fn()}
-        onUseMyLocation={vi.fn()}
-      />,
-    );
-    expect(screen.getByText('Clear (2)')).toBeInTheDocument();
-  });
-
-  it('switches price symbols to the filtered city currency', () => {
-    render(
-      <FilterPanel
-        query={{ ...baseQuery, city: 'new-york' }}
-        total={4}
-        onChange={vi.fn()}
-        onTogglePrice={vi.fn()}
-        onReset={vi.fn()}
-        onUseMyLocation={vi.fn()}
-      />,
-    );
-    expect(screen.getByRole('button', { name: '$$$' })).toBeInTheDocument();
+describe('CategoryIcon', () => {
+  it('falls back rather than rendering nothing for an unknown category', () => {
+    const { container } = render(<CategoryIcon slug="not-a-category" />);
+    expect(container.querySelector('svg')).toBeInTheDocument();
   });
 });
 
-describe('OpenNowBadge', () => {
-  const alwaysOpen: WeekHours = Array.from({ length: 7 }, () => ({ open: '00:00', close: '23:59' })) as WeekHours;
+describe('MeetupCard', () => {
+  it('shows the two facts the decision turns on: the fee and the spots left', () => {
+    render(<MeetupCard meetup={meetup()} showSave={false} />);
 
-  it('resolves the open state on the client', async () => {
-    render(<OpenNowBadge hours={alwaysOpen} />);
-    expect(await screen.findByText('Open now', { exact: false })).toBeInTheDocument();
+    expect(screen.getByText('₹149')).toBeInTheDocument();
+    expect(screen.getByText('2 spots left')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Deep work table' })).toHaveAttribute(
+      'href',
+      '/meetups/a-test-meetup-bengaluru',
+    );
+  });
+
+  it('says "Free" rather than ₹0', () => {
+    render(<MeetupCard meetup={meetup({ joinFeeCents: 0 })} showSave={false} />);
+    expect(screen.getByText('Free')).toBeInTheDocument();
+  });
+
+  it('offers the waitlist instead of a spot count when full', () => {
+    render(<MeetupCard meetup={meetup({ spotsTaken: 8 })} showSave={false} />);
+    expect(screen.getByText('Full — waitlist open')).toBeInTheDocument();
+  });
+
+  it('shows a distance only when the search supplied one', () => {
+    const { rerender } = render(<MeetupCard meetup={meetup()} showSave={false} />);
+    expect(screen.queryByText(/away/)).not.toBeInTheDocument();
+
+    rerender(<MeetupCard meetup={meetup({ distanceKm: 2.4 })} showSave={false} />);
+    expect(screen.getByText(/2\.4 km away/)).toBeInTheDocument();
+  });
+});
+
+describe('VouchSummary', () => {
+  const vouch = (rating: number, i: number): Vouch => ({
+    id: `v${i}`,
+    meetupId: 'm1',
+    userId: `u${i}`,
+    authorName: 'A Member',
+    authorAvatar: null,
+    rating,
+    body: 'It was good.',
+    highlights: ['Started on time'],
+    createdAt: new Date().toISOString(),
+    hostReply: null,
+    hostReplyAt: null,
+  });
+
+  it('shows the average and the shape behind it', () => {
+    render(<VouchSummary vouches={[vouch(5, 1), vouch(5, 2), vouch(3, 3)]} />);
+
+    expect(screen.getByText('4.3')).toBeInTheDocument();
+    expect(screen.getByText('3 people who went')).toBeInTheDocument();
+    // The highlight tally is what makes the average readable.
+    expect(screen.getByText('Started on time · 3')).toBeInTheDocument();
+  });
+
+  it('renders nothing at all when nobody has been yet', () => {
+    const { container } = render(<VouchSummary vouches={[]} />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
