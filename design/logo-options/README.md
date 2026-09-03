@@ -1,29 +1,33 @@
-# SitNext logo options — professional set
+# SitNext logo options — built from the business model
 
-Six directions drawn on one 40×40 grid with one stroke language. This folder is
-a decision aid, not shipped code — delete it once a direction is chosen and
-wired into `src/components/layout/logo.tsx`.
+SitNext is two products in one: a **review directory** (find a place, trust the
+rating) and a **dinner club** (six strangers, one table, every Wednesday). Each
+mark below is judged on whether it says something true about that, not on
+whether it looks nice.
 
-Every mark uses `currentColor`, so a single file serves the brand lockup and
-both monochrome uses. That is deliberate: **the monochrome test is what
-separates a logo from an illustration**, and the mark currently on the site has
-never been put through it — it depends on two tones to read.
+This folder is a decision aid, not shipped code — delete it once a direction is
+chosen and wired into `src/components/layout/logo.tsx`.
 
-| # | Name | Idea | Honest weakness |
+| # | Name | The argument | Honest weakness |
 | --- | --- | --- | --- |
-| 01 | Table of Six | A table ring cut into six equal seats | The six segments blur into a plain ring below ~32px |
-| 02 | Pin & Table | A map pin whose head is a table — the only mark carrying both halves of the business | Reads as a generic map pin; the concept lives in the name more than the pixels |
-| 03 | Place Setting | Plate between fork and knife, from above | Can read as a pause button or a text cursor |
-| 04 | The Seat | One chair from above with someone in it | At small sizes it flattens into an arch or a keycap |
-| 05 | Monogram S | A constructed letterform | Durable but generic — it says nothing about the business |
-| 06 | Six Figures | The current mark, reduced to one colour and a heavier stroke | Still becomes a rosette below ~32px |
+| 01 | The Overlap | Two circles — places, and people. The business is the overlap, and the overlap is the only part filled in. | Can read as an eclipse or a generic Venn |
+| 02 | Rated Table | The rating star every directory lives on, with a table cut out of the middle. | The cut-out closes below ~32px and it becomes a plain star |
+| 03 | Word of Mouth | A review is someone talking. The bubble is the directory; the six dots are the table it seats you at. | The dots muddy into a smear at 16px |
+| 04 | Wednesday | The product has a heartbeat: one table, every Wednesday. | Holds at every size, but a calendar icon says "scheduling app" |
+| 05 | Plate & Pin | A pin whose head is a plate — a place on a map, and what is on the table when you arrive. | Still reads first as a stock map pin |
+| 06 | Verified Seat | A seat with a tick. Both halves rest on one promise: the review is honest and the seat is really yours. | The chair loses to the tick; it reads as a checkbox |
+
+Every mark uses `currentColor` and, where it has a hole, `fill-rule="evenodd"`
+rather than a shape painted in the background colour. That matters: a knockout
+filled with the page colour stops being a logo the moment it lands on a
+surface you did not anticipate — a partner's press page, a printed receipt.
+These are genuinely one colour on any background.
 
 Each ships two files:
 
 - `NN-name-mark.svg` — the mark alone, colour inherited, for the header lockup.
 - `NN-name-icon.svg` — the same mark on the app tile, for favicons and social cards.
 
-**Recommendation: 03, Place Setting.** It is the only one that is simultaneously
-distinctive, unmistakably about eating, and unchanged at 16px in one colour. 02
-carries the better idea but draws as a stock pin; 05 is the safe choice and 01
-the best fit for the dinner half, but both give something up.
+**Recommendation: 01, The Overlap.** It is the only one whose *idea* survives
+at 16px in a single colour — the others either lose the concept when they
+shrink (02, 03) or keep the shape while saying something generic (04, 05, 06).

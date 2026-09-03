@@ -4,7 +4,7 @@ test('the assistant answers from the real directory and links into the app', asy
   await page.goto('/');
   await page.getByRole('button', { name: /Ask the SitNext assistant/i }).click();
 
-  const panel = page.getByRole('dialog', { name: 'SitNext assistant' });
+  const panel = page.getByRole('dialog', { name: 'Ask SitNext' });
   await expect(panel).toBeVisible();
 
   await page.getByRole('button', { name: 'Best-rated coffee in Bengaluru' }).click();
@@ -27,7 +27,7 @@ test('a typed question streams an answer back', async ({ page }) => {
   await page.getByLabel('Your question').fill('How do the Wednesday dinners work?');
   await page.getByRole('button', { name: 'Send' }).click();
 
-  const panel = page.getByRole('dialog', { name: 'SitNext assistant' });
+  const panel = page.getByRole('dialog', { name: 'Ask SitNext' });
   await expect(panel.getByText(/seats left/).first()).toBeVisible({ timeout: 15_000 });
 });
 
@@ -36,7 +36,7 @@ test('the transcript can be cleared and the panel closed', async ({ page }) => {
   await page.getByRole('button', { name: /Ask the SitNext assistant/i }).click();
   await page.getByRole('button', { name: 'What does membership cost?' }).click();
 
-  const panel = page.getByRole('dialog', { name: 'SitNext assistant' });
+  const panel = page.getByRole('dialog', { name: 'Ask SitNext' });
   await expect(panel.getByText('Explorer')).toBeVisible({ timeout: 15_000 });
 
   await page.getByRole('button', { name: 'Start a new conversation' }).click();

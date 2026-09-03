@@ -2,6 +2,8 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import { ButtonLink } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/avatar';
 import { HeroSearch } from './hero-search';
+import { getDictionary } from '@/lib/i18n/server';
+import { fill } from '@/lib/i18n/format';
 
 const FACES = [
   { name: 'Aarav', src: '/img/avatars/a-01.svg' },
@@ -11,7 +13,9 @@ const FACES = [
   { name: 'Mei', src: '/img/avatars/a-05.svg' },
 ];
 
-export function Hero({ businessCount, cityCount }: { businessCount: number; cityCount: number }) {
+export async function Hero({ businessCount, cityCount }: { businessCount: number; cityCount: number }) {
+  const t = await getDictionary();
+
   return (
     <section className="relative overflow-hidden bg-canvas text-content">
       {/* soft light bloom behind the headline */}
@@ -28,27 +32,26 @@ export function Hero({ businessCount, cityCount }: { businessCount: number; city
         <div className="animate-fade-up">
           <span className="inline-flex items-center gap-2 rounded-full border border-content/20 px-3.5 py-1.5 text-xs font-medium text-content/80">
             <Sparkles size={14} className="text-brand" />
-            Every Wednesday, 8:00 PM — in {cityCount} cities
+            {fill(t.hero.badge, { count: cityCount })}
           </span>
 
           <h1 className="display-xl mt-6 text-content">
-            Meet five strangers.
+            {t.hero.titleTop}
             <br />
-            <span className="text-brand">Find your city.</span>
+            <span className="text-brand">{t.hero.titleBottom}</span>
           </h1>
 
           <p className="lede mt-6 max-w-xl text-content/70">
-            SitNext does two things properly. It tells you which local places are actually worth your money — reviewed
-            by people who went — and it seats you at a table with five strangers you would probably like.
+            {t.hero.lede}
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <ButtonLink href="/dinners" size="lg" className="group">
-              Book a seat this Wednesday
+              {t.hero.primaryCta}
               <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
             </ButtonLink>
             <ButtonLink href="/businesses" variant="secondary" size="lg">
-              Explore {businessCount} places
+              {fill(t.hero.secondaryCta, { count: businessCount })}
             </ButtonLink>
           </div>
 
@@ -59,7 +62,7 @@ export function Hero({ businessCount, cityCount }: { businessCount: number; city
               ))}
             </div>
             <p className="text-sm text-content/60">
-              <span className="font-semibold text-content">18,400+ seats</span> filled since we started.
+              <span className="font-semibold text-content">{t.hero.seatsFilled}</span> {t.hero.seatsFilledSuffix}
             </p>
           </div>
         </div>

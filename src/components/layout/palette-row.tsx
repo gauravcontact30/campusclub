@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { PALETTES, applyPalette } from '@/lib/theme';
 import { usePalette } from '@/hooks/use-palette';
+import { useLocale } from '@/lib/i18n/client';
 
 /**
  * The drawer's palette control. A row of swatches rather than the header's
@@ -14,10 +15,11 @@ import { usePalette } from '@/hooks/use-palette';
  */
 export function PaletteRow() {
   const selected = usePalette();
+  const { t } = useLocale();
 
   return (
     <div className="rounded-2xl border border-content/15 px-4 py-3.5">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-content/50">Colour</p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-content/50">{t.header.paletteHeading}</p>
       <div className="mt-3 flex flex-wrap gap-2.5">
         {PALETTES.map((p) => (
           <button

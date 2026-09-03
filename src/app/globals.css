@@ -12,8 +12,8 @@
      Values are space-separated RGB channels rather than hex, because Tailwind
      composes them with its `/opacity` modifiers as `rgb(var(--x) / 0.6)`. */
   :root {
-    --font-display: 'Bricolage Grotesque', Georgia, serif;
-    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Bricolage Grotesque', var(--font-devanagari), Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', var(--font-devanagari), ui-sans-serif, system-ui, sans-serif;
 
     color-scheme: dark;
 

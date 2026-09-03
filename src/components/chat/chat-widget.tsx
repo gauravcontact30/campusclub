@@ -3,21 +3,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { MessageCircle, RotateCcw, Send, Sparkles, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { SITE } from '@/lib/constants';
+import { useLocale } from '@/lib/i18n/client';
 import { useChat } from './use-chat';
 import { ChatBubble, TypingDots } from './chat-message';
-
-const OPENERS = [
-  'Somewhere for dinner in London tonight',
-  'How do the Wednesday dinners work?',
-  'What does membership cost?',
-  'Best-rated coffee in Bengaluru',
-];
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState('');
   const { messages, pending, mode, send, reset } = useChat();
+  const { t } = useLocale();
+  const openers = [t.chat.opener1, t.chat.opener2, t.chat.opener3, t.chat.opener4];
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -53,7 +48,7 @@ export function ChatWidget() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        aria-label={open ? 'Close the assistant' : `Ask the ${SITE.name} assistant`}
+        aria-label={open ? t.chat.close : t.chat.open}
         className={cn(
           'fixed bottom-5 right-5 z-[60] inline-flex h-14 w-14 items-center justify-center rounded-full',
           'bg-brand text-on-brand shadow-lift transition-transform duration-200 hover:scale-105 active:scale-95',
@@ -66,7 +61,7 @@ export function ChatWidget() {
       {open && (
         <div
           role="dialog"
-          aria-label={`${SITE.name} assistant`}
+          aria-label={t.chat.title}
           className={cn(
             'fixed inset-x-3 bottom-24 z-[60] flex max-h-[min(34rem,calc(100dvh-8rem))] flex-col overflow-hidden',
             'animate-fade-up rounded-3xl border border-content/12 bg-canvas-700 shadow-lift',
@@ -78,16 +73,16 @@ export function ChatWidget() {
               <Sparkles size={16} />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-content">Ask {SITE.name}</p>
+              <p className="text-sm font-semibold text-content">{t.chat.title}</p>
               <p className="truncate text-xs text-content/55">
-                {mode === 'demo' ? 'Demo mode — answers from the directory, not the AI' : 'Places, dinners and how it all works'}
+                {mode === 'demo' ? t.chat.subtitleDemo : t.chat.subtitleLive}
               </p>
             </div>
             {messages.length > 0 && (
               <button
                 type="button"
                 onClick={reset}
-                aria-label="Start a new conversation"
+                aria-label={t.chat.reset}
                 className="rounded-full p-2 text-content/55 transition-colors hover:bg-content/10 hover:text-content"
               >
                 <RotateCcw size={15} />
@@ -99,10 +94,10 @@ export function ChatWidget() {
             {messages.length === 0 ? (
               <div className="space-y-3">
                 <p className="text-sm leading-relaxed text-content/70">
-                  I can search the directory, check what is open, and explain how the dinners work. Ask away.
+                  {t.chat.intro}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {OPENERS.map((o) => (
+                  {openers.map((o) => (
                     <button
                       key={o}
                       type="button"
@@ -136,15 +131,15 @@ export function ChatWidget() {
               ref={inputRef}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder="Ask about a place or a dinner…"
-              aria-label="Your question"
+              placeholder={t.chat.placeholder}
+              aria-label={t.chat.inputLabel}
               maxLength={4000}
               className="min-w-0 flex-1 rounded-full border border-content/15 bg-canvas px-4 py-2.5 text-sm text-content placeholder:text-content/45 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/35"
             />
             <button
               type="submit"
               disabled={pending || !draft.trim()}
-              aria-label="Send"
+              aria-label={t.chat.send}
               className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand text-on-brand transition-opacity disabled:opacity-40"
             >
               <Send size={16} />
