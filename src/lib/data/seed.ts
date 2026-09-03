@@ -385,7 +385,7 @@ const rows: Row[] = [
     day: 3, hour: 18, minute: 30, mins: 60, spots: 20, taken: 13, fee: 4900, level: 'any', cadence: 'weekly',
     tags: ['5K', 'Two pace groups', 'Free-ish'],
     description:
-      'The cheapest thing on VibeClub and the most attended. Two pace groups, a lit path, and a stretch circle at the end that half the group skips.',
+      'The cheapest thing on CampusClub and the most attended. Two pace groups, a lit path, and a stretch circle at the end that half the group skips.',
     agenda: ['18:30 — warm-up', '18:40 — 5K, two groups', '19:15 — stretch, or leave, no judgement'],
     bring: ['Sports shoes', 'Water bottle'],
   },

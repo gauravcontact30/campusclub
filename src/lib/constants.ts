@@ -32,10 +32,10 @@ function resolveSiteUrl() {
 }
 
 export const SITE = {
-  name: 'VibeClub',
+  name: 'CampusClub',
   tagline: 'Nobody does it alone.',
   description:
-    'VibeClub is where people in your city meet up to do the things that are harder alone — group study, exam prep, gym sessions, sport, and long breakfasts. Browse what is happening near you, pay the join fee, turn up.',
+    'CampusClub is where people in your city meet up to do the things that are harder alone — group study, exam prep, gym sessions, sport, and long breakfasts. Browse what is happening near you, pay the join fee, turn up.',
   url: resolveSiteUrl(),
 };
 

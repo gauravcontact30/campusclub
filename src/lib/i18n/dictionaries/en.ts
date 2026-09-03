@@ -13,7 +13,7 @@ export const en = {
   header: {
     search: 'Search meetups',
     signIn: 'Sign in',
-    join: 'Join VibeClub',
+    join: 'Join CampusClub',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     themeToLight: 'Switch to light theme',
@@ -82,9 +82,9 @@ export const en = {
     secondary: 'Look at what’s on first',
   },
   chat: {
-    open: 'Ask the VibeClub assistant',
+    open: 'Ask the CampusClub assistant',
     close: 'Close the assistant',
-    title: 'Ask VibeClub',
+    title: 'Ask CampusClub',
     subtitleLive: 'Meetups, join fees and how it all works',
     subtitleDemo: 'Demo mode — answers from the board, not the AI',
     intro: 'I can search what is on near you, check join fees and spots left, and explain how passes work. Ask away.',

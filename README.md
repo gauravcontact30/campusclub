@@ -1,10 +1,10 @@
-# VibeClub
+# CampusClub
 
 **Nobody does it alone.**
 
 A pay-per-join board of local meetups. Someone within a kilometre of you is
 revising for the same exam, going to the same gym at the same hour, eating the
-same dinner by themselves. VibeClub is the reason to say so out loud: members
+same dinner by themselves. CampusClub is the reason to say so out loud: members
 list the things they are already doing — a 6am run, a study table, a Sunday
 dinner, a badminton court — and other members pay that meetup's **join fee** to
 take one of its spots.
@@ -166,7 +166,7 @@ Supabase application.
 ## Folder structure
 
 ```
-vibeclub/
+campusclub/
 ├── e2e/                        Playwright: browse, join, host, passes, theme, language, chat, responsive
 ├── public/logo.svg
 ├── src/
@@ -390,20 +390,26 @@ apertures small copy wants.
 
 ### The mark
 
-Two rings, and the overlap filled. A club is not one circle of people but two
-that found each other — the vibe is the part they share, so it is the only
-element solid.
+An open ring with one dot resting in the opening. It is a monogram and a
+diagram at once: the silhouette is a **C**, and the thing it draws is the
+product — a group of people that has left a place, and the one person about to
+take it. The dot sits *on* the ring's own path rather than beside it, so it
+reads as joining the circle rather than orbiting it.
 
-The geometry is derived rather than eyeballed: equal radii of 11 on centres
-twelve apart put the intersections at `x = 20`, `y = 20 ± √(11² − 6²)`, and each
-side of the lens spans 114°, which is why both arcs carry `large-arc-flag 0`.
+The geometry is derived rather than eyeballed. The ring is `r=13` on centre
+`(20,20)` with a 46° opening centred on 3 o'clock, so the arc runs from 23° to
+337° — 314° of sweep, which is why it carries `large-arc-flag 1`. That opening
+spans a chord of 10.16 and the dot is 7.2 across, leaving 1.48 of clearance on
+each side: close enough to belong to the gap, far enough not to weld shut at
+16px. The arc is drawn as an explicit path rather than a dashed circle, because
+`stroke-dasharray` phase is not rendered identically everywhere and a logo is
+the wrong place to find that out.
 
 Two properties matter more than the drawing. Everything is `currentColor`, so
 one file serves the brand lockup and both monochrome uses — a letterhead, a
 stamped receipt, a partner's press page and a disabled state all get one colour.
-And the lens is a closed path, not a shape painted in the page colour: a
-knockout filled with the background stops being a logo the moment it lands on a
-surface nobody anticipated.
+And there is no knockout anywhere: nothing is painted in the page colour, so the
+mark does not fall apart the moment it lands on a surface nobody anticipated.
 
 Because it survives 16px in a single colour, `public/logo.svg` is the only icon
 file — no simplified favicon variant is needed beside it.

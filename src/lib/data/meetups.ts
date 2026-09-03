@@ -172,7 +172,7 @@ export async function attachHosts(meetups: Meetup[]): Promise<MeetupWithHost[]> 
 function unknownHost(id: string): HostSummary {
   return {
     id,
-    name: 'A VibeClub member',
+    name: 'A CampusClub member',
     avatarUrl: null,
     city: '',
     bio: '',

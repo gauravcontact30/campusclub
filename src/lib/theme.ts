@@ -1,20 +1,21 @@
 export type Theme = 'light' | 'dark';
-export type PaletteId = 'court' | 'turf' | 'dusk' | 'tide' | 'ember';
+export type PaletteId = 'paper' | 'court' | 'turf' | 'dusk' | 'ember';
 
-export const THEME_STORAGE_KEY = 'vibeclub-theme';
-export const PALETTE_STORAGE_KEY = 'vibeclub-palette';
+export const THEME_STORAGE_KEY = 'campusclub-theme';
+export const PALETTE_STORAGE_KEY = 'campusclub-palette';
 
 /**
- * The five selectable palettes. `swatch` is the pair shown in the picker —
- * the brand colour and its supporting signal — taken from each palette's dark
- * values so the chips read the same whichever theme is active.
+ * The five selectable palettes. `swatch` is the pair shown in the picker — the
+ * brand colour and its supporting signal — taken from each palette's LIGHT
+ * values, because light is now the default theme and the chips should match
+ * what a first-time visitor is actually looking at.
  */
 export const PALETTES: { id: PaletteId; name: string; blurb: string; swatch: [string, string] }[] = [
-  { id: 'court', name: 'Court', blurb: 'Indigo and amber', swatch: ['#8A7CFF', '#F5B642'] },
-  { id: 'turf', name: 'Turf', blurb: 'Pitch green and lime', swatch: ['#58D68D', '#D6E85A'] },
-  { id: 'dusk', name: 'Dusk', blurb: 'Plum and rose', swatch: ['#E07AC8', '#FAA082'] },
-  { id: 'tide', name: 'Tide', blurb: 'Teal and sky', swatch: ['#3ED1C8', '#7EBAFA'] },
-  { id: 'ember', name: 'Ember', blurb: 'Terracotta and gold', swatch: ['#EA6C3A', '#F5B342'] },
+  { id: 'paper', name: 'Paper', blurb: 'Cream and signal red', swatch: ['#C22E17', '#A06204'] },
+  { id: 'court', name: 'Court', blurb: 'Indigo and amber', swatch: ['#5240D8', '#955F06'] },
+  { id: 'turf', name: 'Turf', blurb: 'Pitch green and lime', swatch: ['#147A47', '#5C6A0C'] },
+  { id: 'dusk', name: 'Dusk', blurb: 'Plum and rose', swatch: ['#A82C84', '#B24428'] },
+  { id: 'ember', name: 'Ember', blurb: 'Terracotta and gold', swatch: ['#C44C1E', '#A46308'] },
 ];
 
 const IDS = PALETTES.map((p) => p.id);
@@ -24,19 +25,19 @@ const IDS = PALETTES.map((p) => p.id);
  * one theme or palette and then swaps. It is kept as a string because it has to
  * execute ahead of React — and deliberately kept tiny, since it blocks parsing.
  *
- * Theme authority: an explicit choice, then the operating system, then dark.
- * Palette authority: an explicit choice, then Court, which is the default
+ * Theme authority: an explicit choice, then the operating system, then light.
+ * Palette authority: an explicit choice, then Paper, which is the default
  * already baked into the stylesheet and so needs no attribute.
  */
 export const THEME_INIT_SCRIPT = `(function(){try{
 var d=document.documentElement,s=localStorage.getItem('${THEME_STORAGE_KEY}');
-d.dataset.theme=s==='light'||s==='dark'?s:(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+d.dataset.theme=s==='light'||s==='dark'?s:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
 var p=localStorage.getItem('${PALETTE_STORAGE_KEY}');
-if(p&&${JSON.stringify(IDS)}.indexOf(p)>-1&&p!=='court')d.dataset.palette=p;
-}catch(e){document.documentElement.dataset.theme='dark';}})();`;
+if(p&&${JSON.stringify(IDS)}.indexOf(p)>-1&&p!=='paper')d.dataset.palette=p;
+}catch(e){document.documentElement.dataset.theme='light';}})();`;
 
 export function currentTheme(): Theme {
-  return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+  return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 }
 
 export function applyTheme(theme: Theme) {
@@ -46,7 +47,7 @@ export function applyTheme(theme: Theme) {
 
 export function currentPalette(): PaletteId {
   const value = document.documentElement.dataset.palette;
-  return IDS.includes(value as PaletteId) ? (value as PaletteId) : 'court';
+  return IDS.includes(value as PaletteId) ? (value as PaletteId) : 'paper';
 }
 
 /**
@@ -54,7 +55,7 @@ export function currentPalette(): PaletteId {
  * component learns it changed. This is also what keeps the pickers free of a
  * setState-in-effect, which the React Compiler lint rule rejects outright.
  */
-const PALETTE_EVENT = 'vibeclub:palettechange';
+const PALETTE_EVENT = 'campusclub:palettechange';
 
 export function subscribePalette(onChange: () => void) {
   window.addEventListener(PALETTE_EVENT, onChange);
@@ -62,9 +63,9 @@ export function subscribePalette(onChange: () => void) {
 }
 
 export function applyPalette(palette: PaletteId) {
-  // Court is the stylesheet's default, so it is expressed as the absence of the
+  // Paper is the stylesheet's default, so it is expressed as the absence of the
   // attribute rather than as a fifth block that repeats what is already there.
-  if (palette === 'court') delete document.documentElement.dataset.palette;
+  if (palette === 'paper') delete document.documentElement.dataset.palette;
   else document.documentElement.dataset.palette = palette;
   remember(PALETTE_STORAGE_KEY, palette);
   window.dispatchEvent(new Event(PALETTE_EVENT));

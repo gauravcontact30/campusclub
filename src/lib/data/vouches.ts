@@ -10,7 +10,7 @@ function fromRow(row: Row): Vouch {
     id: String(row.id),
     meetupId: String(row.meetup_id),
     userId: String(row.user_id),
-    authorName: String(row.author_name ?? 'A VibeClub member'),
+    authorName: String(row.author_name ?? 'A CampusClub member'),
     authorAvatar: (row.author_avatar as string | null) ?? null,
     rating: Number(row.rating ?? 0),
     body: String(row.body ?? ''),

@@ -2,7 +2,7 @@ import { Quote } from 'lucide-react';
 import type { Vouch } from '@/types';
 import { ratingBreakdown, topHighlights } from '@/lib/data/vouches';
 import { Avatar } from '@/components/ui/avatar';
-import { RatingStars } from '@/components/ui/rating-stars';
+import { RatingBlocks } from '@/components/ui/rating-blocks';
 import { Badge } from '@/components/ui/badge';
 import { formatDay } from '@/lib/utils';
 
@@ -20,7 +20,7 @@ export function VouchSummary({ vouches }: { vouches: Vouch[] }) {
     <div className="surface-card grid gap-6 p-6 sm:grid-cols-[auto_1fr]">
       <div className="text-center sm:text-left">
         <p className="font-display text-5xl font-bold leading-none text-content">{average.toFixed(1)}</p>
-        <RatingStars value={average} className="mt-2 justify-center sm:justify-start" />
+        <RatingBlocks value={average} className="mt-2 justify-center sm:justify-start" />
         <p className="mt-1.5 text-sm text-content/60">
           {vouches.length} {vouches.length === 1 ? 'person' : 'people'} who went
         </p>
@@ -72,7 +72,7 @@ export function VouchList({ vouches }: { vouches: Vouch[] }) {
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-content">{vouch.authorName}</p>
               <p className="flex items-center gap-2 text-xs text-content/55">
-                <RatingStars value={vouch.rating} size={13} />
+                <RatingBlocks value={vouch.rating} size={13} />
                 {formatDay(vouch.createdAt)}
               </p>
             </div>

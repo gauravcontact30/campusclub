@@ -1,6 +1,7 @@
-import { BadgeCheck, Star } from 'lucide-react';
+import { BadgeCheck } from 'lucide-react';
 import type { HostSummary } from '@/types';
 import { Avatar } from '@/components/ui/avatar';
+import { RatingBlocks } from '@/components/ui/rating-blocks';
 import { formatDay } from '@/lib/utils';
 
 export function HostCard({ host }: { host: HostSummary }) {
@@ -17,9 +18,9 @@ export function HostCard({ host }: { host: HostSummary }) {
             {host.verified && <BadgeCheck size={16} className="text-brand" aria-label="Verified host" />}
           </p>
           <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-content/60">
-            <span className="inline-flex items-center gap-1">
-              <Star size={13} className="text-glint" fill="currentColor" />
-              {host.rating.toFixed(1)}
+            <span className="inline-flex items-center gap-1.5">
+              <RatingBlocks value={host.rating} size={11} />
+              <span className="font-semibold text-content">{host.rating.toFixed(1)}</span>
             </span>
             <span>{host.hostedCount} meetups hosted</span>
             <span>Member since {formatDay(host.memberSince)}</span>

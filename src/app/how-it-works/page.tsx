@@ -6,7 +6,7 @@ import { FREE_CANCELLATION_HOURS } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'How it works',
-  description: 'How joining works, what the join fee pays for, what hosts earn, and how VibeClub keeps meetups safe.',
+  description: 'How joining works, what the join fee pays for, what hosts earn, and how CampusClub keeps meetups safe.',
 };
 
 const JOINING = [
@@ -78,7 +78,7 @@ export default function HowItWorksPage() {
             Pay for the one thing you are going to. Nothing else.
           </h1>
           <p className="lede mt-5">
-            VibeClub is a board of things happening near you, run by people who live near you. Every meetup carries a
+            CampusClub is a board of things happening near you, run by people who live near you. Every meetup carries a
             join fee its host sets, and that fee is the entire transaction — there is no membership standing between
             you and the first one.
           </p>

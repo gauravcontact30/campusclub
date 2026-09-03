@@ -19,7 +19,7 @@ export interface DemoDb {
   saves: { userId: string; meetupId: string }[];
 }
 
-const globalRef = globalThis as unknown as { __vibeclubDb?: DemoDb };
+const globalRef = globalThis as unknown as { __campusclubDb?: DemoDb };
 
 function createDb(): DemoDb {
   return {
@@ -37,14 +37,14 @@ function createDb(): DemoDb {
 }
 
 export function db(): DemoDb {
-  if (!globalRef.__vibeclubDb) globalRef.__vibeclubDb = createDb();
-  return globalRef.__vibeclubDb;
+  if (!globalRef.__campusclubDb) globalRef.__campusclubDb = createDb();
+  return globalRef.__campusclubDb;
 }
 
 /** Test helper — wipes mutations back to the seeded baseline. */
 export function resetDb() {
-  globalRef.__vibeclubDb = createDb();
-  return globalRef.__vibeclubDb;
+  globalRef.__campusclubDb = createDb();
+  return globalRef.__campusclubDb;
 }
 
 /** Rating + vouch count are derived, never stored, so they can't drift. */

@@ -30,7 +30,7 @@ const columns = [
       { href: '/host', label: 'Host a meetup' },
       { href: '/how-it-works#hosting', label: 'What hosts earn' },
       { href: '/how-it-works#safety', label: 'Trust & safety' },
-      { href: '/about', label: 'About VibeClub' },
+      { href: '/about', label: 'About CampusClub' },
       { href: '/signup', label: 'Create an account' },
     ],
   },

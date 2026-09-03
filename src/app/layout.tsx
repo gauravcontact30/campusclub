@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Manrope, Noto_Sans_Devanagari, Sora } from 'next/font/google';
+import { Archivo, Fraunces, Noto_Sans_Devanagari } from 'next/font/google';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
@@ -12,17 +12,19 @@ import { LocaleProvider } from '@/lib/i18n/client';
 import './globals.css';
 
 /**
- * Sora for headings — geometric, slightly technical, and it holds up at the
- * weight the display sizes need. Manrope underneath it for running text, which
- * is quieter and has the wider apertures small copy wants.
+ * The pairing carries the two halves of this design. Fraunces is a
+ * high-contrast serif with a soft, slightly wonky warmth — the editorial voice
+ * for headlines and the wordmark. Archivo is the working face underneath it:
+ * a utilitarian grotesque with tight, legible small sizes, which is what a
+ * dense result list and a filter sidebar actually need.
  */
-const display = Sora({
+const display = Fraunces({
   subsets: ['latin'],
   variable: '--font-display',
   display: 'swap',
 });
 
-const sans = Manrope({
+const sans = Archivo({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
@@ -54,16 +56,16 @@ export const metadata: Metadata = {
     type: 'website',
     url: SITE.url,
   },
-  // One file at every size: the mark is two circles and a lens, so nothing is
-  // lost at 16px and no simplified favicon variant is needed.
+  // One file at every size: the mark is an arc and a dot, so nothing is lost at
+  // 16px and no simplified favicon variant is needed.
   icons: { icon: '/logo.svg', apple: '/logo.svg' },
 };
 
 export const viewport: Viewport = {
   // One per theme, so the browser chrome matches the page it frames.
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F7F7FB' },
-    { media: '(prefers-color-scheme: dark)', color: '#0C0E14' },
+    { media: '(prefers-color-scheme: light)', color: '#FBF7F0' },
+    { media: '(prefers-color-scheme: dark)', color: '#161311' },
   ],
   width: 'device-width',
   initialScale: 1,

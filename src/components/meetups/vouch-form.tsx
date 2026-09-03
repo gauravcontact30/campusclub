@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from 'react';
 import { addVouchAction } from '@/app/actions/vouches';
 import { Button } from '@/components/ui/button';
 import { Field, Textarea } from '@/components/ui/field';
-import { RatingInput } from '@/components/ui/rating-stars';
+import { RatingInput } from '@/components/ui/rating-blocks';
 import { useUiStore } from '@/store/ui-store';
 import { VOUCH_HIGHLIGHTS } from '@/lib/constants';
 import { cn } from '@/lib/utils';

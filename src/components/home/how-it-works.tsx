@@ -1,56 +1,60 @@
-import { CalendarCheck, CreditCard, Search, Users } from 'lucide-react';
-
 /**
  * Numbered because it genuinely is a sequence — you cannot pay before you have
- * found something, and the fourth step only exists because of the third.
+ * found something, and the fourth step only exists because of the third. The
+ * numerals are set large in the display serif and carry the rhythm of the
+ * section on their own, so each step needs no icon competing with them.
  */
 const STEPS = [
   {
-    icon: Search,
     title: 'Find something near you',
-    body: 'Filter by what you want to do, how far you will travel, and when you are free. Everything on the board is within your city.',
+    body: 'Search or filter by what you want to do, when you are free, and how far you will travel. Everything on the board is inside your city, and most of it is inside your neighbourhood.',
   },
   {
-    icon: CreditCard,
     title: 'Pay that meetup’s join fee',
-    body: 'One payment, for one meetup. It covers the host’s costs — the court, the day pass, the food. No subscription needed to start.',
+    body: 'One payment, for one meetup. It covers the host’s costs — the court, the day pass, the study room, the food. No subscription is needed to start, and the listing shows the exact amount first.',
   },
   {
-    icon: Users,
     title: 'Turn up',
-    body: 'You get the exact address, who else is coming, and what to bring. Most groups are between six and twelve people.',
+    body: 'You get the exact address, who else is coming, and what to bring. Most groups are between six and twelve people, and about half of everyone there came on their own the first time.',
   },
   {
-    icon: CalendarCheck,
     title: 'Say how it went',
-    body: 'Only people who actually attended can leave feedback, which is why the ratings here mean something.',
+    body: 'Only people who actually attended can leave feedback, which is the entire reason the ratings here are worth reading before you spend anything.',
   },
 ];
 
 export function HowItWorks() {
   return (
     <section className="container-page py-20" aria-labelledby="how-heading">
-      <p className="eyebrow">Four steps</p>
-      <h2 id="how-heading" className="display-lg mt-3 max-w-2xl text-balance text-content">
-        Joining costs less than the coffee you would have had alone.
-      </h2>
+      <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <p className="eyebrow">How it works</p>
+          <h2 id="how-heading" className="display-lg mt-3 text-balance text-content">
+            Joining costs less than the coffee you would have had alone.
+          </h2>
+          <p className="lede mt-5">
+            Four steps, and you only pay at the second one. Everything before it is free to look at, for as long as
+            you like.
+          </p>
+        </div>
 
-      <ol className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {STEPS.map((step, i) => (
-          <li key={step.title} className="surface-card flex flex-col gap-3 p-6">
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand/12 text-brand">
-                <step.icon size={19} />
-              </span>
-              <span className="font-display text-sm font-bold tabular-nums text-content/35">
+        <ol className="space-y-px">
+          {STEPS.map((step, i) => (
+            <li key={step.title} className="flex gap-6 border-t border-content/12 py-7 first:border-t-0 first:pt-0">
+              <span
+                className="font-display text-4xl font-semibold leading-none text-brand/35 tabular-nums"
+                aria-hidden
+              >
                 {String(i + 1).padStart(2, '0')}
               </span>
-            </div>
-            <h3 className="font-display text-lg font-bold text-content">{step.title}</h3>
-            <p className="text-sm leading-relaxed text-content/70">{step.body}</p>
-          </li>
-        ))}
-      </ol>
+              <div className="min-w-0">
+                <h3 className="font-display text-xl font-semibold text-content">{step.title}</h3>
+                <p className="mt-2 text-[0.95rem] leading-relaxed text-content/70">{step.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
     </section>
   );
 }

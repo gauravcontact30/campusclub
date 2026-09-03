@@ -6,7 +6,7 @@ import { PAYMENT_MODE } from '@/lib/payments/config';
 
 export const metadata: Metadata = {
   title: 'Passes',
-  description: 'Pay per meetup, or pre-buy joins on a pass. No subscription is required to use VibeClub.',
+  description: 'Pay per meetup, or pre-buy joins on a pass. No subscription is required to use CampusClub.',
 };
 
 const NOTES = [
