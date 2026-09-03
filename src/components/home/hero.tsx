@@ -11,8 +11,8 @@ import type { HostSummary } from '@/types';
  * Solid colour, not initials: at 28px with a third of each circle clipped by
  * its neighbour, two-letter initials just produce unreadable fragments of
  * text. A flat tint reads instantly as "a person" without asking to be read,
- * and it echoes the mark's own overlapping-discs motif instead of competing
- * with it.
+ * and it carries the same brand/ink/signal hierarchy as the mark itself
+ * instead of introducing a fourth meaning for colour.
  */
 const AVATAR_TINTS = ['bg-brand', 'bg-content-200', 'bg-signal'];
 
