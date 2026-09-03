@@ -1,6 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useLocale } from '@/lib/i18n/client';
+import { fill } from '@/lib/i18n/format';
 import { useState } from 'react';
 import { MapPin, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +12,7 @@ const QUICK = ['Filter coffee', 'Natural wine', 'Reformer pilates', 'Plumber', '
 
 export function HeroSearch() {
   const router = useRouter();
+  const { t } = useLocale();
   const [term, setTerm] = useState('');
   const [city, setCity] = useState('');
 
@@ -23,8 +26,8 @@ export function HeroSearch() {
 
   return (
     <div className="rounded-4xl border border-content/15 bg-content/5 p-5 backdrop-blur sm:p-7">
-      <p className="font-display text-lg font-semibold text-content">What are you looking for tonight?</p>
-      <p className="mt-1 text-sm text-content/60">Search 200+ reviewed places, or start with a category.</p>
+      <p className="font-display text-lg font-semibold text-content">{t.heroSearch.title}</p>
+      <p className="mt-1 text-sm text-content/60">{fill(t.heroSearch.subtitle, { count: 200 })}</p>
 
       <form onSubmit={submit} className="mt-5 space-y-3">
         <div className="flex items-center gap-2 rounded-2xl bg-canvas px-4 py-3">
@@ -32,7 +35,7 @@ export function HeroSearch() {
           <input
             value={term}
             onChange={(e) => setTerm(e.target.value)}
-            placeholder="Tacos, barbers, pilates…"
+            placeholder={t.heroSearch.termPlaceholder}
             aria-label="What are you looking for?"
             className="w-full bg-transparent text-sm text-content placeholder:text-content/50 focus:outline-none"
           />
@@ -46,7 +49,7 @@ export function HeroSearch() {
             aria-label="City"
             className="w-full bg-transparent text-sm text-content focus:outline-none"
           >
-            <option value="">Anywhere</option>
+            <option value="">{t.heroSearch.anywhere}</option>
             {CITIES.map((c) => (
               <option key={c.slug} value={c.slug}>
                 {c.name}, {c.country}
@@ -56,7 +59,7 @@ export function HeroSearch() {
         </div>
 
         <Button type="submit" size="lg" full>
-          Search SitNext
+          {t.heroSearch.submit}
         </Button>
       </form>
 

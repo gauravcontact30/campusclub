@@ -97,7 +97,7 @@ export function QuizStepper({ signedIn, initialAnswers }: { signedIn: boolean; i
                 aria-pressed={active}
                 className={cn(
                   'group rounded-3xl border p-5 text-left transition-all hover:-translate-y-0.5',
-                  active ? 'border-brand bg-brand text-content' : 'border-content/15 bg-canvas-700 hover:border-content/40',
+                  active ? 'border-brand bg-brand text-on-brand' : 'border-content/15 bg-canvas-700 hover:border-content/40',
                 )}
               >
                 <span className="flex items-center justify-between gap-3">
@@ -105,7 +105,7 @@ export function QuizStepper({ signedIn, initialAnswers }: { signedIn: boolean; i
                   <span
                     className={cn(
                       'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border',
-                      active ? 'border-brand bg-brand text-content' : 'border-content/25',
+                      active ? 'border-brand bg-brand text-on-brand' : 'border-content/25',
                     )}
                   >
                     {active && <Check size={14} />}
@@ -138,7 +138,7 @@ export function QuizStepper({ signedIn, initialAnswers }: { signedIn: boolean; i
         ) : (
           <Link
             href="/signup?next=/dinners/quiz"
-            className="inline-flex h-14 items-center rounded-full bg-brand px-8 font-semibold text-content hover:bg-brand-600"
+            className="inline-flex h-14 items-center rounded-full bg-brand px-8 font-semibold text-on-brand hover:bg-brand-600"
           >
             Create an account to save
           </Link>

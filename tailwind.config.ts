@@ -39,6 +39,13 @@ const config: Config = {
           700: withAlpha('--brand-700'),
           200: withAlpha('--brand-200'),
         },
+        /* Text and icons sitting ON a brand fill. Not `content`, because that
+           flips with the theme while the brand fill does not: the dark theme's
+           brand is the *lighter* of the two, so it wants dark type, and the
+           light theme's is darker, so it wants light type — the exact opposite
+           of `content` in both cases. Using `content` measured 3.13:1 and
+           3.67:1, below the 4.5:1 AA floor for normal text. */
+        'on-brand': withAlpha('--on-brand'),
         /* Warm gold. Carries the affirmative signal — open now, confirmed. */
         signal: {
           DEFAULT: withAlpha('--signal'),

@@ -127,7 +127,7 @@ export default async function BusinessPage({
             <div className="flex flex-wrap gap-2">
               <Link
                 href={`/businesses/${slug}/review`}
-                className="inline-flex h-11 items-center gap-2 rounded-full bg-brand px-5 text-sm font-semibold text-content hover:bg-brand-600"
+                className="inline-flex h-11 items-center gap-2 rounded-full bg-brand px-5 text-sm font-semibold text-on-brand hover:bg-brand-600"
               >
                 <Star size={16} /> Write a review
               </Link>
@@ -169,7 +169,7 @@ export default async function BusinessPage({
                     scroll={false}
                     className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                       reviewSort === option.value
-                        ? 'border-brand bg-brand text-content'
+                        ? 'border-brand bg-brand text-on-brand'
                         : 'border-content/15 text-content/60 hover:border-content/40'
                     }`}
                   >

@@ -352,6 +352,73 @@ degrades any remote image to a deterministic brand gradient if it fails to load.
 
 ---
 
+## Languages
+
+English and Hindi, switched from the header (and from the mobile drawer). English
+is the default.
+
+The locale lives in a **cookie**, not in the URL. Server components read it with
+`cookies()` and render the right dictionary, so switching re-renders the whole
+tree rather than swapping labels on the client. The trade is deliberate and worth
+knowing: every route stays exactly where it is — no `/en` and `/hi` segments, no
+rewriting every link — but there are no per-language URLs, which is what would
+push you to routed locales if search traffic mattered.
+
+`en.ts` is the source of truth and `Dictionary` is derived from it, so `hi.ts` is
+typed against the English shape. **A missing translation is a build error, not a
+blank space on the page** — delete one key from the Hindi file and `tsc` names it.
+
+Hindi also loads its own face. Neither Bricolage Grotesque nor Plus Jakarta Sans
+carries Devanagari, so Hindi was falling back to whatever the operating system
+happened to have — different on every machine and matched to nothing. Noto Sans
+Devanagari is appended to both stacks, so Latin glyphs still come from the brand
+faces and only Devanagari falls through to it.
+
+Translated so far: navigation, header and drawer, theme and palette controls,
+the hero and its search panel, the directory heading, the closing call to action,
+and the assistant panel. Page bodies beyond those are still English. Seeded
+business names, descriptions and reviews stay in English on purpose — that is
+member content, not interface copy, and translating it would be inventing data.
+
+---
+
+## The assistant
+
+A chat panel on every page, opened from the launcher bottom-right. With
+`ANTHROPIC_API_KEY` set it is a real Claude conversation (`claude-opus-5`,
+streamed) that answers from **this** site rather than from general knowledge:
+four tools sit between the model and the data layer the pages already render
+from.
+
+| Tool | Answers |
+| --- | --- |
+| `search_places` | Any "somewhere to eat / drink / go" question — by name, cuisine, city, category, price or rating |
+| `get_place` | One listing in full: hours, contact, address, recent review quotes |
+| `list_dinners` | Upcoming Wednesday tables, seats left, price per city |
+| `get_site_facts` | Plans, cities, categories, and how the dinners actually work |
+
+The system prompt forbids a factual claim that did not come back through a
+tool, so the assistant says "I don't know" rather than inventing a rating or an
+address. Tool results are labelled as data: business descriptions and review
+bodies are member-written, so the prompt tells the model to ignore anything in
+them that reads as an instruction.
+
+Three things worth knowing about the implementation:
+
+- **Tools use plain JSON Schema, not the SDK's zod helper.** That helper needs
+  zod 4 and this app is on zod 3 for its form validators; `betaTool` validates
+  arguments identically without forcing an upgrade.
+- **The route streams and is rate-limited.** Text deltas are forwarded to the
+  browser as they arrive. A per-IP window caps requests, because this endpoint
+  spends money on every call — it is in-memory, which is honest for one server
+  and needs a shared store before there are two.
+- **Demo mode.** With no key the panel still answers, from retrieval only, and
+  the header says *"Demo mode — answers from the directory, not the AI"*. The
+  whole app is built to run with zero configuration; a dead panel would break
+  that, and a panel pretending to be an AI would be worse than dead.
+
+---
+
 ## Agent tooling
 
 `.mcp.json` registers the **Playwright MCP** server so Claude Code can drive a

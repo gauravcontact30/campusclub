@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useLocale } from '@/lib/i18n/client';
+import { fill } from '@/lib/i18n/format';
 import { useRouter } from 'next/navigation';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, X } from 'lucide-react';
@@ -30,6 +32,7 @@ export function BusinessSearch({
   savedIds: string[];
 }) {
   const router = useRouter();
+  const { t } = useLocale();
   // The search box is the only filter that needs debouncing, so it lives in its
   // own state and the effective query is derived from it — no effect required.
   const [filters, setFilters] = useState<BusinessQuery>(initialQuery);
@@ -128,9 +131,9 @@ export function BusinessSearch({
     <div className="container-page py-8 sm:py-12">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="display-lg">The directory</h1>
+          <h1 className="display-lg">{t.directory.title}</h1>
           <p className="lede mt-2">
-            {results.total} places reviewed by people who actually went.
+            {fill(t.directory.subtitle, { count: results.total })}
           </p>
         </div>
 
@@ -140,7 +143,7 @@ export function BusinessSearch({
             <input
               value={termDraft}
               onChange={(e) => setTermDraft(e.target.value)}
-              placeholder="Search places, food, services…"
+              placeholder={t.directory.searchPlaceholder}
               aria-label="Search the directory"
               className="w-full bg-transparent text-sm focus:outline-none"
             />
@@ -225,7 +228,7 @@ export function BusinessSearch({
                     aria-current={results.page === i + 1}
                     className={cn(
                       'h-9 w-9 rounded-full text-sm font-semibold transition-colors',
-                      results.page === i + 1 ? 'bg-brand text-content' : 'text-content/60 hover:bg-content/5',
+                      results.page === i + 1 ? 'bg-brand text-on-brand' : 'text-content/60 hover:bg-content/5',
                     )}
                   >
                     {i + 1}

@@ -5,6 +5,7 @@ import { Check, Palette } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PALETTES, applyPalette } from '@/lib/theme';
 import { usePalette } from '@/hooks/use-palette';
+import { useLocale } from '@/lib/i18n/client';
 
 /**
  * The palette a visitor picked is only known on the client, so `usePalette`
@@ -14,6 +15,7 @@ import { usePalette } from '@/hooks/use-palette';
 export function ThemePicker({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const selected = usePalette();
+  const { t } = useLocale();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,7 +39,7 @@ export function ThemePicker({ className }: { className?: string }) {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label="Choose a colour theme"
+        aria-label={t.header.paletteLabel}
         className={cn(
           'h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content transition-colors hover:border-content/50',
           className ?? 'inline-flex',
@@ -52,7 +54,7 @@ export function ThemePicker({ className }: { className?: string }) {
           className="absolute right-0 z-50 mt-2 w-64 animate-fade-up overflow-hidden rounded-2xl border border-content/10 bg-canvas-700 shadow-lift"
         >
           <p className="px-4 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-content/50">
-            Colour
+            {t.header.paletteHeading}
           </p>
           <div className="p-2 pt-1">
             {PALETTES.map((p) => (

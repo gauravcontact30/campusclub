@@ -1,16 +1,18 @@
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth/session';
+import { getDictionary } from '@/lib/i18n/server';
 import { ButtonLink } from '@/components/ui/button';
 import { AccountMenu } from './account-menu';
 import { MobileNav } from './mobile-nav';
 import { NAV_LINKS } from './nav-links';
 import { Logo } from './logo';
 import { ThemeToggle } from './theme-toggle';
+import { LanguageToggle } from './language-toggle';
 import { ThemePicker } from './theme-picker';
 
 export async function Navbar() {
-  const user = await getCurrentUser();
+  const [user, t] = await Promise.all([getCurrentUser(), getDictionary()]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-content/10 bg-canvas/95 backdrop-blur supports-[backdrop-filter]:bg-canvas/80">
@@ -24,13 +26,14 @@ export async function Navbar() {
                 href={link.href}
                 className="rounded-full px-3.5 py-2 text-sm font-medium text-content/80 transition-colors hover:bg-content/10 hover:text-content"
               >
-                {link.label}
+                {t.nav[link.key]}
               </Link>
             ))}
           </nav>
         </div>
 
         <div className="flex items-center gap-2">
+          <LanguageToggle />
           <ThemeToggle />
           {/* Light/dark is a frequent action and stays one click. The palette is
               a rare one, so it hides behind a menu — and on small screens it
@@ -39,7 +42,7 @@ export async function Navbar() {
 
           <Link
             href="/businesses"
-            aria-label="Search businesses"
+            aria-label={t.header.search}
             className="hidden h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content transition-colors hover:border-content/50 sm:inline-flex"
           >
             <Search size={16} />
@@ -50,10 +53,10 @@ export async function Navbar() {
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
               <ButtonLink href="/login" variant="ghost" size="sm" className="text-content hover:bg-content/10">
-                Sign in
+                {t.header.signIn}
               </ButtonLink>
               <ButtonLink href="/signup" size="sm">
-                Join a dinner
+                {t.header.join}
               </ButtonLink>
             </div>
           )}

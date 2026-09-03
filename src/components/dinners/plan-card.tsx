@@ -46,7 +46,7 @@ export function PlanCard({
       )}
     >
       {plan.highlight && (
-        <span className="mb-4 w-fit rounded-full bg-brand px-3 py-1 text-xs font-semibold text-content">
+        <span className="mb-4 w-fit rounded-full bg-brand px-3 py-1 text-xs font-semibold text-on-brand">
           Most popular
         </span>
       )}

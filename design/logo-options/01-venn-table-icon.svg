@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="SitNext">
+  <rect width="48" height="48" rx="13" fill="#0F0A08"/>
+  <g transform="translate(4 4)" color="#EA6C3A">
+    <circle cx="15" cy="20" r="9.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+    <circle cx="25" cy="20" r="9.5" fill="none" stroke="currentColor" stroke-width="2.8"/>
+    <path d="M20 11.6a9.5 9.5 0 0 1 0 16.8 9.5 9.5 0 0 1 0-16.8z" fill="currentColor"/>
+  </g>
+</svg>

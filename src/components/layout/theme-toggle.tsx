@@ -3,6 +3,7 @@
 import { Moon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { applyTheme, currentTheme } from '@/lib/theme';
+import { useLocale } from '@/lib/i18n/client';
 
 /**
  * Which icon and which label show is decided by CSS from `data-theme` on
@@ -14,6 +15,7 @@ import { applyTheme, currentTheme } from '@/lib/theme';
  * the mobile drawer where a bare icon would be the only unlabelled row.
  */
 export function ThemeToggle({ className, showLabel = false }: { className?: string; showLabel?: boolean }) {
+  const { t } = useLocale();
   return (
     <button
       type="button"
@@ -25,8 +27,8 @@ export function ThemeToggle({ className, showLabel = false }: { className?: stri
     >
       <Sun size={showLabel ? 18 : 16} aria-hidden className="when-dark" />
       <Moon size={showLabel ? 18 : 16} aria-hidden className="when-light" />
-      <span className={cn('when-dark', !showLabel && 'sr-only')}>Switch to light theme</span>
-      <span className={cn('when-light', !showLabel && 'sr-only')}>Switch to dark theme</span>
+      <span className={cn('when-dark', !showLabel && 'sr-only')}>{t.header.themeToLight}</span>
+      <span className={cn('when-light', !showLabel && 'sr-only')}>{t.header.themeToDark}</span>
     </button>
   );
 }

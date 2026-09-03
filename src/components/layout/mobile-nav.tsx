@@ -10,7 +10,9 @@ import { useUiStore } from '@/store/ui-store';
 import { ButtonLink } from '@/components/ui/button';
 import { signOutAction } from '@/app/actions/auth';
 import { ThemeToggle } from './theme-toggle';
+import { LanguageToggle } from './language-toggle';
 import { PaletteRow } from './palette-row';
+import { useLocale } from '@/lib/i18n/client';
 import type { UserProfile } from '@/types';
 
 export function MobileNav({ user }: { user: UserProfile | null }) {
@@ -18,6 +20,7 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
   const toggle = useUiStore((s) => s.toggleMobileNav);
   const close = useUiStore((s) => s.closeMobileNav);
   const pathname = usePathname();
+  const { t } = useLocale();
 
   useEffect(() => close(), [pathname, close]);
 
@@ -32,7 +35,7 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
     <>
       <button
         onClick={toggle}
-        aria-label={open ? 'Close menu' : 'Open menu'}
+        aria-label={open ? t.header.closeMenu : t.header.openMenu}
         aria-expanded={open}
         className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content md:hidden"
       >
@@ -54,7 +57,7 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
                   href={link.href}
                   className="rounded-2xl px-4 py-4 font-display text-2xl text-content hover:bg-content/10"
                 >
-                  {link.label}
+                  {t.nav[link.key]}
                 </Link>
               ))}
             </nav>
@@ -65,16 +68,21 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
                 className="flex w-full items-center gap-3 rounded-2xl border border-content/15 px-4 py-3.5 text-sm font-semibold text-content transition-colors hover:bg-content/10"
               />
 
+              <LanguageToggle
+                showLabel
+                className="flex w-full items-center gap-3 rounded-2xl border border-content/15 px-4 py-3.5 text-sm font-semibold text-content transition-colors hover:bg-content/10"
+              />
+
               <PaletteRow />
 
               {user ? (
                 <>
-                  <p className="px-1 text-sm text-content/60">Signed in as {user.email}</p>
+                  <p className="px-1 text-sm text-content/60">{t.drawer.signedInAs} {user.email}</p>
                   <ButtonLink href="/profile" variant="secondary" full size="lg">
-                    Your profile
+                    {t.drawer.profile}
                   </ButtonLink>
                   <ButtonLink href="/saved" variant="ghost" full size="lg" className="text-content hover:bg-content/10">
-                    Saved places
+                    {t.drawer.saved}
                   </ButtonLink>
                   <ButtonLink
                     href="/bookings"
@@ -83,24 +91,24 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
                     size="lg"
                     className="text-content hover:bg-content/10"
                   >
-                    Your dinners
+                    {t.drawer.bookings}
                   </ButtonLink>
                   <form action={signOutAction}>
                     <button
                       type="submit"
                       className="w-full rounded-full px-5 py-3 text-sm font-semibold text-brand hover:bg-content/10"
                     >
-                      Sign out
+                      {t.drawer.signOut}
                     </button>
                   </form>
                 </>
               ) : (
                 <>
                   <ButtonLink href="/signup" full size="lg">
-                    Join a dinner
+                    {t.header.join}
                   </ButtonLink>
                   <ButtonLink href="/login" variant="secondary" full size="lg">
-                    Sign in
+                    {t.header.signIn}
                   </ButtonLink>
                 </>
               )}
