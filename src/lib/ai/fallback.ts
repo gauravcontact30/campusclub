@@ -1,7 +1,7 @@
-import { searchBusinesses } from '@/lib/data/businesses';
-import { getDinners } from '@/lib/data/dinners';
-import { CATEGORIES, CITIES, PLANS, SITE } from '@/lib/constants';
-import { formatMoneyForCity, openStatusLabel, priceLabel } from '@/lib/utils';
+import { searchMeetups } from '@/lib/data/meetups';
+import { CATEGORIES, CITIES, FREE_CANCELLATION_HOURS, PASSES, SITE } from '@/lib/constants';
+import { formatDateTime, formatFee, formatMoney } from '@/lib/utils';
+import type { MeetupWithHost, WhenFilter } from '@/types';
 
 /**
  * What the panel answers with when no ANTHROPIC_API_KEY is set.
@@ -12,19 +12,21 @@ import { formatMoneyForCity, openStatusLabel, priceLabel } from '@/lib/utils';
  * pretend one would be worse than dead.
  */
 const STOPWORDS = new Set([
-  'a','an','and','any','are','around','as','at','best','can','find','for','get','good','great','has','have',
-  'how','i','in','is','it','me','my','near','nearby','of','on','or','place','places','rated','recommend',
-  'show','some','somewhere','the','there','to','tonight','top','want','what','where','which','with','you',
+  'a','an','and','any','are','around','as','at','best','can','find','for','get','going','good','great','has',
+  'have','how','i','in','is','it','join','joining','me','my','near','nearby','of','on','or','something',
+  'meetup','meetups','show','some','somewhere','the','there','thing','things','this','to','today','tonight',
+  'top','want','week','what','where','which','with','you','your',
 ]);
 
 /**
- * The directory matches a term as a substring of one joined string, so a whole
+ * The repository matches a term as a substring of one joined string, so a whole
  * sentence never matches anything. Pull the words that carry meaning and try
- * them longest-first — "best rated coffee in Bengaluru" has to become "coffee".
+ * them longest-first — "something to do in Pune this week" has to become "pune"
+ * via the city match and then an empty term.
  */
 function keywords(question: string, cityName?: string): string[] {
-  // Split the city into its own words: filtering the whole name let "york"
-  // through, which then matched the city text and looked like a real hit.
+  // Split the city into its own words, so a city already recognised separately
+  // is not also tried as a search term and counted as a real text match.
   const cityWords = new Set((cityName ?? '').toLowerCase().split(/\s+/).filter(Boolean));
   return question
     .toLowerCase()
@@ -34,40 +36,78 @@ function keywords(question: string, cityName?: string): string[] {
     .sort((a, b) => b.length - a.length);
 }
 
+/** "tomorrow morning" and "this weekend" are the two people actually type. */
+function whenFrom(q: string): WhenFilter {
+  if (/\btomorrow\b/.test(q)) return 'tomorrow';
+  if (/\b(weekend|saturday|sunday)\b/.test(q)) return 'weekend';
+  if (/\b(today|tonight|this evening)\b/.test(q)) return 'today';
+  if (/\b(this week|next 7|coming week)\b/.test(q)) return 'week';
+  return 'any';
+}
+
+function line(m: MeetupWithHost) {
+  const left = Math.max(0, m.spotsTotal - m.spotsTaken);
+  return (
+    `• ${m.title} — ${formatDateTime(m.startsAt)} · ${m.area}, ${m.city} · ` +
+    `${formatFee(m.joinFeeCents)} to join · ${left === 0 ? 'full, waitlist open' : `${left} spots left`} — /meetups/${m.slug}`
+  );
+}
+
 export async function demoAnswer(question: string): Promise<string> {
   const q = question.toLowerCase();
   const city = CITIES.find((c) => q.includes(c.name.toLowerCase()));
 
-  if (/(price|cost|plan|membership|subscri|how much)/.test(q)) {
-    const lines = PLANS.map(
-      (p) => `• ${p.name} — ${p.priceCents === 0 ? 'free' : formatMoneyForCity(p.priceCents, 'Bengaluru')} ${p.cadence}. ${p.tagline}`,
+  if (/(refund|cancel|money back)/.test(q)) {
+    return [
+      `Cancel more than ${FREE_CANCELLATION_HOURS} hours before a meetup starts and the join fee comes back automatically — a pass credit returns to your balance the same way.`,
+      `Inside ${FREE_CANCELLATION_HOURS} hours it does not, because the host has usually already paid for the venue.`,
+      'If a host cancels, everyone is refunded in full. Manage your joins on /my-meetups.',
+    ].join('\n');
+  }
+
+  if (/(pass|credit|subscri|membership)/.test(q)) {
+    const lines = PASSES.map(
+      (p) =>
+        `• ${p.name} — ${p.priceCents === 0 ? 'free' : `${formatMoney(p.priceCents)} ${p.cadence}`}. ${p.tagline}`,
     );
-    return `Membership is only for the dinners; the directory and reviews are free forever.\n\n${lines.join('\n')}\n\nFull comparison on /pricing.`;
+    return `You do not need a pass. The default is paying the join fee for the one meetup you want, and passes just pre-buy those joins for people who go several times a week.\n\n${lines.join('\n')}\n\nFull comparison on /passes.`;
   }
 
-  // "dinner in London" means a restaurant; only club-specific wording routes
-  // here. The bare word "dinner" belongs to the directory, not the supper club.
-  if (/(wednesday|stranger|dinner club|supper club|book a seat|seats? left|join a dinner|matching quiz)/.test(q)) {
-    const events = (await getDinners(city?.name)).slice(0, 3);
-    if (!events.length) return `No dinners are scheduled${city ? ` in ${city.name}` : ''} yet. See /dinners for every city.`;
-    const lines = events.map((e) => {
-      const left = Math.max(0, e.seatsTotal - e.seatsTaken);
-      return `• ${e.city} · ${e.neighborhood} · ${new Date(e.startsAt).toDateString()} · ${left} of ${e.seatsTotal} seats left — /dinners/${e.id}`;
-    });
-    return `Dinners run every Wednesday at 8pm, six seats a table.\n\n${lines.join('\n')}\n\nEverything else is on /dinners.`;
+  if (/(price|cost|fee|how much|charge)/.test(q)) {
+    return [
+      'Every meetup carries a join fee its host sets — usually between free and about ₹499 — and that is the whole cost. It covers the host\'s costs: the court, a gym day pass, the study room, the food.',
+      'There is no subscription unless you want one. Browse the fees on /meetups, or see /passes.',
+    ].join('\n');
   }
 
+  if (/(host|organis|organiz|list my|run a meetup)/.test(q)) {
+    return 'Hosting is free and you keep the whole join fee. You set the spots, the level and the fee; we handle payments, the waitlist and refunds. Start at /host.';
+  }
+
+  const when = whenFrom(q);
   const words = keywords(question, city?.name);
-  const category = CATEGORIES.find((c) => words.some((w) => c.name.toLowerCase().includes(w) || c.slug.includes(w)));
+  const category = CATEGORIES.find((c) =>
+    words.some((w) => c.name.toLowerCase().includes(w) || c.slug.includes(w) || c.verb.toLowerCase().includes(w)),
+  );
 
-  let items: Awaited<ReturnType<typeof searchBusinesses>>['items'] = [];
+  let items: MeetupWithHost[] = [];
   let total = 0;
   let matchedTerm: string | null = null;
-  for (const term of [words.join(' '), ...words, '']) {
-    const result = await searchBusinesses({
+
+  // Longest word first, then a final pass with no term at all. That last pass
+  // is only worth making when something else was recognised — a city, a
+  // category, a time window — or when the question carried no real words to
+  // begin with ("what is on?"). Otherwise showing four unrelated meetups under
+  // "nothing matched" is worse than saying so plainly.
+  const attempts = [words.join(' '), ...words].filter(Boolean);
+  if (city || category || when !== 'any' || !attempts.length) attempts.push('');
+
+  for (const term of attempts) {
+    const result = await searchMeetups({
       term,
-      city: city?.name ?? '',
+      city: city?.slug ?? '',
       category: category?.slug ?? '',
+      when,
       perPage: 4,
     });
     if (result.items.length) {
@@ -75,23 +115,16 @@ export async function demoAnswer(question: string): Promise<string> {
       matchedTerm = term || null;
       break;
     }
-    // The last pass drops the term entirely; if a city or category was
-    // recognised that still answers, and if not there is genuinely nothing.
-    if (!term && !city && !category) break;
   }
 
   if (items.length) {
-    const lines = items.map(
-      (b) =>
-        `• ${b.name} — ${b.rating.toFixed(1)}★ · ${priceLabel(b.priceLevel, b.city)} · ${b.neighborhood}, ${b.city} · ${openStatusLabel(b.hours)} — /businesses/${b.slug}`,
-    );
     // Say when the words did not match and only the city or category did —
-    // "4 places match that" would be a lie about a fallback.
+    // "4 meetups match that" would be a lie about a fallback.
     const lead = matchedTerm
-      ? `${total} place${total === 1 ? '' : 's'} match that.`
-      : `Nothing matched those words${city ? `, but here is what is on ${city.name}` : ', but here is what is in the directory'}.`;
-    return `${lead}\n\n${lines.join('\n')}`;
+      ? `${total} meetup${total === 1 ? '' : 's'} match that.`
+      : `Nothing matched those words${city ? `, but here is what is on in ${city.name}` : ', but here is what is on'}.`;
+    return `${lead}\n\n${items.map(line).join('\n')}`;
   }
 
-  return `I could not find anything for that in the directory. Try /businesses to browse all ${SITE.name} listings, or /dinners for this week's tables.`;
+  return `I could not find anything for that on the board. Try /meetups to see everything that is on, or /how-it-works for how joining and fees work on ${SITE.name}.`;
 }

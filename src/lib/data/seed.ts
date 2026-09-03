@@ -1,121 +1,51 @@
-import type { Business, DinnerEvent, PriceLevel, Review, UserProfile, WeekHours } from '@/types';
+import type { Audience, Cadence, HostSummary, Level, Meetup, UserProfile, Vouch } from '@/types';
+import { slugify } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */
-/* Opening-hours presets (Monday-first)                                */
+/* Time helpers                                                        */
 /* ------------------------------------------------------------------ */
-const h = (open: string | null, close: string | null) => ({ open, close });
-const closed = h(null, null);
 
-const preset = {
-  cafe: [h('07:30', '21:00'), h('07:30', '21:00'), h('07:30', '21:00'), h('07:30', '21:00'), h('07:30', '22:30'), h('08:00', '22:30'), h('08:00', '20:00')] as WeekHours,
-  restaurant: [closed, h('12:00', '15:00'), h('12:00', '23:00'), h('12:00', '23:00'), h('12:00', '23:59'), h('11:30', '23:59'), h('11:30', '22:00')] as WeekHours,
-  bar: [h('17:00', '00:30'), h('17:00', '00:30'), h('17:00', '01:00'), h('17:00', '01:00'), h('16:00', '02:00'), h('16:00', '02:00'), h('16:00', '23:00')] as WeekHours,
-  service: [h('09:00', '18:00'), h('09:00', '18:00'), h('09:00', '18:00'), h('09:00', '18:00'), h('09:00', '17:00'), h('10:00', '14:00'), closed] as WeekHours,
-  gym: [h('06:00', '22:00'), h('06:00', '22:00'), h('06:00', '22:00'), h('06:00', '22:00'), h('06:00', '21:00'), h('07:00', '19:00'), h('07:00', '19:00')] as WeekHours,
-  salon: [closed, h('10:00', '19:00'), h('10:00', '19:00'), h('10:00', '20:00'), h('10:00', '20:00'), h('09:00', '20:00'), h('10:00', '17:00')] as WeekHours,
-  clinic: [h('08:30', '19:00'), h('08:30', '19:00'), h('08:30', '19:00'), h('08:30', '19:00'), h('08:30', '17:00'), h('09:00', '13:00'), closed] as WeekHours,
-  shop: [h('11:00', '20:00'), h('11:00', '20:00'), h('11:00', '20:00'), h('11:00', '20:00'), h('11:00', '21:00'), h('10:00', '21:00'), h('11:00', '19:00')] as WeekHours,
-};
+/**
+ * Seeded meetups are pinned to *today*, not to a fixed calendar date, so the
+ * demo is never a graveyard of meetups that happened last year. Everything is
+ * expressed as an offset in days from midnight this morning.
+ */
+function at(dayOffset: number, hour: number, minute = 0) {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + dayOffset);
+  d.setHours(hour, minute, 0, 0);
+  return d.toISOString();
+}
 
-const cover = (n: number) => `/img/covers/cover-${String(((n - 1) % 12) + 1).padStart(2, '0')}.svg`;
-const gallery = (n: number) => [cover(n), cover(n + 3), cover(n + 6), cover(n + 9), cover(n + 5)];
+function plusMinutes(iso: string, minutes: number) {
+  return new Date(new Date(iso).getTime() + minutes * 60_000).toISOString();
+}
 
-type Row = {
-  name: string;
-  category: keyof typeof categoryHours;
-  city: string;
-  state: string;
-  neighborhood: string;
-  address: string;
-  postalCode: string;
-  lat: number;
-  lng: number;
-  price: PriceLevel;
-  tags: string[];
-  description: string;
-  amenities: string[];
-  phone: string;
-  claimed?: boolean;
-};
-
-const categoryHours = {
-  restaurants: preset.restaurant,
-  cafes: preset.cafe,
-  bars: preset.bar,
-  'home-services': preset.service,
-  'beauty-spa': preset.salon,
-  fitness: preset.gym,
-  shopping: preset.shop,
-  health: preset.clinic,
-};
-
-const rows: Row[] = [
-  { name: 'Third Wave Filter Room', category: 'cafes', city: 'Bengaluru', state: 'Karnataka', neighborhood: 'Indiranagar', address: '12, 100 Feet Road', postalCode: '560038', lat: 12.9719, lng: 77.6412, price: 2, tags: ['Filter coffee', 'Bakes', 'Work-friendly'], description: 'A narrow, sunlit room that takes South Indian filter coffee as seriously as a single-origin pour-over. The counter seats eleven, the playlist is all vinyl, and the cardamom bun sells out before noon.', amenities: ['Free Wi-Fi', 'Accepts cards', 'Vegan options', 'Outdoor seating'], phone: '+91 80 4123 8890', claimed: true },
-  { name: 'Nandini Dosa Camp', category: 'restaurants', city: 'Bengaluru', state: 'Karnataka', neighborhood: 'Malleshwaram', address: '7th Cross, Sampige Road', postalCode: '560003', lat: 13.0031, lng: 77.5697, price: 1, tags: ['South Indian', 'Breakfast', 'Legacy'], description: 'Four decades of benne dosa on the same cast-iron tawa. Queue outside from 7am, eat standing, leave changed. Cash preferred but they finally added a QR code in 2022.', amenities: ['Family friendly', 'Accepts cards'], phone: '+91 80 2334 5512' },
-  { name: 'Copper & Rye', category: 'bars', city: 'Bengaluru', state: 'Karnataka', neighborhood: 'Koramangala', address: '80 Feet Road, 4th Block', postalCode: '560034', lat: 12.9345, lng: 77.6266, price: 3, tags: ['Cocktails', 'Small plates', 'Date night'], description: 'A twelve-seat cocktail bar behind an unmarked teak door. The menu changes with what the bartenders find at the Russell Market, and the toasted-rice old fashioned has a small cult.', amenities: ['Late night', 'Reservations', 'Accepts cards'], phone: '+91 80 4890 2211', claimed: true },
-  { name: 'Sundar Home Repairs', category: 'home-services', city: 'Bengaluru', state: 'Karnataka', neighborhood: 'HSR Layout', address: '27, Sector 2', postalCode: '560102', lat: 12.9121, lng: 77.6446, price: 2, tags: ['Plumbing', 'Electrical', 'Same day'], description: 'A five-person crew that actually arrives inside the two-hour window they promise. Transparent parts pricing sent over WhatsApp before any work starts.', amenities: ['Accepts cards', 'Parking'], phone: '+91 98450 33122', claimed: true },
-  { name: 'The Long Room Studio', category: 'fitness', city: 'Bengaluru', state: 'Karnataka', neighborhood: 'Jayanagar', address: '11th Main, 4th Block', postalCode: '560011', lat: 12.9250, lng: 77.5938, price: 3, tags: ['Reformer pilates', 'Small groups', 'Beginner friendly'], description: 'Eight reformers, no mirrors, and instructors who remember which shoulder you injured. Classes cap at eight so nobody hides in the back row.', amenities: ['Wheelchair accessible', 'Accepts cards', 'Parking'], phone: '+91 80 4712 0098' },
-  { name: 'Paperboat Bookshop', category: 'shopping', city: 'Bengaluru', state: 'Karnataka', neighborhood: 'Basavanagudi', address: 'Gandhi Bazaar Main Road', postalCode: '560004', lat: 12.9425, lng: 77.5730, price: 2, tags: ['Independent', 'Translations', 'Events'], description: 'Kannada translations at the front, a startlingly good poetry wall at the back, and a Thursday reading series that regularly runs out of chairs.', amenities: ['Free Wi-Fi', 'Accepts cards', 'Family friendly'], phone: '+91 80 2667 1140' },
-  { name: 'Bandra Bhaji Bar', category: 'restaurants', city: 'Mumbai', state: 'Maharashtra', neighborhood: 'Bandra West', address: 'Waroda Road', postalCode: '400050', lat: 19.0596, lng: 72.8295, price: 2, tags: ['Street food', 'Late night', 'Vegetarian'], description: 'Pav bhaji finished with an obscene amount of butter, served until one in the morning to a crowd of musicians, nurses and cab drivers.', amenities: ['Late night', 'Vegan options', 'Accepts cards'], phone: '+91 22 2640 8877' },
-  { name: 'Salt & Sea Trattoria', category: 'restaurants', city: 'Mumbai', state: 'Maharashtra', neighborhood: 'Colaba', address: 'Mandlik Road', postalCode: '400001', lat: 18.9220, lng: 72.8330, price: 4, tags: ['Italian', 'Seafood', 'Wine list'], description: 'Coastal Italian by way of the Sassoon Dock auction. The tasting menu is six courses of restraint; the bar does a Negroni with local vermouth.', amenities: ['Reservations', 'Accepts cards', 'Outdoor seating'], phone: '+91 22 2202 4411', claimed: true },
-  { name: 'Marine Drive Barbers', category: 'beauty-spa', city: 'Mumbai', state: 'Maharashtra', neighborhood: 'Churchgate', address: 'Veer Nariman Road', postalCode: '400020', lat: 18.9322, lng: 72.8264, price: 2, tags: ['Hot towel', 'Walk-ins', 'Old school'], description: 'A chrome-and-leather barbershop that has been cutting the same fade since 1974. Twenty minutes, hot towel included, no appointment culture.', amenities: ['Accepts cards', 'Wheelchair accessible'], phone: '+91 22 2204 5566' },
-  { name: 'Sanjeevani Family Clinic', category: 'health', city: 'Mumbai', state: 'Maharashtra', neighborhood: 'Dadar', address: 'Ranade Road', postalCode: '400028', lat: 19.0212, lng: 72.8424, price: 2, tags: ['GP', 'Paediatrics', 'Walk-ins'], description: 'A neighbourhood practice where the doctor still calls the next day to check on you. Digital records, printed prescriptions, twelve-minute average wait.', amenities: ['Wheelchair accessible', 'Accepts cards', 'Family friendly'], phone: '+91 22 2445 9090', claimed: true },
-  { name: 'Chandni Chowk Chai House', category: 'cafes', city: 'Delhi', state: 'Delhi', neighborhood: 'Old Delhi', address: 'Gali Paranthe Wali', postalCode: '110006', lat: 28.6562, lng: 77.2307, price: 1, tags: ['Chai', 'Heritage', 'Cash'], description: 'Clay cups, a coal fire and a queue that snakes past the paratha shops. Order the tulsi chai and stand where the locals stand.', amenities: ['Family friendly'], phone: '+91 11 2326 7712' },
-  { name: 'Hauz Khas Vinyl Bar', category: 'bars', city: 'Delhi', state: 'Delhi', neighborhood: 'Hauz Khas', address: 'Deer Park Road', postalCode: '110016', lat: 28.5535, lng: 77.1943, price: 3, tags: ['Listening bar', 'Whisky', 'No TV'], description: 'A listening bar built around a restored 1978 sound system. Conversation is welcome, shouting is not, and the whisky flight leans Japanese.', amenities: ['Late night', 'Reservations', 'Accepts cards'], phone: '+91 11 4106 3320', claimed: true },
-  { name: 'GK Movers & Fitters', category: 'home-services', city: 'Delhi', state: 'Delhi', neighborhood: 'Greater Kailash', address: 'M Block Market', postalCode: '110048', lat: 28.5495, lng: 77.2426, price: 2, tags: ['Moving', 'Assembly', 'Insured'], description: 'Packers who label every box and re-assemble the wardrobe they took apart. Fixed quotes, insured in transit, no surprise loading charges.', amenities: ['Accepts cards', 'Parking'], phone: '+91 98110 44521' },
-  { name: 'The Clerkenwell Table', category: 'restaurants', city: 'London', state: 'England', neighborhood: 'Clerkenwell', address: '42 St John Street', postalCode: 'EC1M 4AY', lat: 51.5223, lng: -0.1024, price: 3, tags: ['British', 'Seasonal', 'Long table'], description: 'One menu, one sitting, one very long communal table. Whatever the market gave them that morning arrives in four courses, and strangers leave as a table.', amenities: ['Reservations', 'Accepts cards', 'Vegan options'], phone: '+44 20 7253 8811', claimed: true },
-  { name: 'Peckham Roasters', category: 'cafes', city: 'London', state: 'England', neighborhood: 'Peckham', address: '9 Blenheim Grove', postalCode: 'SE15 4QL', lat: 51.4713, lng: -0.0691, price: 2, tags: ['Speciality coffee', 'Pastries', 'Dog friendly'], description: 'A railway-arch roastery with a two-group lever machine and a queue of prams. The cortado is the benchmark everyone in SE15 measures against.', amenities: ['Free Wi-Fi', 'Pet friendly', 'Outdoor seating', 'Accepts cards'], phone: '+44 20 7639 2210' },
-  { name: 'Soho Sound Barbers', category: 'beauty-spa', city: 'London', state: 'England', neighborhood: 'Soho', address: '18 Berwick Street', postalCode: 'W1F 8RD', lat: 51.5138, lng: -0.1362, price: 3, tags: ['Barbering', 'Beard', 'Records'], description: 'Cuts on the ground floor, a record shop in the basement, and a waiting bench that has heard every band argument in Soho since 1998.', amenities: ['Accepts cards', 'Late night'], phone: '+44 20 7434 5566' },
-  { name: 'Hackney Strength Club', category: 'fitness', city: 'London', state: 'England', neighborhood: 'Hackney', address: '211 Mare Street', postalCode: 'E8 3QE', lat: 51.5432, lng: -0.0554, price: 3, tags: ['Strength', 'Coaching', '24/7'], description: 'Platforms, chalk and coaches who program for people with desk jobs. No mirrors selfie wall, no contracts, just a barbell and a plan.', amenities: ['Parking', 'Accepts cards', 'Wheelchair accessible'], phone: '+44 20 8985 3300', claimed: true },
-  { name: 'Greenpoint Supper Club', category: 'restaurants', city: 'New York', state: 'NY', neighborhood: 'Greenpoint', address: '155 Franklin Street', postalCode: '11222', lat: 40.7305, lng: -73.9566, price: 3, tags: ['New American', 'Natural wine', 'Communal'], description: 'A twenty-two seat room where dinner is served family style at 7pm sharp. The chef announces each dish from the pass, and the wine is all low-intervention.', amenities: ['Reservations', 'Accepts cards', 'Vegan options'], phone: '+1 718 383 2210', claimed: true },
-  { name: 'Bowery Espresso Bar', category: 'cafes', city: 'New York', state: 'NY', neighborhood: 'Lower East Side', address: '77 Bowery', postalCode: '10002', lat: 40.7168, lng: -73.9958, price: 2, tags: ['Espresso', 'Standing bar', 'Fast'], description: 'Italian-style standing bar: no laptops, no oat milk debates, ninety-second espresso and a pistachio cornetto out the door.', amenities: ['Accepts cards'], phone: '+1 212 966 4412' },
-  { name: 'East Village Nail Studio', category: 'beauty-spa', city: 'New York', state: 'NY', neighborhood: 'East Village', address: '311 E 9th Street', postalCode: '10003', lat: 40.7284, lng: -73.9857, price: 3, tags: ['Nails', 'Non-toxic', 'By appointment'], description: 'A five-chair studio using only 10-free polish, with a booking app that actually reflects availability. Ninety-minute slots, no upsell script.', amenities: ['Accepts cards', 'Wheelchair accessible'], phone: '+1 212 477 8890' },
-  { name: 'Brooklyn Bike Doctor', category: 'home-services', city: 'New York', state: 'NY', neighborhood: 'Williamsburg', address: '88 N 6th Street', postalCode: '11249', lat: 40.7192, lng: -73.9601, price: 2, tags: ['Mobile repair', 'Tune-ups', 'Same day'], description: 'A van, a stand and a mechanic who will fix your drivetrain outside your building while you take a call. Parts at cost plus labour, itemised.', amenities: ['Accepts cards', 'Parking'], phone: '+1 347 220 1187' },
-  { name: 'Alfama Tasca do Fado', category: 'restaurants', city: 'Lisbon', state: 'Lisboa', neighborhood: 'Alfama', address: 'Rua dos Remédios 74', postalCode: '1100-443', lat: 38.7128, lng: -9.1276, price: 2, tags: ['Portuguese', 'Fado', 'Family run'], description: 'Grilled sardines, house vinho verde and live fado from ten. Grandmother cooks, grandson sings, and the room goes silent for both.', amenities: ['Family friendly', 'Late night', 'Accepts cards'], phone: '+351 21 886 3311' },
-  { name: 'Príncipe Real Roastery', category: 'cafes', city: 'Lisbon', state: 'Lisboa', neighborhood: 'Príncipe Real', address: 'Rua da Escola Politécnica 20', postalCode: '1250-100', lat: 38.7167, lng: -9.1494, price: 2, tags: ['Coffee', 'Brunch', 'Garden'], description: 'A tiled townhouse with a walled garden out back, roasting on a 5kg Probat that you can watch from the counter.', amenities: ['Outdoor seating', 'Free Wi-Fi', 'Vegan options', 'Pet friendly'], phone: '+351 21 347 2200', claimed: true },
-  { name: 'Cais do Sodré Wine Room', category: 'bars', city: 'Lisbon', state: 'Lisboa', neighborhood: 'Cais do Sodré', address: 'Rua Nova do Carvalho 42', postalCode: '1200-292', lat: 38.7071, lng: -9.1449, price: 3, tags: ['Wine bar', 'Petiscos', 'Pink street'], description: 'Forty Portuguese wines by the glass in a room the size of a generous kitchen. Ask for something from the Dão and let them argue about it.', amenities: ['Late night', 'Outdoor seating', 'Accepts cards'], phone: '+351 21 346 7788' },
-];
-
-export const SEED_BUSINESSES: Business[] = rows.map((r, i) => ({
-  id: `b${String(i + 1).padStart(3, '0')}`,
-  slug: `${r.name.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-')}-${r.city.toLowerCase().replace(/\s+/g, '-')}`,
-  name: r.name,
-  categorySlug: r.category,
-  tags: r.tags,
-  description: r.description,
-  phone: r.phone,
-  website: `https://www.${r.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.example`,
-  address: r.address,
-  neighborhood: r.neighborhood,
-  city: r.city,
-  state: r.state,
-  postalCode: r.postalCode,
-  lat: r.lat,
-  lng: r.lng,
-  priceLevel: r.price,
-  coverImage: cover(i + 1),
-  images: gallery(i + 1),
-  hours: categoryHours[r.category],
-  amenities: r.amenities,
-  ownerId: r.claimed ? 'u001' : null,
-  isClaimed: Boolean(r.claimed),
-  createdAt: new Date(Date.UTC(2023, i % 12, ((i * 3) % 27) + 1)).toISOString(),
-  rating: 0,
-  reviewCount: 0,
-}));
+function daysAgo(n: number) {
+  const d = new Date();
+  d.setHours(12, 0, 0, 0);
+  d.setDate(d.getDate() - n);
+  return d.toISOString();
+}
 
 /* ------------------------------------------------------------------ */
 /* People                                                              */
 /* ------------------------------------------------------------------ */
-const people = [
-  ['Aarav Mehta', 'aarav@example.com', 'Bengaluru', 'Product designer. Will queue 40 minutes for a dosa.'],
-  ['Priya Nair', 'priya@example.com', 'Mumbai', 'Doctor by day, natural wine evangelist by night.'],
-  ['Daniel Osei', 'daniel@example.com', 'London', 'Structural engineer. Believes every city is a coffee city.'],
-  ['Sofia Almeida', 'sofia@example.com', 'Lisbon', 'Translator. Sits at the loudest end of the table.'],
-  ['Mei Lin Chow', 'mei@example.com', 'New York', 'Data scientist, marathon-adjacent, ferocious about noodles.'],
-  ['Rohan Kapoor', 'rohan@example.com', 'Delhi', 'Sound engineer. Owns more records than shelves.'],
-  ['Elena Rossi', 'elena@example.com', 'London', 'Chef turned food writer. Reviews are long, sorry.'],
-  ['Kabir Shah', 'kabir@example.com', 'Bengaluru', 'Founder. Has opinions on filter coffee ratios.'],
+
+const people: [name: string, email: string, city: string, bio: string, interests: string[]][] = [
+  ['Aarav Mehta', 'aarav@example.com', 'Bengaluru', 'Product designer. Runs a Saturday sketching table that has outlived three jobs.', ['skills', 'outdoors']],
+  ['Priya Nair', 'priya@example.com', 'Mumbai', 'Resident doctor. Books the 6am court because it is the only hour nobody pages me.', ['sports', 'gym']],
+  ['Kabir Shah', 'kabir@example.com', 'Bengaluru', 'CAT 99.4. Now hosts the mock-test table I wish I had had.', ['exam-prep', 'group-study']],
+  ['Ananya Rao', 'ananya@example.com', 'Hyderabad', 'Final-year law student. Will absolutely make you put your phone in the box.', ['group-study', 'breakfast-lunch']],
+  ['Rohan Kapoor', 'rohan@example.com', 'Delhi', 'Sound engineer. Cooks for eight, badly, happily.', ['dinner', 'skills']],
+  ['Meera Iyer', 'meera@example.com', 'Chennai', 'Marathoner, four times. Still the slowest person in her own run group.', ['outdoors', 'gym']],
+  ['Vikram Sethi', 'vikram@example.com', 'Pune', 'GATE aspirant, second attempt. Believes in the 5am library.', ['exam-prep', 'group-study']],
+  ['Sara Qureshi', 'sara@example.com', 'Mumbai', 'Illustrator. Hosts an open sketch night where nobody is allowed to apologise for their work.', ['skills', 'dinner']],
+  ['Aditya Menon', 'aditya@example.com', 'Bengaluru', 'Backend engineer. Deadlifts, debugs, disappears at 9pm.', ['gym', 'sports']],
+  ['Nisha Gupta', 'nisha@example.com', 'Delhi', 'UPSC, mains cleared once. Runs the morning answer-writing table in Rajinder Nagar.', ['exam-prep', 'breakfast-lunch']],
+  ['Tanvi Deshmukh', 'tanvi@example.com', 'Pune', 'Architecture student. Long lunches, longer arguments.', ['breakfast-lunch', 'skills']],
+  ['Arjun Reddy', 'arjun@example.com', 'Hyderabad', 'Box cricket organiser since college. Owns four bats, none of them good.', ['sports', 'dinner']],
 ];
 
 export const SEED_USERS: (UserProfile & { password: string })[] = people.map((p, i) => ({
@@ -123,109 +53,505 @@ export const SEED_USERS: (UserProfile & { password: string })[] = people.map((p,
   email: p[1],
   password: 'password123',
   fullName: p[0],
-  avatarUrl: `/img/avatars/a-${String(i + 1).padStart(2, '0')}.svg`,
+  // Null on purpose: the Avatar falls back to token-coloured initials, which
+  // follow the theme. A shipped PNG would be the one thing on the page that
+  // does not.
+  avatarUrl: null,
   city: p[2],
   bio: p[3],
-  plan: (i === 0 ? 'monthly' : i === 1 ? 'quarterly' : 'free') as UserProfile['plan'],
-  createdAt: new Date(Date.UTC(2023, i, 12)).toISOString(),
+  pass: (i === 0 ? 'regular' : i === 1 ? 'starter' : 'payg') as UserProfile['pass'],
+  credits: i === 0 ? 7 : i === 1 ? 3 : 0,
+  interests: p[4],
+  createdAt: new Date(Date.UTC(2024, i % 12, ((i * 5) % 26) + 1)).toISOString(),
+}));
+
+/** Hosting reputation. Derived here so demo and Supabase agree on the shape. */
+const hostStats: [hosted: number, rating: number, verified: boolean][] = [
+  [34, 4.9, true],
+  [21, 4.8, true],
+  [46, 5.0, true],
+  [12, 4.7, true],
+  [18, 4.6, false],
+  [29, 4.9, true],
+  [9, 4.5, false],
+  [23, 4.8, true],
+  [15, 4.7, true],
+  [31, 4.9, true],
+  [7, 4.6, false],
+  [26, 4.8, true],
+];
+
+export const SEED_HOSTS: HostSummary[] = SEED_USERS.map((u, i) => ({
+  id: u.id,
+  name: u.fullName,
+  avatarUrl: u.avatarUrl,
+  city: u.city,
+  bio: u.bio,
+  hostedCount: hostStats[i][0],
+  rating: hostStats[i][1],
+  verified: hostStats[i][2],
+  memberSince: u.createdAt,
 }));
 
 /* ------------------------------------------------------------------ */
-/* Reviews — deterministic spread so ratings look organic              */
+/* Meetups                                                             */
 /* ------------------------------------------------------------------ */
-const reviewCopy: { rating: number; title: string; body: string }[] = [
-  { rating: 5, title: 'Now my default answer to "where should we go?"', body: 'Third visit this month and it has not slipped once. The staff clocked that I always order the same thing and started making it before I reached the counter. Small thing, but that is why I keep coming back.' },
-  { rating: 4, title: 'Excellent, if you time it right', body: 'Between one and two on a weekday it is chaos and you will stand. Come at four instead and it is one of the calmest rooms in the neighbourhood. Docking a star purely for the crush at peak.' },
-  { rating: 5, title: 'Worth crossing the city for', body: 'I live forty minutes away and I still do this twice a month. Everything arrives at the right temperature, the pricing is honest and nobody rushes you out. Genuinely hard to fault.' },
-  { rating: 3, title: 'Good, not the revelation I was promised', body: 'Perfectly pleasant and I would go again with friends, but the queue outside had me expecting fireworks. Solid execution, slightly overhyped by the internet.' },
-  { rating: 5, title: 'The staff make it', body: 'Turned up ten minutes before closing, fully expecting to be turned away, and instead got a seat and a recommendation that turned out to be the best thing on the menu. That is service.' },
-  { rating: 4, title: 'Reliable for a group', body: 'Booked for eight on a Friday, which is usually a disaster. They split the bill without being asked and got everything out within a few minutes of each other. Will use again for work dinners.' },
-  { rating: 2, title: 'Off night, hopefully', body: 'Waited thirty-five minutes for something that arrived lukewarm, and the follow-up was a shrug. I have heard enough good things to try once more, but this was not it.' },
-  { rating: 5, title: 'Quietly brilliant', body: 'No branding, no queue-jumping, no theatre. Just people who are very good at one thing doing it every day. The kind of place you hope never gets discovered, which is ironic given I am reviewing it.' },
-  { rating: 4, title: 'Great value for what you get', body: 'Prices have not moved much in two years while everything around it has. The quality has held too. Comfortable recommending it to anyone watching what they spend.' },
-  { rating: 5, title: 'Took my parents, they were delighted', body: 'Accessible entrance, patient with questions, and they happily adjusted a dish for my mother. Rare combination and the reason this gets five stars from me.' },
-  { rating: 3, title: 'Depends entirely who is on shift', body: 'Weekday afternoons: attentive and warm. Weekend evenings: distracted and slow. Same place, two different experiences, so know what you are walking into.' },
-  { rating: 4, title: 'Booked on a whim, stayed three hours', body: 'Intended to be a quick stop. Ended up talking to the people at the next table until they turned the lights up. The room does something to conversation.' },
-  { rating: 5, title: 'Fixed what two other people could not', body: 'Diagnosed the actual problem in ten minutes, quoted before starting, and charged exactly what was quoted. I have saved the number and given it to half my building.' },
-  { rating: 4, title: 'Clean, on time, no theatrics', body: 'Arrived inside the window, laid down covers without being asked, cleaned up after. Slightly pricier than the alternatives and honestly worth it for not having to chase anyone.' },
-  { rating: 5, title: 'Beginner friendly in a real way', body: 'I was worried about being the least fit person in the room. The coach adjusted three things for me quietly, without making it a moment. Six weeks in and I have not missed a session.' },
+
+type Row = {
+  title: string;
+  category: string;
+  host: number;
+  city: string;
+  state: string;
+  area: string;
+  venue: string;
+  address: string;
+  lat: number;
+  lng: number;
+  /** Days from today. */
+  day: number;
+  hour: number;
+  minute?: number;
+  mins: number;
+  spots: number;
+  taken: number;
+  fee: number;
+  level: Level;
+  audience?: Audience;
+  language?: string;
+  cadence?: Cadence;
+  tags: string[];
+  description: string;
+  agenda: string[];
+  bring: string[];
+};
+
+const rows: Row[] = [
+  /* ------------------------------- Bengaluru ------------------------------ */
+  {
+    title: 'Deep work table — 3 hours, phones in the box',
+    category: 'group-study', host: 2, city: 'Bengaluru', state: 'Karnataka', area: 'Indiranagar',
+    venue: 'Third Wave Filter Room', address: '12, 100 Feet Road', lat: 12.9719, lng: 77.6412,
+    day: 1, hour: 9, mins: 180, spots: 8, taken: 6, fee: 14900, level: 'serious',
+    tags: ['Silent', 'Wi-Fi', 'Pomodoro'],
+    description:
+      'Four 45-minute blocks with strict 10-minute breaks. Phones go in a box on the counter at the start and come back out at the end. Nobody talks during a block — the whole point is that eight people holding each other to it is easier than one person trying alone.',
+    agenda: ['09:00 — arrive, set your one goal on the board', '09:15 — first two blocks, silent', '10:55 — coffee break, talk as much as you like', '11:15 — final two blocks, then a two-minute wrap'],
+    bring: ['Laptop', 'Notebook & pen'],
+  },
+  {
+    title: 'Sunrise loop around Ulsoor Lake',
+    category: 'outdoors', host: 0, city: 'Bengaluru', state: 'Karnataka', area: 'Ulsoor',
+    venue: 'Ulsoor Lake — main gate', address: 'Ulsoor Lake Road', lat: 12.9825, lng: 77.6207,
+    day: 1, hour: 6, minute: 15, mins: 60, spots: 14, taken: 9, fee: 4900, level: 'any', cadence: 'daily',
+    tags: ['5K', 'Beginner pace group', 'Chai after'],
+    description:
+      'Two pace groups — roughly 7:00/km and roughly 5:30/km — so nobody runs alone and nobody gets dropped. We finish at the tea stall by the north gate, which is genuinely the best part.',
+    agenda: ['06:15 — warm-up together at the gate', '06:25 — split into two pace groups, 5K loop', '07:00 — stretch and chai'],
+    bring: ['Sports shoes', 'Water bottle'],
+  },
+  {
+    title: 'Push day, and someone to count your last three',
+    category: 'gym', host: 8, city: 'Bengaluru', state: 'Karnataka', area: 'Koramangala',
+    venue: 'Iron Yard Koramangala', address: '80 Feet Road, 4th Block', lat: 12.9345, lng: 77.6266,
+    day: 2, hour: 19, mins: 75, spots: 6, taken: 4, fee: 19900, level: 'intermediate', cadence: 'weekly',
+    tags: ['Chest & shoulders', 'Spotters', 'Day pass included'],
+    description:
+      'A fixed push session run in pairs so everyone gets a spotter. The gym day pass is inside the join fee — you do not pay anything at the counter. I write the session on the whiteboard before we start; you can scale every lift down without anyone raising an eyebrow.',
+    agenda: ['19:00 — pair up and warm up', '19:10 — bench, incline, overhead, in rotation', '19:55 — accessories, your choice', '20:15 — done'],
+    bring: ['Water bottle', 'A towel'],
+  },
+  {
+    title: 'Saturday sketch table — no apologising for your work',
+    category: 'skills', host: 0, city: 'Bengaluru', state: 'Karnataka', area: 'Cubbon Park',
+    venue: 'Cubbon Park bandstand', address: 'Kasturba Road entrance', lat: 12.9763, lng: 77.5929,
+    day: 5, hour: 16, mins: 120, spots: 12, taken: 5, fee: 9900, level: 'beginner', cadence: 'weekly',
+    tags: ['Urban sketching', 'All levels', 'Materials to share'],
+    description:
+      'Bring whatever you draw with. Two hours of sketching the park, then twenty minutes where we lay everything out on the ground and look at it. The one rule is that nobody is allowed to open with "this is terrible, but".',
+    agenda: ['16:00 — five-minute warm-up gestures', '16:20 — one long piece, wherever you like', '17:40 — lay it all out, look, talk'],
+    bring: ['Notebook & pen', 'Just yourself'],
+  },
+  {
+    title: 'Badminton doubles — rotating partners',
+    category: 'sports', host: 8, city: 'Bengaluru', state: 'Karnataka', area: 'HSR Layout',
+    venue: 'Smash Arena', address: '27, Sector 2, HSR Layout', lat: 12.9121, lng: 77.6446,
+    day: 3, hour: 20, mins: 90, spots: 8, taken: 8, fee: 24900, level: 'any', cadence: 'weekly',
+    tags: ['Court booked', 'Rackets available', 'Shuttles included'],
+    description:
+      'Two courts, eight people, partners rotate every game so you play with everyone. Court hire and shuttles are in the fee. Genuinely fine if you last played in school — half the group is in that bracket.',
+    agenda: ['20:00 — knock-up', '20:10 — rotating doubles, eleven-point games', '21:25 — last game, whoever is left standing'],
+    bring: ['Sports shoes', 'Racket (spares available)'],
+  },
+  {
+    title: 'Long breakfast — dosa, then nowhere to be',
+    category: 'breakfast-lunch', host: 3, city: 'Bengaluru', state: 'Karnataka', area: 'Malleshwaram',
+    venue: 'Nandini Dosa Camp', address: '7th Cross, Sampige Road', lat: 13.0031, lng: 77.5697,
+    day: 6, hour: 8, minute: 30, mins: 105, spots: 6, taken: 3, fee: 9900, level: 'any',
+    tags: ['Vegetarian', 'Cash-free', 'Six people'],
+    description:
+      'Benne dosa at a place that has been doing one thing since 1981. Six of us, one long table, and no agenda beyond eating slowly on a Sunday. Food is separate — you pay for what you order.',
+    agenda: ['08:30 — meet outside, queue together', '08:50 — eat', '09:40 — filter coffee and the good conversation'],
+    bring: ['Just yourself'],
+  },
+
+  /* --------------------------------- Mumbai ------------------------------- */
+  {
+    title: 'CAT mocks — full paper, then two hours of analysis',
+    category: 'exam-prep', host: 2, city: 'Mumbai', state: 'Maharashtra', area: 'Andheri West',
+    venue: 'Lokhandwala Study Hall', address: 'Level 2, Crystal Plaza', lat: 19.1364, lng: 72.8296,
+    day: 2, hour: 10, mins: 300, spots: 10, taken: 7, fee: 29900, level: 'serious', cadence: 'weekly',
+    tags: ['Timed paper', 'Analysis', 'Question bank'],
+    description:
+      'A real mock under real conditions — three sections, sectional timing, no phone. Then the part almost everyone skips: two hours going through the paper as a group, question by question, arguing about approaches.',
+    agenda: ['10:00 — paper starts, strictly timed', '12:00 — break, eat something', '12:40 — group analysis, section by section', '15:00 — set your week from what broke'],
+    bring: ['Question bank', 'Notebook & pen'],
+  },
+  {
+    title: '6am court before the hospital shift',
+    category: 'sports', host: 1, city: 'Mumbai', state: 'Maharashtra', area: 'Bandra West',
+    venue: 'Bandra Gymkhana courts', address: 'Turner Road', lat: 19.0596, lng: 72.8295,
+    day: 1, hour: 6, mins: 75, spots: 8, taken: 6, fee: 19900, level: 'intermediate', cadence: 'weekly',
+    tags: ['Early', 'Doubles', 'Court booked'],
+    description:
+      'The only hour that reliably belongs to me, so I book it and fill it. Fast doubles, everyone is out by 7:20 and at work by nine. Punctuality matters here more than skill.',
+    agenda: ['06:00 — on court, knock-up', '06:10 — games', '07:15 — off, out, gone'],
+    bring: ['Sports shoes', 'Racket (spares available)'],
+  },
+  {
+    title: 'Open sketch night — bring the drawing you hate',
+    category: 'skills', host: 7, city: 'Mumbai', state: 'Maharashtra', area: 'Colaba',
+    venue: 'Kala Ghoda studio loft', address: 'Rampart Row', lat: 18.9282, lng: 72.8324,
+    day: 4, hour: 19, minute: 30, mins: 120, spots: 14, taken: 11, fee: 14900, level: 'any', cadence: 'weekly',
+    tags: ['Life drawing', 'Critique', 'BYO materials'],
+    description:
+      'An hour of drawing to a timer, then an hour where we pin work up and talk about it properly. Bring the piece you gave up on — that is usually the one worth twenty minutes of eight people looking at it.',
+    agenda: ['19:30 — timed poses, 2 / 5 / 10 / 20 minutes', '20:30 — pin-up and critique', '21:30 — pack down'],
+    bring: ['Notebook & pen', 'Just yourself'],
+  },
+  {
+    title: 'Sunday dinner for eight, cooked in front of you',
+    category: 'dinner', host: 7, city: 'Mumbai', state: 'Maharashtra', area: 'Khar',
+    venue: "Host's home kitchen — address on join", address: '14th Road, Khar West', lat: 19.0728, lng: 72.8347,
+    day: 6, hour: 19, mins: 180, spots: 8, taken: 6, fee: 49900, level: 'any',
+    tags: ['Home cooked', 'Vegetarian option', 'Address revealed on join'],
+    description:
+      'I cook, you sit at the counter and watch it happen, and we eat when it is ready — which is usually later than promised. Food and everything to drink is inside the fee. Exact address goes out once you join.',
+    agenda: ['19:00 — arrive, first course while I finish the second', '20:00 — everyone at the table', '22:00 — the part where nobody leaves'],
+    bring: ['Just yourself'],
+  },
+  {
+    title: 'Working lunch — freelancers, one table, one hour',
+    category: 'breakfast-lunch', host: 7, city: 'Mumbai', state: 'Maharashtra', area: 'Lower Parel',
+    venue: 'Kamala Mills canteen', address: 'Trade World, Kamala Mills', lat: 18.9949, lng: 72.8258,
+    day: 3, hour: 13, mins: 75, spots: 10, taken: 4, fee: 4900, level: 'any', cadence: 'weekly',
+    tags: ['Freelancers', 'Cheap', 'No pitching'],
+    description:
+      'Working from home five days a week is quietly corrosive. This is one hour, once a week, eating with other people who also have nobody to eat with. No pitching, no business cards, no LinkedIn follow-ups.',
+    agenda: ['13:00 — grab food, sit down', '13:15 — talk about anything but scope creep', '14:15 — back to it'],
+    bring: ['Just yourself'],
+  },
+
+  /* --------------------------------- Delhi -------------------------------- */
+  {
+    title: 'UPSC answer writing — four questions, marked in the room',
+    category: 'exam-prep', host: 9, city: 'Delhi', state: 'Delhi', area: 'Rajinder Nagar',
+    venue: 'Old Rajinder Nagar reading room', address: 'Bada Bazaar Road', lat: 28.6398, lng: 77.1839,
+    day: 1, hour: 7, mins: 150, spots: 12, taken: 10, fee: 14900, level: 'serious', cadence: 'daily',
+    tags: ['GS mains', 'Peer marking', 'Every weekday'],
+    description:
+      'Four questions in ninety minutes, handwritten, timed. Then we swap papers and mark each other against the actual rubric. Reading someone else\'s answer is the fastest way to see what is wrong with your own.',
+    agenda: ['07:00 — questions on the board', '08:30 — pens down, swap papers', '09:00 — marks and one comment each', '09:30 — out'],
+    bring: ['Notebook & pen', 'Question bank'],
+  },
+  {
+    title: 'Evening badminton at Siri Fort',
+    category: 'sports', host: 4, city: 'Delhi', state: 'Delhi', area: 'Siri Fort',
+    venue: 'Siri Fort Sports Complex', address: 'August Kranti Marg', lat: 28.5494, lng: 77.2201,
+    day: 2, hour: 20, mins: 90, spots: 8, taken: 5, fee: 19900, level: 'beginner', cadence: 'weekly',
+    tags: ['Beginners welcome', 'Court booked', 'Shuttles included'],
+    description:
+      'Explicitly a beginners\' court. If you have never held a racket properly, this is the right night and I will show you in five minutes. Nobody here is keeping score seriously.',
+    agenda: ['20:00 — basics for anyone new', '20:20 — friendly doubles, partners rotate', '21:30 — off court'],
+    bring: ['Sports shoes', 'Racket (spares available)'],
+  },
+  {
+    title: 'Winter dinner — eight people, one long table',
+    category: 'dinner', host: 4, city: 'Delhi', state: 'Delhi', area: 'Hauz Khas',
+    venue: 'Table at Hauz Khas village', address: 'Deer Park side lane', lat: 28.5535, lng: 77.1943,
+    day: 4, hour: 20, mins: 150, spots: 8, taken: 7, fee: 39900, level: 'any',
+    tags: ['Set menu', 'Eight people', 'Vegetarian option'],
+    description:
+      'A set menu for eight at a place I have been going to for six years. The fee covers the food. Half the table will be people who came alone the first time, which is exactly the intention.',
+    agenda: ['20:00 — arrive, introductions that last one sentence each', '20:20 — food starts arriving', '22:30 — the table decides what happens next'],
+    bring: ['Just yourself'],
+  },
+  {
+    title: 'Group study — CA finals, silent room',
+    category: 'group-study', host: 9, city: 'Delhi', state: 'Delhi', area: 'Karol Bagh',
+    venue: 'Karol Bagh library, second floor', address: 'Ajmal Khan Road', lat: 28.6519, lng: 77.1909,
+    day: 3, hour: 14, mins: 240, spots: 10, taken: 6, fee: 9900, level: 'serious',
+    tags: ['Silent', 'Four hours', 'Doubt hour at the end'],
+    description:
+      'Three silent hours, then one hour where the room opens up and anyone can put a doubt on the board. The last hour is why people come back.',
+    agenda: ['14:00 — silent block one', '15:30 — ten minutes, stand up, walk', '15:40 — silent block two', '17:00 — doubts on the board, anyone can answer'],
+    bring: ['Laptop', 'Notebook & pen'],
+  },
+
+  /* ---------------------------------- Pune -------------------------------- */
+  {
+    title: 'GATE 5am club — the library opens for us',
+    category: 'exam-prep', host: 6, city: 'Pune', state: 'Maharashtra', area: 'Kothrud',
+    venue: 'Kothrud study centre', address: 'Paud Road', lat: 18.5074, lng: 73.8077,
+    day: 1, hour: 5, mins: 180, spots: 8, taken: 5, fee: 9900, level: 'serious', cadence: 'daily',
+    tags: ['5am', 'Silent', 'Every weekday'],
+    description:
+      'Five in the morning is a terrible idea alone and a completely reasonable one with seven other people who also said they would be there. That is the whole mechanism. Three hours, out by eight, day already won.',
+    agenda: ['05:00 — doors, no talking from here', '06:30 — fifteen-minute break', '06:45 — second block', '08:00 — breakfast for anyone who wants it'],
+    bring: ['Notebook & pen', 'Laptop'],
+  },
+  {
+    title: 'Sunday trek — Sinhagad before the crowd',
+    category: 'outdoors', host: 6, city: 'Pune', state: 'Maharashtra', area: 'Sinhagad',
+    venue: 'Sinhagad base — Atkarwadi gate', address: 'Sinhagad Ghat Road', lat: 18.3664, lng: 73.7556,
+    day: 6, hour: 5, minute: 30, mins: 300, spots: 16, taken: 12, fee: 29900, level: 'beginner',
+    tags: ['Sunrise', 'Transport included', 'Breakfast at the top'],
+    description:
+      'Shared transport from Kothrud at half five, on the trail by six, at the top for sunrise. Two and a half hours up at a pace set by whoever is slowest — that is a promise, not a courtesy.',
+    agenda: ['05:30 — pickup at Kothrud', '06:10 — start climbing', '08:00 — top, pithla bhakri, sit down', '09:30 — down, back by 10:30'],
+    bring: ['Sports shoes', 'Water bottle'],
+  },
+  {
+    title: 'Architecture students\' long lunch',
+    category: 'breakfast-lunch', host: 10, city: 'Pune', state: 'Maharashtra', area: 'Deccan',
+    venue: 'Vaishali, Fergusson College Road', address: 'FC Road', lat: 18.5236, lng: 73.8412,
+    day: 5, hour: 12, minute: 30, mins: 120, spots: 8, taken: 4, fee: 4900, level: 'any',
+    tags: ['Students', 'Cheap', 'Loud'],
+    description:
+      'Portfolio arguments over sabudana vada. Bring whatever you are working on if you want eyes on it; nobody minds if you just want to eat and listen.',
+    agenda: ['12:30 — order, sit, eat', '13:15 — whoever brought work puts it on the table', '14:30 — out before the evening crowd'],
+    bring: ['Just yourself'],
+  },
+  {
+    title: 'Beginner lifting — form first, weight never',
+    category: 'gym', host: 6, city: 'Pune', state: 'Maharashtra', area: 'Baner',
+    venue: 'Baner Strength Room', address: 'Baner Road', lat: 18.5590, lng: 73.7868,
+    day: 3, hour: 18, minute: 30, mins: 75, spots: 6, taken: 2, fee: 19900, level: 'beginner', audience: 'women', cadence: 'weekly',
+    tags: ['Women only', 'Day pass included', 'Coached'],
+    description:
+      'A women-only slot for the first eight weeks of lifting, when the gym floor is the most intimidating room in the city. Squat, hinge, press, row — with an empty bar until the movement is right. Day pass is in the fee.',
+    agenda: ['18:30 — the four movements, empty bar', '19:00 — add weight only where form held', '19:35 — questions, no time limit'],
+    bring: ['Water bottle', 'Sports shoes'],
+  },
+
+  /* -------------------------------- Hyderabad ----------------------------- */
+  {
+    title: 'Box cricket, nine o\'clock, teams picked on the spot',
+    category: 'sports', host: 11, city: 'Hyderabad', state: 'Telangana', area: 'Gachibowli',
+    venue: 'The Box, Gachibowli', address: 'Financial District Road', lat: 17.4401, lng: 78.3489,
+    day: 2, hour: 21, mins: 90, spots: 12, taken: 9, fee: 14900, level: 'any', cadence: 'weekly',
+    tags: ['Turf booked', 'Teams on the night', 'Floodlit'],
+    description:
+      'Twelve people, two teams picked by whoever arrives first, six overs a side. Turf is booked and paid for out of the fee. I have four bats, all of them mediocre, all of them available.',
+    agenda: ['21:00 — pick teams', '21:10 — two innings', '22:20 — chai at the gate'],
+    bring: ['Sports shoes', 'Water bottle'],
+  },
+  {
+    title: 'Law finals — case-law drilling in pairs',
+    category: 'group-study', host: 3, city: 'Hyderabad', state: 'Telangana', area: 'Banjara Hills',
+    venue: 'Road No. 12 reading room', address: 'Banjara Hills Road No. 12', lat: 17.4126, lng: 78.4392,
+    day: 4, hour: 10, mins: 180, spots: 8, taken: 5, fee: 9900, level: 'serious',
+    tags: ['Pairs', 'Case law', 'Phones in the box'],
+    description:
+      'Pairs drill each other on facts, holding and ratio. Swap partners every forty minutes. It is exhausting and it is the only method that ever moved my marks.',
+    agenda: ['10:00 — pair one', '10:40 — swap', '11:20 — swap again', '12:20 — group recap of everything that got missed'],
+    bring: ['Notebook & pen', 'Question bank'],
+  },
+  {
+    title: 'Biryani lunch for people new to the city',
+    category: 'breakfast-lunch', host: 11, city: 'Hyderabad', state: 'Telangana', area: 'Jubilee Hills',
+    venue: 'Shah Ghouse, Jubilee Hills', address: 'Road No. 36', lat: 17.4321, lng: 78.4074,
+    day: 5, hour: 13, mins: 105, spots: 10, taken: 6, fee: 9900, level: 'any',
+    tags: ['New in town', 'Halal', 'Ten people'],
+    description:
+      'Specifically for people who moved here in the last six months and have not yet found their people. I have been the new one twice. The food is not the point but it is very much the point.',
+    agenda: ['13:00 — meet outside, walk in together', '13:15 — eat', '14:15 — anyone who wants to keep going, keeps going'],
+    bring: ['Just yourself'],
+  },
+  {
+    title: 'Evening 5K along the Necklace Road',
+    category: 'outdoors', host: 11, city: 'Hyderabad', state: 'Telangana', area: 'Necklace Road',
+    venue: 'Necklace Road, People\'s Plaza', address: 'Necklace Road', lat: 17.4239, lng: 78.4738,
+    day: 3, hour: 18, minute: 30, mins: 60, spots: 20, taken: 13, fee: 4900, level: 'any', cadence: 'weekly',
+    tags: ['5K', 'Two pace groups', 'Free-ish'],
+    description:
+      'The cheapest thing on VibeClub and the most attended. Two pace groups, a lit path, and a stretch circle at the end that half the group skips.',
+    agenda: ['18:30 — warm-up', '18:40 — 5K, two groups', '19:15 — stretch, or leave, no judgement'],
+    bring: ['Sports shoes', 'Water bottle'],
+  },
+
+  /* --------------------------------- Chennai ------------------------------ */
+  {
+    title: 'Marina sunrise run — 6K, slow on purpose',
+    category: 'outdoors', host: 5, city: 'Chennai', state: 'Tamil Nadu', area: 'Marina',
+    venue: 'Marina Beach — lighthouse end', address: 'Kamarajar Salai', lat: 13.0500, lng: 80.2824,
+    day: 1, hour: 5, minute: 45, mins: 75, spots: 18, taken: 11, fee: 4900, level: 'beginner', cadence: 'daily',
+    tags: ['Sunrise', 'Conversational pace', 'Beginners'],
+    description:
+      'Conversational pace means you can hold a sentence the whole way. If you cannot, we slow down. Six kilometres along the sand-side path, finishing before the heat makes it a bad idea.',
+    agenda: ['05:45 — meet at the lighthouse', '06:00 — 6K out and back', '07:00 — coffee at the stall'],
+    bring: ['Sports shoes', 'Water bottle'],
+  },
+  {
+    title: 'Silent co-working — four hours, no meetings',
+    category: 'group-study', host: 5, city: 'Chennai', state: 'Tamil Nadu', area: 'Nungambakkam',
+    venue: 'Amethyst reading room', address: 'Whites Road', lat: 13.0604, lng: 80.2604,
+    day: 2, hour: 10, mins: 240, spots: 10, taken: 3, fee: 14900, level: 'any', cadence: 'weekly',
+    tags: ['Silent', 'Wi-Fi', 'Power sockets'],
+    description:
+      'For anyone whose job is technically remote and practically lonely. Four hours, everyone working on their own thing, absolute silence except for the two scheduled breaks.',
+    agenda: ['10:00 — block one', '11:30 — break', '11:45 — block two', '13:15 — optional lunch downstairs'],
+    bring: ['Laptop', 'Water bottle'],
+  },
+  {
+    title: 'NEET biology — one system a week',
+    category: 'exam-prep', host: 3, city: 'Chennai', state: 'Tamil Nadu', area: 'T. Nagar',
+    venue: 'Panagal Park study hall', address: 'Thanikachalam Road', lat: 13.0418, lng: 80.2341,
+    day: 4, hour: 17, mins: 150, spots: 12, taken: 8, fee: 9900, level: 'intermediate', cadence: 'weekly',
+    tags: ['NCERT', 'Weekly system', 'MCQ drill'],
+    description:
+      'One body system per week, straight from NCERT, then sixty MCQs against the clock and a walk through every wrong answer. Slow, unglamorous, works.',
+    agenda: ['17:00 — this week\'s system, board work', '18:00 — 60 MCQs, timed', '18:40 — every wrong answer, out loud'],
+    bring: ['Question bank', 'Notebook & pen'],
+  },
+  {
+    title: 'Tamil conversation hour — absolute beginners',
+    category: 'skills', host: 5, city: 'Chennai', state: 'Tamil Nadu', area: 'Besant Nagar',
+    venue: 'Elliot\'s Beach — the steps', address: 'Besant Nagar Beach', lat: 12.9986, lng: 80.2707,
+    day: 5, hour: 17, minute: 30, mins: 90, spots: 10, taken: 4, fee: 4900, level: 'beginner', language: 'Tamil', cadence: 'weekly',
+    tags: ['Language', 'Beginners', 'Outdoors'],
+    description:
+      'For people who have lived here two years and still cannot order breakfast. Half the group are native speakers who volunteered. Nobody corrects grammar unless you ask them to.',
+    agenda: ['17:30 — pair a learner with a speaker', '18:00 — swap pairs', '18:40 — everyone together, one topic'],
+    bring: ['Notebook & pen'],
+  },
+
+  /* ------------------------- a few more, for depth ------------------------ */
+  {
+    title: 'Chess ladder — bring a clock if you have one',
+    category: 'skills', host: 2, city: 'Bengaluru', state: 'Karnataka', area: 'Jayanagar',
+    venue: 'Jayanagar Club annexe', address: '11th Main, 4th Block', lat: 12.9250, lng: 77.5938,
+    day: 7, hour: 18, mins: 150, spots: 16, taken: 7, fee: 9900, level: 'any', cadence: 'weekly',
+    tags: ['Ladder', '15+10', 'All ratings'],
+    description:
+      'A running ladder — you play whoever is nearest you on it. Ratings from 600 to 1900 turn up, which sounds unworkable and is in practice the best part.',
+    agenda: ['18:00 — pairings from the ladder', '18:10 — three rounds, 15+10', '20:20 — new ladder posted'],
+    bring: ['Just yourself'],
+  },
+  {
+    title: 'Leg day, and nobody skips it alone',
+    category: 'gym', host: 1, city: 'Mumbai', state: 'Maharashtra', area: 'Powai',
+    venue: 'Powai Barbell Club', address: 'Hiranandani Gardens', lat: 19.1197, lng: 72.9051,
+    day: 5, hour: 7, mins: 75, spots: 6, taken: 5, fee: 19900, level: 'intermediate', cadence: 'weekly',
+    tags: ['Squat & hinge', 'Spotters', 'Day pass included'],
+    description:
+      'The session everybody moves to tomorrow. Six people, three racks, one written plan. Day pass included in the fee.',
+    agenda: ['07:00 — warm-up, together', '07:15 — squats in pairs', '07:50 — hinge and accessories', '08:15 — done, protein, work'],
+    bring: ['Water bottle', 'A towel'],
+  },
+  {
+    title: 'Thursday dinner, six strangers, one rule',
+    category: 'dinner', host: 0, city: 'Bengaluru', state: 'Karnataka', area: 'Jayanagar',
+    venue: 'Address revealed 24 hours before', address: 'Jayanagar 4th Block', lat: 12.9299, lng: 77.5822,
+    day: 4, hour: 20, mins: 150, spots: 6, taken: 4, fee: 39900, level: 'any', cadence: 'weekly',
+    tags: ['Six strangers', 'Set menu', 'Phones away'],
+    description:
+      'Six people who have not met, one long table, and the rule that nobody asks what anyone does for a living in the first hour. Food is in the fee. Venue lands in your inbox the day before.',
+    agenda: ['20:00 — arrive, one sentence each', '20:15 — food, no phones on the table', '22:30 — whoever is still talking, keeps talking'],
+    bring: ['Just yourself'],
+  },
 ];
 
-const dedupe = new Set<string>();
-export const SEED_REVIEWS: Review[] = SEED_BUSINESSES.flatMap((biz, bi) => {
-  const count = 3 + ((bi * 7 + 4) % 6); // 3..8 reviews each
-  return Array.from({ length: count }, (_, ri) => {
-    const userIndex = (bi + ri * 3) % SEED_USERS.length;
-    const user = SEED_USERS[userIndex];
-    const key = `${biz.id}:${user.id}`;
-    if (dedupe.has(key)) return null;
-    dedupe.add(key);
-    const copy = reviewCopy[(bi * 4 + ri * 5 + userIndex * 7) % reviewCopy.length];
-    const daysAgo = 4 + ((bi * 11 + ri * 13) % 300);
-    return {
-      id: `r-${biz.id}-${ri}`,
-      businessId: biz.id,
-      userId: user.id,
-      authorName: user.fullName,
-      authorAvatar: user.avatarUrl,
-      rating: copy.rating,
-      title: copy.title,
-      body: copy.body,
-      photos: ri % 4 === 0 ? [biz.images[(ri + 1) % biz.images.length]] : [],
-      helpfulCount: (bi * 7 + ri * 5) % 24,
-      createdAt: new Date(Date.now() - daysAgo * 86_400_000).toISOString(),
-      // Owners who have claimed their listing reply to the occasional review.
-      ownerResponse:
-        SEED_BUSINESSES[bi].isClaimed && copy.rating <= 3
-          ? 'Thank you for writing this — we would rather hear it than not. That wait was on us; we have added a second person to the Friday shift since. Ask for the manager next time and the first round is on the house.'
-          : null,
-      ownerResponseAt:
-        SEED_BUSINESSES[bi].isClaimed && copy.rating <= 3
-          ? new Date(Date.now() - (daysAgo - 2) * 86_400_000).toISOString()
-          : null,
-    } satisfies Review;
-  }).filter((r): r is Review => r !== null);
+export const SEED_MEETUPS: Meetup[] = rows.map((r, i) => {
+  const startsAt = at(r.day, r.hour, r.minute ?? 0);
+  return {
+    id: `m${String(i + 1).padStart(3, '0')}`,
+    slug: `${slugify(r.title).slice(0, 60)}-${slugify(r.city)}`,
+    title: r.title,
+    categorySlug: r.category,
+    hostId: SEED_USERS[r.host].id,
+    description: r.description,
+    agenda: r.agenda,
+    bring: r.bring,
+    venueName: r.venue,
+    address: r.address,
+    area: r.area,
+    city: r.city,
+    state: r.state,
+    lat: r.lat,
+    lng: r.lng,
+    startsAt,
+    endsAt: plusMinutes(startsAt, r.mins),
+    spotsTotal: r.spots,
+    spotsTaken: r.taken,
+    joinFeeCents: r.fee,
+    level: r.level,
+    audience: r.audience ?? 'everyone',
+    language: r.language ?? 'English',
+    cadence: r.cadence ?? 'once',
+    coverImage: null,
+    tags: r.tags,
+    createdAt: daysAgo(30 - (i % 25)),
+    rating: 0,
+    vouchCount: 0,
+  };
 });
 
 /* ------------------------------------------------------------------ */
-/* Dinner events — every Wednesday 20:00, rolling four weeks           */
+/* Vouches — left after a meetup has actually run                      */
 /* ------------------------------------------------------------------ */
-const dinnerCities = [
-  { city: 'Bengaluru', neighborhood: 'Indiranagar', venue: 'Copper & Rye', price: 129900, language: 'English', vibe: 'Curious & chatty' },
-  { city: 'Mumbai', neighborhood: 'Bandra West', venue: 'Salt & Sea Trattoria', price: 149900, language: 'English', vibe: 'Loud, warm, late' },
-  { city: 'Delhi', neighborhood: 'Hauz Khas', venue: 'Hauz Khas Vinyl Bar', price: 119900, language: 'Hindi & English', vibe: 'Music people' },
-  { city: 'London', neighborhood: 'Clerkenwell', venue: 'The Clerkenwell Table', price: 349900, language: 'English', vibe: 'Long table, four courses' },
-  { city: 'New York', neighborhood: 'Greenpoint', venue: 'Greenpoint Supper Club', price: 399900, language: 'English', vibe: 'Natural wine & noise' },
-  { city: 'Lisbon', neighborhood: 'Alfama', venue: 'Alfama Tasca do Fado', price: 219900, language: 'Portuguese & English', vibe: 'Fado from ten' },
+
+const vouchCopy: { rating: number; body: string; highlights: string[] }[] = [
+  { rating: 5, body: 'Turned up expecting to feel like the outsider and was handed a task within two minutes. Started exactly on time, ended exactly on time, and I got more done than in the previous three days combined.', highlights: ['Started on time', 'Welcoming to newcomers', 'Would join again'] },
+  { rating: 5, body: 'The phones-in-the-box rule sounds gimmicky until you watch eight people actually keep to it for three hours. I have joined four times now and booked the next one before leaving.', highlights: ['Quiet enough to focus', 'Host was organised'] },
+  { rating: 4, body: 'Genuinely good, one honest note: we started about twelve minutes late because two people were finding the entrance. Worth pinning better directions. Everything after that was excellent.', highlights: ['Good group energy', 'Would join again'] },
+  { rating: 5, body: 'I have been in this city for seven months and this is the first thing that made it feel less like a hotel. Nobody asked what I do for a living, which was a relief.', highlights: ['Welcoming to newcomers', 'Good group energy'] },
+  { rating: 4, body: 'Solid session and fairly priced for what is included. The group skews experienced, so if you are brand new, say so at the start — they will happily adjust, but you have to speak up.', highlights: ['Host was organised'] },
+  { rating: 5, body: 'The analysis afterwards is worth the fee on its own. I have written mocks alone for a year and learned more in two hours of arguing about them than in any of it.', highlights: ['Host was organised', 'Would join again'] },
+  { rating: 3, body: 'Fine, but oversubscribed on the day I went — twelve people for eight spots because of a waitlist mix-up, so it was cramped. The host handled it well and refunded two people on the spot.', highlights: ['Good group energy'] },
+  { rating: 5, body: 'Slowest person in the group sets the pace and that is actually enforced, not just said. I have never been dropped, which after two other run groups is not nothing.', highlights: ['Welcoming to newcomers', 'Would join again'] },
+  { rating: 5, body: 'Six weeks in a row now. The reason it works is that somebody notices when you do not show up, and that turns out to be the entire difference.', highlights: ['Started on time', 'Would join again'] },
+  { rating: 4, body: 'Good energy, well run, and the equipment was all there as promised. Docking one only because parking nearby is genuinely awful — come by metro.', highlights: ['Host was organised', 'Good group energy'] },
+  { rating: 5, body: 'I was the only beginner and it never once felt like it. Three separate people quietly adjusted something for me without making a moment of it.', highlights: ['Welcoming to newcomers', 'Quiet enough to focus'] },
+  { rating: 5, body: 'Booked it as a one-off to fill a Saturday. Have now been to five and know most of the group by name. Not what I expected from a paid meetup.', highlights: ['Good group energy', 'Would join again'] },
 ];
 
-function nextWednesday(weeksAhead: number) {
-  const d = new Date();
-  d.setHours(20, 0, 0, 0);
-  const delta = (3 - d.getDay() + 7) % 7 || 7; // next Wednesday
-  d.setDate(d.getDate() + delta + weeksAhead * 7);
-  return d;
-}
+const hostReplies = [
+  'Fair on the directions — I have added a photo of the entrance to the listing. See you next week.',
+  'Thank you. The waitlist bug was on us and both refunds went out the same evening; the cap is hard now.',
+  'Glad it landed. Anyone reading this who is unsure: come to the front and say you are new, we will sort you out.',
+];
 
-export const SEED_DINNERS: DinnerEvent[] = dinnerCities.flatMap((c, ci) =>
-  [0, 1, 2, 3].map((w) => {
-    const starts = nextWednesday(w);
-    const seatsTotal = 6;
+export const SEED_VOUCHES: Vouch[] = SEED_MEETUPS.flatMap((meetup, mi) => {
+  // Recurring meetups have run before, so they carry history. One-offs that
+  // have not happened yet carry a little less — which is honest.
+  const count = meetup.cadence === 'once' ? 2 + (mi % 3) : 4 + (mi % 4);
+  return Array.from({ length: count }, (_, vi) => {
+    const copy = vouchCopy[(mi * 5 + vi * 3) % vouchCopy.length];
+    const author = SEED_USERS[(mi + vi * 4 + 1) % SEED_USERS.length];
+    const replies = copy.rating <= 4 && vi === 0;
     return {
-      id: `d-${c.city.toLowerCase().replace(/\s+/g, '')}-${w}`,
-      city: c.city,
-      neighborhood: c.neighborhood,
-      venueName: c.venue,
-      venueRevealAt: new Date(starts.getTime() - 36 * 3_600_000).toISOString(),
-      startsAt: starts.toISOString(),
-      seatsTotal,
-      seatsTaken: [4, 5, 2, 3, 6, 1][(ci + w) % 6],
-      priceCents: c.price,
-      language: c.language,
-      vibe: c.vibe,
-      coverImage: cover(ci * 2 + w + 1),
-      hostNotes:
-        'Six strangers, one table, three hours. We send the venue address 36 hours before, the icebreaker deck lands on your phone at 20:15, and where the night goes after dessert is entirely up to the table.',
-    } satisfies DinnerEvent;
-  }),
-);
+      id: `v-${meetup.id}-${vi}`,
+      meetupId: meetup.id,
+      userId: author.id,
+      authorName: author.fullName,
+      authorAvatar: author.avatarUrl,
+      rating: copy.rating,
+      body: copy.body,
+      highlights: copy.highlights,
+      createdAt: daysAgo(3 + vi * 7 + (mi % 5)),
+      hostReply: replies ? hostReplies[mi % hostReplies.length] : null,
+      hostReplyAt: replies ? daysAgo(2 + vi * 7 + (mi % 5)) : null,
+    };
+  });
+});

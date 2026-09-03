@@ -16,25 +16,28 @@ test('the open drawer actually covers the page', async ({ page }) => {
 
 test('the mobile drawer opens, navigates and closes', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('navigation').getByRole('link', { name: 'Dinners' })).toBeHidden();
+  await expect(page.getByRole('navigation').getByRole('link', { name: 'Find a meetup' })).toBeHidden();
 
   await page.getByRole('button', { name: 'Open menu' }).click();
-  await page.getByRole('link', { name: 'Dinners' }).first().click();
+  // Scoped to the drawer: the hero's "Find a meetup near you" CTA also matches
+  // the name, and it sits earlier in the DOM behind the open panel.
+  await page.locator('body > div.fixed').getByRole('link', { name: 'Find a meetup' }).click();
 
-  await expect(page).toHaveURL(/\/dinners/);
+  await expect(page).toHaveURL(/\/meetups/);
   await expect(page.getByRole('button', { name: 'Open menu' })).toBeVisible();
 });
 
-test('the directory filters collapse behind a button on small screens', async ({ page }) => {
-  await page.goto('/businesses');
-  await expect(page.getByRole('heading', { name: 'Filters' })).toBeHidden();
+test('the board filters collapse behind a button on small screens', async ({ page }) => {
+  await page.goto('/meetups');
+  await expect(page.getByRole('button', { name: 'Show results' })).toBeHidden();
 
-  await page.getByRole('button', { name: 'Filters' }).click();
-  await expect(page.getByRole('heading', { name: 'Filters' })).toBeVisible();
+  await page.getByRole('button', { name: /^Filters/ }).click();
+  await expect(page.getByRole('button', { name: 'Show results' })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Join fee up to' })).toBeVisible();
 });
 
 test('no horizontal overflow on the key pages', async ({ page }) => {
-  for (const path of ['/', '/businesses', '/dinners', '/pricing', '/how-it-works']) {
+  for (const path of ['/', '/meetups', '/passes', '/how-it-works', '/about']) {
     await page.goto(path);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

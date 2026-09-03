@@ -1,40 +1,62 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { demoAnswer } from '@/lib/ai/fallback';
+import { resetDb } from '@/lib/data/store';
 
 /**
  * Demo mode is retrieval, not intelligence, so what matters is that it routes
  * to the right source and never overstates what it found.
  */
+beforeEach(() => {
+  resetDb();
+});
+
 describe('demoAnswer', () => {
-  it('answers pricing from the plans, not the directory', async () => {
-    const answer = await demoAnswer('what does membership cost?');
-    expect(answer).toContain('Explorer');
-    expect(answer).toContain('/pricing');
+  it('answers a pricing question with the join-fee model, not a subscription pitch', async () => {
+    const answer = await demoAnswer('how much does it cost to join?');
+    expect(answer).toMatch(/join fee/i);
+    expect(answer).toContain('/meetups');
   });
 
-  it('routes club wording to the dinners', async () => {
-    const answer = await demoAnswer('how do the wednesday dinners work?');
-    expect(answer).toMatch(/seats left/);
-    expect(answer).toContain('/dinners/');
+  it('leads with "you do not need a pass" when asked about passes', async () => {
+    const answer = await demoAnswer('should I get a membership?');
+    expect(answer).toMatch(/do not need a pass/i);
+    expect(answer).toContain('Starter');
+    expect(answer).toContain('/passes');
   });
 
-  it('treats a bare "dinner" as a restaurant search, not the dinner club', async () => {
-    const answer = await demoAnswer('somewhere for dinner in London tonight');
-    expect(answer).toContain('/businesses/');
-    expect(answer).not.toMatch(/seats left/);
+  it('answers refunds from the cancellation rule', async () => {
+    const answer = await demoAnswer('can I get a refund if I cancel?');
+    expect(answer).toMatch(/6 hours/);
+    expect(answer).toContain('/my-meetups');
   });
 
-  it('pulls keywords out of a sentence the substring matcher could never match', async () => {
-    const answer = await demoAnswer('best rated coffee in Bengaluru');
-    expect(answer).toContain('/businesses/');
-    expect(answer).toContain('Bengaluru');
+  it('points hosts at the host page and says they keep the fee', async () => {
+    const answer = await demoAnswer('how do I host my own meetup?');
+    expect(answer).toContain('/host');
+    expect(answer).toMatch(/keep the whole join fee/i);
   });
 
-  it('says so when only the city matched, rather than claiming the words did', async () => {
-    // Words with no hope of matching any listing text — "mechanic" does, as a
-    // bike shop's description mentions one, which is the matcher working.
-    const answer = await demoAnswer('a zeppelin taxidermist in New York');
-    expect(answer).toContain('Nothing matched those words');
-    expect(answer).toContain('New York');
+  it('searches the board for an activity and links real meetups', async () => {
+    const answer = await demoAnswer('badminton in Bengaluru');
+    expect(answer).toMatch(/meetups? match that/);
+    expect(answer).toMatch(/\/meetups\/[a-z0-9-]+/);
+    expect(answer).toMatch(/to join/);
+  });
+
+  it('narrows to a city when one is named', async () => {
+    const answer = await demoAnswer('something to do in Chennai');
+    expect(answer).toContain('Chennai');
+  });
+
+  it('is honest when only the city matched and the words did not', async () => {
+    const answer = await demoAnswer('a zeppelin taxidermist in Pune');
+    expect(answer).toMatch(/Nothing matched those words/);
+    expect(answer).toContain('Pune');
+  });
+
+  it('admits it found nothing rather than inventing something', async () => {
+    const answer = await demoAnswer('zeppelin taxidermy');
+    expect(answer).toMatch(/could not find anything/i);
+    expect(answer).toContain('/meetups');
   });
 });

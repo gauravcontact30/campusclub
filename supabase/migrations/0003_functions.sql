@@ -1,5 +1,5 @@
 -- =============================================================================
--- SitNext — triggers and RPCs
+-- VibeClub — triggers and RPCs
 -- =============================================================================
 
 -- A profile row for every new auth user, populated from the signup metadata.
@@ -13,7 +13,7 @@ begin
   insert into public.profiles (id, full_name, city)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data ->> 'full_name', 'SitNext member'),
+    coalesce(new.raw_user_meta_data ->> 'full_name', 'VibeClub member'),
     coalesce(new.raw_user_meta_data ->> 'city', '')
   )
   on conflict (id) do nothing;

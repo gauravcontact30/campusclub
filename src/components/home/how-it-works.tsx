@@ -1,43 +1,53 @@
-import { CalendarCheck, MessagesSquare, UserRoundCheck } from 'lucide-react';
+import { CalendarCheck, CreditCard, Search, Users } from 'lucide-react';
 
+/**
+ * Numbered because it genuinely is a sequence — you cannot pay before you have
+ * found something, and the fourth step only exists because of the third.
+ */
 const STEPS = [
   {
-    icon: UserRoundCheck,
-    title: 'Answer six questions',
-    body: 'Two minutes on how you talk, what you eat and how late you stay. No photos, no swiping, no profile to polish.',
+    icon: Search,
+    title: 'Find something near you',
+    body: 'Filter by what you want to do, how far you will travel, and when you are free. Everything on the board is within your city.',
+  },
+  {
+    icon: CreditCard,
+    title: 'Pay that meetup’s join fee',
+    body: 'One payment, for one meetup. It covers the host’s costs — the court, the day pass, the food. No subscription needed to start.',
+  },
+  {
+    icon: Users,
+    title: 'Turn up',
+    body: 'You get the exact address, who else is coming, and what to bring. Most groups are between six and twelve people.',
   },
   {
     icon: CalendarCheck,
-    title: 'We seat you with five people',
-    body: 'The algorithm balances every table for age spread, language and conversational energy. The venue lands on your phone 36 hours before.',
-  },
-  {
-    icon: MessagesSquare,
-    title: 'Turn up. Talk. Rate the place.',
-    body: 'Three hours, one long table. Afterwards you review the venue for everyone else — that is where the directory comes from.',
+    title: 'Say how it went',
+    body: 'Only people who actually attended can leave feedback, which is why the ratings here mean something.',
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section className="container-page py-20 sm:py-24">
-      <div className="max-w-2xl">
-        <p className="eyebrow">The whole idea</p>
-        <h2 className="display-lg mt-3">Two strangers away from a better Wednesday.</h2>
-        <p className="lede mt-4">
-          Reviews tell you where to go. Dinners give you someone to go with. SitNext runs both sides of that loop.
-        </p>
-      </div>
+    <section className="container-page py-20" aria-labelledby="how-heading">
+      <p className="eyebrow">Four steps</p>
+      <h2 id="how-heading" className="display-lg mt-3 max-w-2xl text-balance text-content">
+        Joining costs less than the coffee you would have had alone.
+      </h2>
 
-      <ol className="mt-12 grid gap-5 md:grid-cols-3">
+      <ol className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {STEPS.map((step, i) => (
-          <li key={step.title} className="surface-card group relative overflow-hidden p-7 transition-transform hover:-translate-y-1">
-            <span className="font-display text-6xl font-semibold text-content/20 transition-colors group-hover:text-brand/25">
-              0{i + 1}
-            </span>
-            <step.icon size={26} className="mt-4 text-brand" />
-            <h3 className="mt-4 font-display text-xl font-semibold">{step.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-content/65">{step.body}</p>
+          <li key={step.title} className="surface-card flex flex-col gap-3 p-6">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand/12 text-brand">
+                <step.icon size={19} />
+              </span>
+              <span className="font-display text-sm font-bold tabular-nums text-content/35">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+            </div>
+            <h3 className="font-display text-lg font-bold text-content">{step.title}</h3>
+            <p className="text-sm leading-relaxed text-content/70">{step.body}</p>
           </li>
         ))}
       </ol>

@@ -85,13 +85,13 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
                     {t.drawer.saved}
                   </ButtonLink>
                   <ButtonLink
-                    href="/bookings"
+                    href="/my-meetups"
                     variant="ghost"
                     full
                     size="lg"
                     className="text-content hover:bg-content/10"
                   >
-                    {t.drawer.bookings}
+                    {t.drawer.myMeetups}
                   </ButtonLink>
                   <form action={signOutAction}>
                     <button

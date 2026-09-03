@@ -1,5 +1,5 @@
-import type { Business, BusinessClaim, DinnerBooking, QuizAnswers, Review, UserProfile } from '@/types';
-import { SEED_BUSINESSES, SEED_DINNERS, SEED_REVIEWS, SEED_USERS } from './seed';
+import type { HostSummary, Join, Meetup, Payment, UserProfile, Vouch } from '@/types';
+import { SEED_HOSTS, SEED_MEETUPS, SEED_USERS, SEED_VOUCHES } from './seed';
 
 /**
  * Demo-mode database.
@@ -10,52 +10,48 @@ import { SEED_BUSINESSES, SEED_DINNERS, SEED_REVIEWS, SEED_USERS } from './seed'
  * repository layer swap between the two without pages noticing.
  */
 export interface DemoDb {
-  businesses: Business[];
-  reviews: Review[];
+  meetups: Meetup[];
+  hosts: HostSummary[];
+  vouches: Vouch[];
   users: (UserProfile & { password: string })[];
-  saves: { userId: string; businessId: string }[];
-  bookings: DinnerBooking[];
-  quiz: Record<string, QuizAnswers>;
-  claims: BusinessClaim[];
-  helpfulVotes: { reviewId: string; userId: string }[];
-  dinners: typeof SEED_DINNERS;
+  joins: Join[];
+  payments: Payment[];
+  saves: { userId: string; meetupId: string }[];
 }
 
-const globalRef = globalThis as unknown as { __sitnextDb?: DemoDb };
+const globalRef = globalThis as unknown as { __vibeclubDb?: DemoDb };
 
 function createDb(): DemoDb {
   return {
-    businesses: SEED_BUSINESSES.map((b) => ({ ...b })),
-    reviews: SEED_REVIEWS.map((r) => ({ ...r })),
+    meetups: SEED_MEETUPS.map((m) => ({ ...m })),
+    hosts: SEED_HOSTS.map((h) => ({ ...h })),
+    vouches: SEED_VOUCHES.map((v) => ({ ...v })),
     users: SEED_USERS.map((u) => ({ ...u })),
+    joins: [],
+    payments: [],
     saves: [
-      { userId: 'u001', businessId: 'b001' },
-      { userId: 'u001', businessId: 'b014' },
+      { userId: 'u001', meetupId: 'm002' },
+      { userId: 'u001', meetupId: 'm017' },
     ],
-    bookings: [],
-    quiz: {},
-    claims: [],
-    helpfulVotes: [],
-    dinners: SEED_DINNERS.map((d) => ({ ...d })),
   };
 }
 
 export function db(): DemoDb {
-  if (!globalRef.__sitnextDb) globalRef.__sitnextDb = createDb();
-  return globalRef.__sitnextDb;
+  if (!globalRef.__vibeclubDb) globalRef.__vibeclubDb = createDb();
+  return globalRef.__vibeclubDb;
 }
 
 /** Test helper — wipes mutations back to the seeded baseline. */
 export function resetDb() {
-  globalRef.__sitnextDb = createDb();
-  return globalRef.__sitnextDb;
+  globalRef.__vibeclubDb = createDb();
+  return globalRef.__vibeclubDb;
 }
 
-/** Rating + review count are derived, never stored, so they can't drift. */
-export function withAggregates(business: Business, reviews: Review[] = db().reviews): Business {
-  const mine = reviews.filter((r) => r.businessId === business.id);
-  const rating = mine.length ? mine.reduce((sum, r) => sum + r.rating, 0) / mine.length : 0;
-  return { ...business, rating: Math.round(rating * 10) / 10, reviewCount: mine.length };
+/** Rating + vouch count are derived, never stored, so they can't drift. */
+export function withAggregates(meetup: Meetup, vouches: Vouch[] = db().vouches): Meetup {
+  const mine = vouches.filter((v) => v.meetupId === meetup.id);
+  const rating = mine.length ? mine.reduce((sum, v) => sum + v.rating, 0) / mine.length : 0;
+  return { ...meetup, rating: Math.round(rating * 10) / 10, vouchCount: mine.length };
 }
 
 export function nextId(prefix: string) {

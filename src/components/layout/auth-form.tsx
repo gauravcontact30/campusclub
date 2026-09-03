@@ -34,7 +34,7 @@ export function AuthForm({ mode, next }: { mode: 'signin' | 'signup'; next: stri
               </option>
               {CITIES.map((c) => (
                 <option key={c.slug} value={c.name}>
-                  {c.name}, {c.country}
+                  {c.name}, {c.state}
                 </option>
               ))}
             </Select>

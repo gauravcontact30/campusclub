@@ -1,5 +1,5 @@
 -- =============================================================================
--- SitNext — owner tools
+-- VibeClub — owner tools
 -- Public right of reply on reviews, and an audit trail for listing claims.
 -- =============================================================================
 

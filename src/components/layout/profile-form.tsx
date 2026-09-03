@@ -17,7 +17,7 @@ export function ProfileForm({ user }: { user: UserProfile }) {
 
   return (
     <form action={formAction} className="surface-card space-y-5 p-6">
-      <h2 className="font-display text-xl font-semibold">Your details</h2>
+      <h2 className="font-display text-xl font-bold text-content">Your details</h2>
 
       <Field label="Name" htmlFor="fullName" error={state?.fieldErrors?.fullName}>
         <Input id="fullName" name="fullName" defaultValue={user.fullName} />
@@ -27,7 +27,12 @@ export function ProfileForm({ user }: { user: UserProfile }) {
         <Input id="profile-city" name="city" defaultValue={user.city} />
       </Field>
 
-      <Field label="Bio" htmlFor="bio" hint="Shown to nobody but you — it just helps us seat you." error={state?.fieldErrors?.bio}>
+      <Field
+        label="Bio"
+        htmlFor="bio"
+        hint="Shown on meetups you host, so people know who they are turning up to."
+        error={state?.fieldErrors?.bio}
+      >
         <Textarea id="bio" name="bio" defaultValue={user.bio} className="min-h-[100px]" maxLength={280} />
       </Field>
 

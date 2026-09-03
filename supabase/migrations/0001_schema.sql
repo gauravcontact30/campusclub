@@ -1,5 +1,5 @@
 -- =============================================================================
--- SitNext — core schema
+-- VibeClub — core schema
 -- Apply with:  supabase db push      (or paste into the SQL editor)
 -- =============================================================================
 
@@ -9,7 +9,7 @@ create extension if not exists pg_trgm;
 -- ---------------------------------------------------------------- profiles --
 create table if not exists public.profiles (
   id          uuid primary key references auth.users (id) on delete cascade,
-  full_name   text        not null default 'SitNext member',
+  full_name   text        not null default 'VibeClub member',
   avatar_url  text,
   city        text        not null default '',
   bio         text        not null default '',

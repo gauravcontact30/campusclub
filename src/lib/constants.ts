@@ -1,175 +1,258 @@
-import type { Category, SubscriptionPlan } from '@/types';
+import type { Category, City, Level, Pass } from '@/types';
+
+/**
+ * The canonical origin, used for `metadataBase`, the sitemap and robots.txt.
+ *
+ * `??` alone was not enough: a Vercel project with NEXT_PUBLIC_SITE_URL defined
+ * but blank hands us an empty string, which is not `undefined`, so the fallback
+ * never fired and `new URL('')` threw during the build. Vercel's own
+ * VERCEL_PROJECT_PRODUCTION_URL / VERCEL_URL are also bare hostnames with no
+ * scheme, which `new URL` rejects too. So: take the first candidate that
+ * actually parses, adding https:// when a scheme is missing.
+ */
+function resolveSiteUrl() {
+  const candidates = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    process.env.VERCEL_URL,
+  ];
+
+  for (const raw of candidates) {
+    const value = raw?.trim();
+    if (!value) continue;
+    const withScheme = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+    try {
+      return new URL(withScheme).origin;
+    } catch {
+      // Malformed value — try the next candidate rather than failing the build.
+    }
+  }
+
+  return 'http://localhost:3000';
+}
 
 export const SITE = {
-  name: 'SitNext',
-  tagline: 'Find the good stuff. Meet the good people.',
+  name: 'VibeClub',
+  tagline: 'Nobody does it alone.',
   description:
-    'SitNext is a local discovery platform: read and write honest reviews of neighbourhood businesses, then book a seat at a curated dinner with five strangers who share your taste.',
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+    'VibeClub is where people in your city meet up to do the things that are harder alone — group study, exam prep, gym sessions, sport, and long breakfasts. Browse what is happening near you, pay the join fee, turn up.',
+  url: resolveSiteUrl(),
 };
+
+/* ------------------------------------------------------------------ */
+/* What people meet up to do                                           */
+/* ------------------------------------------------------------------ */
 
 export const CATEGORIES: Category[] = [
-  { id: 'c1', slug: 'restaurants', name: 'Restaurants', icon: 'UtensilsCrossed', blurb: 'Tables worth booking twice.' },
-  { id: 'c2', slug: 'cafes', name: 'Coffee & Cafés', icon: 'Coffee', blurb: 'Where the laptops and the lingerers go.' },
-  { id: 'c3', slug: 'bars', name: 'Bars & Nightlife', icon: 'Martini', blurb: 'Last orders, first impressions.' },
-  { id: 'c4', slug: 'home-services', name: 'Home Services', icon: 'Wrench', blurb: 'Plumbers, painters, people who show up.' },
-  { id: 'c5', slug: 'beauty-spa', name: 'Beauty & Spa', icon: 'Scissors', blurb: 'Cuts, colour and quiet rooms.' },
-  { id: 'c6', slug: 'fitness', name: 'Fitness', icon: 'Dumbbell', blurb: 'Studios that keep you coming back.' },
-  { id: 'c7', slug: 'shopping', name: 'Shopping', icon: 'ShoppingBag', blurb: 'Independents worth the detour.' },
-  { id: 'c8', slug: 'health', name: 'Health & Medical', icon: 'Stethoscope', blurb: 'Clinics with a human touch.' },
-];
-
-export const CITIES = [
-  { slug: 'bengaluru', name: 'Bengaluru', country: 'India', blurb: 'Filter coffee to natural wine, in one street.' },
-  { slug: 'mumbai', name: 'Mumbai', country: 'India', blurb: 'A city that eats standing up.' },
-  { slug: 'delhi', name: 'Delhi', country: 'India', blurb: 'Old kitchens, new counters.' },
-  { slug: 'london', name: 'London', country: 'United Kingdom', blurb: 'Six strangers, one long table.' },
-  { slug: 'new-york', name: 'New York', country: 'United States', blurb: 'Reservations are a personality here.' },
-  { slug: 'lisbon', name: 'Lisbon', country: 'Portugal', blurb: 'Dinner starts when the light goes.' },
-];
-
-/** Price tiers are rendered in the currency of the city the listing sits in. */
-export const CITY_CURRENCY: Record<string, { code: string; symbol: string; locale: string }> = {
-  Bengaluru: { code: 'INR', symbol: '₹', locale: 'en-IN' },
-  Mumbai: { code: 'INR', symbol: '₹', locale: 'en-IN' },
-  Delhi: { code: 'INR', symbol: '₹', locale: 'en-IN' },
-  London: { code: 'GBP', symbol: '£', locale: 'en-GB' },
-  'New York': { code: 'USD', symbol: '$', locale: 'en-US' },
-  Lisbon: { code: 'EUR', symbol: '€', locale: 'pt-PT' },
-};
-
-export const DEFAULT_CURRENCY = CITY_CURRENCY.Bengaluru;
-
-export const PRICE_LABELS: Record<number, string> = { 1: '₹', 2: '₹₹', 3: '₹₹₹', 4: '₹₹₹₹' };
-
-export const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
-
-export const AMENITIES = [
-  'Outdoor seating',
-  'Wheelchair accessible',
-  'Accepts cards',
-  'Free Wi-Fi',
-  'Pet friendly',
-  'Parking',
-  'Vegan options',
-  'Late night',
-  'Family friendly',
-  'Reservations',
-];
-
-export const PLANS: SubscriptionPlan[] = [
   {
-    id: 'free',
-    name: 'Explorer',
-    priceCents: 0,
-    cadence: 'forever',
-    tagline: 'Discover, review, save. No card needed.',
-    perks: ['Unlimited search & reviews', 'Save places to lists', 'One dinner per quarter', 'Community guidelines badge'],
+    id: 'c1',
+    slug: 'group-study',
+    name: 'Group study',
+    icon: 'BookOpen',
+    verb: 'Study together',
+    blurb: 'Three hours, phones face down, one table.',
   },
   {
-    id: 'monthly',
-    name: 'Monthly Table',
-    priceCents: 129900,
+    id: 'c2',
+    slug: 'exam-prep',
+    name: 'Exam prep',
+    icon: 'GraduationCap',
+    verb: 'Prep together',
+    blurb: 'Mock tests and doubt-clearing for CAT, GATE, UPSC, NEET.',
+  },
+  {
+    id: 'c3',
+    slug: 'dinner',
+    name: 'Dinner',
+    icon: 'UtensilsCrossed',
+    verb: 'Eat together',
+    blurb: 'A long table, six people, no phones out.',
+  },
+  {
+    id: 'c4',
+    slug: 'breakfast-lunch',
+    name: 'Breakfast & lunch',
+    icon: 'Croissant',
+    verb: 'Eat together',
+    blurb: 'Idli runs at seven, thali at one.',
+  },
+  {
+    id: 'c5',
+    slug: 'gym',
+    name: 'Gym',
+    icon: 'Dumbbell',
+    verb: 'Train together',
+    blurb: 'A spotter, a schedule, and someone who notices you skipped.',
+  },
+  {
+    id: 'c6',
+    slug: 'sports',
+    name: 'Sports',
+    icon: 'Volleyball',
+    verb: 'Play together',
+    blurb: 'Badminton, football, box cricket — teams made on the spot.',
+  },
+  {
+    id: 'c7',
+    slug: 'outdoors',
+    name: 'Runs & outdoors',
+    icon: 'Footprints',
+    verb: 'Move together',
+    blurb: 'Sunrise runs, lake loops, weekend treks.',
+  },
+  {
+    id: 'c8',
+    slug: 'skills',
+    name: 'Skills & hobbies',
+    icon: 'Palette',
+    verb: 'Practise together',
+    blurb: 'Sketching, open mics, chess, language practice.',
+  },
+];
+
+export const CATEGORY_SLUGS = CATEGORIES.map((c) => c.slug);
+
+export function categoryBySlug(slug: string) {
+  return CATEGORIES.find((c) => c.slug === slug);
+}
+
+/* ------------------------------------------------------------------ */
+/* Where                                                               */
+/* ------------------------------------------------------------------ */
+
+export const CITIES: City[] = [
+  { slug: 'bengaluru', name: 'Bengaluru', state: 'Karnataka', blurb: 'Library cafés and 6am lake loops.', lat: 12.9716, lng: 77.5946 },
+  { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', blurb: 'Study rooms above the station, football on reclaimed ground.', lat: 19.076, lng: 72.8777 },
+  { slug: 'delhi', name: 'Delhi', state: 'Delhi', blurb: 'UPSC mornings in Rajinder Nagar, badminton by eight.', lat: 28.6139, lng: 77.209 },
+  { slug: 'pune', name: 'Pune', state: 'Maharashtra', blurb: 'Student city. Somebody is always revising something.', lat: 18.5204, lng: 73.8567 },
+  { slug: 'hyderabad', name: 'Hyderabad', state: 'Telangana', blurb: 'Biryani at one, box cricket at nine.', lat: 17.385, lng: 78.4867 },
+  { slug: 'chennai', name: 'Chennai', state: 'Tamil Nadu', blurb: 'Marina runs before the heat arrives.', lat: 13.0827, lng: 80.2707 },
+];
+
+export function cityBySlug(slug: string) {
+  return CITIES.find((c) => c.slug === slug);
+}
+
+/** One currency across every city we operate in — no conversion anywhere. */
+export const CURRENCY = { code: 'INR', symbol: '₹', locale: 'en-IN' };
+
+/* ------------------------------------------------------------------ */
+/* Money                                                               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The model: every meetup carries a join fee the host sets, and that is the
+ * default way to pay. Passes are simply pre-bought joins at a lower unit
+ * price — the checkout spends a credit instead of opening the gateway.
+ */
+export const PASSES: Pass[] = [
+  {
+    id: 'payg',
+    name: 'Pay as you go',
+    priceCents: 0,
+    credits: 0,
+    cadence: 'no commitment',
+    tagline: 'Pay only the join fee, only when you go.',
+    perks: ['Browse and save everything', 'Pay per meetup, ₹49 – ₹499', 'Free cancellation up to 6 hours before', 'Host your own meetups for free'],
+  },
+  {
+    id: 'starter',
+    name: 'Starter',
+    priceCents: 39900,
+    credits: 4,
     cadence: 'per month',
-    tagline: 'A dinner every week, matched to you.',
-    perks: ['4 dinners a month', 'Priority matching', 'Venue reveal 24h early', 'Cancel anytime'],
+    tagline: 'Four joins a month, about a third off.',
+    perks: ['4 join credits every month', 'Credits work on any meetup', 'Join full meetups from the waitlist first', 'Cancel anytime'],
+  },
+  {
+    id: 'regular',
+    name: 'Regular',
+    priceCents: 79900,
+    credits: 10,
+    cadence: 'per month',
+    tagline: 'For people who are out three times a week.',
+    perks: ['10 join credits every month', 'Priority on the waitlist', 'Bring a friend once a month', 'Early access to new meetups'],
     highlight: true,
   },
   {
-    id: 'quarterly',
-    name: 'Season Pass',
-    priceCents: 329900,
-    cadence: 'per quarter',
-    tagline: 'Three months of Wednesdays.',
-    perks: ['12 dinners', 'Priority matching', 'Bring-a-friend pass ×1', 'Partner venue discounts'],
-  },
-  {
-    id: 'annual',
-    name: 'Regulars Club',
-    priceCents: 1099900,
-    cadence: 'per year',
-    tagline: 'For people who never sit at home.',
-    perks: ['Unlimited dinners', 'Concierge matching', 'Bring-a-friend pass ×4', 'Early access to new cities'],
+    id: 'unlimited',
+    name: 'Unlimited',
+    priceCents: 149900,
+    credits: null,
+    cadence: 'per month',
+    tagline: 'Every meetup in your city, no counting.',
+    perks: ['Unlimited joins', 'Top of every waitlist', 'Bring a friend to any meetup', 'Host tools and attendee insights'],
   },
 ];
 
-export const QUIZ_QUESTIONS = [
-  {
-    id: 'energy',
-    prompt: 'At a table of six, you are usually…',
-    help: 'There is no wrong answer — we balance every table.',
-    options: [
-      { value: 'listener', label: 'The listener', hint: 'You ask the second question.' },
-      { value: 'spark', label: 'The spark', hint: 'Silence lasts about four seconds.' },
-      { value: 'anchor', label: 'The anchor', hint: 'You keep the night on the rails.' },
-      { value: 'wildcard', label: 'The wildcard', hint: 'Nobody predicts your stories.' },
-    ],
-  },
-  {
-    id: 'topics',
-    prompt: 'The conversation you would happily lose two hours to?',
-    help: 'We seat people with overlapping curiosity, not identical opinions.',
-    options: [
-      { value: 'culture', label: 'Books, film & music' },
-      { value: 'work', label: 'Work, startups & craft' },
-      { value: 'world', label: 'Travel, cities & politics' },
-      { value: 'life', label: 'Relationships & the big questions' },
-    ],
-  },
-  {
-    id: 'food',
-    prompt: 'Your ideal plate on a Wednesday night?',
-    help: 'Dietary needs are collected at booking — this is about taste.',
-    options: [
-      { value: 'comfort', label: 'Comfort food, generous portions' },
-      { value: 'adventurous', label: 'Something I cannot pronounce' },
-      { value: 'plant', label: 'Plant-forward and bright' },
-      { value: 'classic', label: 'A well-made classic' },
-    ],
-  },
-  {
-    id: 'pace',
-    prompt: 'How does the night end?',
-    help: 'Half of our tables move on to a second venue.',
-    options: [
-      { value: 'early', label: 'Home by ten, happily' },
-      { value: 'second', label: 'One more drink somewhere' },
-      { value: 'late', label: 'Last train, obviously' },
-      { value: 'flow', label: 'Whatever the table decides' },
-    ],
-  },
-  {
-    id: 'age',
-    prompt: 'Which age range should we seat you closest to?',
-    help: 'Tables mix ranges, but we keep everyone within a comfortable spread.',
-    options: [
-      { value: '20s', label: '21 – 29' },
-      { value: '30s', label: '30 – 39' },
-      { value: '40s', label: '40 – 49' },
-      { value: 'any', label: 'Surprise me' },
-    ],
-  },
-  {
-    id: 'language',
-    prompt: 'Which language should the table run in?',
-    help: 'We match on the language you are most comfortable joking in.',
-    options: [
-      { value: 'english', label: 'English' },
-      { value: 'hindi', label: 'Hindi' },
-      { value: 'portuguese', label: 'Portuguese' },
-      { value: 'any', label: 'Any of the above' },
-    ],
-  },
+export function passById(id: string) {
+  return PASSES.find((p) => p.id === id);
+}
+
+/** Join fees a host can choose from, in paise. Keeps the form honest. */
+export const FEE_PRESETS = [4900, 9900, 14900, 19900, 29900, 49900];
+
+/* ------------------------------------------------------------------ */
+/* Meetup vocabulary                                                   */
+/* ------------------------------------------------------------------ */
+
+export const LEVELS: { value: Level; label: string; hint: string }[] = [
+  { value: 'any', label: 'Everyone', hint: 'No experience assumed.' },
+  { value: 'beginner', label: 'Beginner', hint: 'Starting out, and that is the point.' },
+  { value: 'intermediate', label: 'Intermediate', hint: 'You have done this a few times.' },
+  { value: 'serious', label: 'Serious', hint: 'Turn up ready to work.' },
 ];
 
-export const OWNER_ROLES = ['Owner', 'Manager', 'Marketing', 'Franchisee', 'Other'];
+export const AUDIENCES = [
+  { value: 'everyone', label: 'Open to everyone' },
+  { value: 'women', label: 'Women only' },
+  { value: 'men', label: 'Men only' },
+] as const;
+
+export const CADENCES = [
+  { value: 'once', label: 'One-off' },
+  { value: 'weekly', label: 'Every week' },
+  { value: 'daily', label: 'Every weekday' },
+] as const;
+
+export const LANGUAGES = ['English', 'Hindi', 'Kannada', 'Marathi', 'Tamil', 'Telugu'];
+
+export const BRING_PRESETS = [
+  'Laptop',
+  'Notebook & pen',
+  'Your own mat',
+  'Water bottle',
+  'Sports shoes',
+  'Racket (spares available)',
+  'Question bank',
+  'Just yourself',
+];
+
+export const VOUCH_HIGHLIGHTS = [
+  'Started on time',
+  'Welcoming to newcomers',
+  'Host was organised',
+  'Good group energy',
+  'Quiet enough to focus',
+  'Would join again',
+];
+
+export const WHEN_OPTIONS = [
+  { value: 'any', label: 'Any time' },
+  { value: 'today', label: 'Today' },
+  { value: 'tomorrow', label: 'Tomorrow' },
+  { value: 'weekend', label: 'This weekend' },
+  { value: 'week', label: 'Next 7 days' },
+] as const;
 
 export const SORT_OPTIONS = [
-  { value: 'recommended', label: 'Recommended' },
-  { value: 'rating', label: 'Highest rated' },
-  { value: 'reviews', label: 'Most reviewed' },
-  { value: 'price_asc', label: 'Price: low to high' },
-  { value: 'price_desc', label: 'Price: high to low' },
+  { value: 'soonest', label: 'Starting soonest' },
+  { value: 'filling', label: 'Filling fastest' },
+  { value: 'cheapest', label: 'Lowest join fee' },
+  { value: 'rating', label: 'Best rated hosts' },
   /** Only offered once the visitor has shared their location. */
-  { value: 'distance', label: 'Nearest first', needsLocation: true },
+  { value: 'nearest', label: 'Nearest to me', needsLocation: true },
 ] as const;
+
+/** How long before a meetup starts a member can still cancel for a refund. */
+export const FREE_CANCELLATION_HOURS = 6;

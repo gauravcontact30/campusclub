@@ -1,112 +1,118 @@
 import { describe, expect, it } from 'vitest';
 import {
-  distanceKm,
+  dayLabel,
+  durationLabel,
   formatDistance,
-  formatMoneyForCity,
-  hashIndex,
+  formatFee,
+  formatMoney,
+  hasStarted,
   initials,
-  isOpenNow,
-  nextOpening,
   pluralize,
-  priceLabel,
   slugify,
-  to12h,
+  spotsState,
 } from '@/lib/utils';
-import type { WeekHours } from '@/types';
 
-const h = (open: string | null, close: string | null) => ({ open, close });
-const weekdayHours: WeekHours = [
-  h('09:00', '17:00'), // Mon
-  h('09:00', '17:00'),
-  h('09:00', '17:00'),
-  h('09:00', '17:00'),
-  h('09:00', '17:00'), // Fri
-  h(null, null), // Sat
-  h(null, null), // Sun
-];
+describe('money', () => {
+  it('formats whole rupees without decimals', () => {
+    expect(formatMoney(14900)).toBe('₹149');
+  });
 
-const lateBar: WeekHours = Array.from({ length: 7 }, () => h('18:00', '02:00')) as WeekHours;
+  it('keeps paise when an amount actually has them', () => {
+    expect(formatMoney(14950)).toBe('₹149.50');
+  });
 
-describe('slugify', () => {
-  it('produces url-safe slugs', () => {
-    expect(slugify('Third Wave Filter Room')).toBe('third-wave-filter-room');
-    expect(slugify('  Café  &  Bar!  ')).toBe('caf-bar');
+  it('says "Free" rather than ₹0, because that is the word on the card', () => {
+    expect(formatFee(0)).toBe('Free');
+    expect(formatFee(4900)).toBe('₹49');
   });
 });
 
-describe('isOpenNow', () => {
-  it('is open inside the window', () => {
-    // Wednesday 12:00
-    expect(isOpenNow(weekdayHours, new Date('2026-09-02T12:00:00'))).toBe(true);
+describe('spotsState', () => {
+  it('reports what is left and reads out loud', () => {
+    const s = spotsState(6, 8);
+    expect(s.left).toBe(2);
+    expect(s.label).toBe('2 spots left');
+    expect(s.full).toBe(false);
   });
 
-  it('is closed outside the window', () => {
-    expect(isOpenNow(weekdayHours, new Date('2026-09-02T18:30:00'))).toBe(false);
+  it('drops the plural at one', () => {
+    expect(spotsState(7, 8).label).toBe('1 spot left');
   });
 
-  it('is closed on a day with no hours', () => {
-    // Saturday
-    expect(isOpenNow(weekdayHours, new Date('2026-09-05T12:00:00'))).toBe(false);
+  it('marks a full meetup as a waitlist rather than an error', () => {
+    const s = spotsState(8, 8);
+    expect(s.full).toBe(true);
+    expect(s.left).toBe(0);
+    expect(s.label).toMatch(/waitlist/i);
   });
 
-  it('handles windows that spill past midnight', () => {
-    expect(isOpenNow(lateBar, new Date('2026-09-02T01:00:00'))).toBe(true);
-    expect(isOpenNow(lateBar, new Date('2026-09-02T15:00:00'))).toBe(false);
-  });
-});
-
-describe('nextOpening', () => {
-  it('skips closed days to find the next opening', () => {
-    // Saturday → next opening is Monday
-    const next = nextOpening(weekdayHours, new Date('2026-09-05T12:00:00'));
-    expect(next).toEqual({ dayIndex: 0, open: '09:00', offset: 2 });
-  });
-});
-
-describe('money and price tiers', () => {
-  it('formats in the currency of the city', () => {
-    expect(formatMoneyForCity(129900, 'Bengaluru')).toContain('₹');
-    expect(formatMoneyForCity(349900, 'London')).toContain('£');
-    expect(formatMoneyForCity(399900, 'New York')).toContain('$');
+  it('calls it scarce only when a quarter or less is left', () => {
+    expect(spotsState(6, 8).scarce).toBe(true);
+    expect(spotsState(4, 8).scarce).toBe(false);
+    // Nothing sold yet is not scarcity, however small the meetup.
+    expect(spotsState(0, 2).scarce).toBe(false);
   });
 
-  it('renders price tiers with the local symbol', () => {
-    expect(priceLabel(3, 'New York')).toBe('$$$');
-    expect(priceLabel(2, 'Bengaluru')).toBe('₹₹');
-    expect(priceLabel(9, 'London')).toBe('££££'); // clamped
+  it('never goes negative or divides by zero on bad data', () => {
+    expect(spotsState(12, 8).left).toBe(0);
+    expect(spotsState(0, 0).fraction).toBe(0);
   });
 });
 
-describe('misc helpers', () => {
-  it('converts 24h to 12h', () => {
-    expect(to12h('09:00')).toBe('9:00 AM');
-    expect(to12h('00:30')).toBe('12:30 AM');
-    expect(to12h('13:45')).toBe('1:45 PM');
+describe('time', () => {
+  const iso = (d: Date) => d.toISOString();
+
+  it('names today and tomorrow by calendar day, not elapsed hours', () => {
+    const now = new Date(2026, 8, 3, 23, 30);
+    const lateTonight = new Date(2026, 8, 3, 23, 45);
+    const earlyTomorrow = new Date(2026, 8, 4, 1, 0);
+
+    // Only 15 and 90 minutes apart, but different days — which is what a
+    // person reading a card actually cares about.
+    expect(dayLabel(iso(lateTonight), now)).toBe('Today');
+    expect(dayLabel(iso(earlyTomorrow), now)).toBe('Tomorrow');
   });
 
-  it('measures distance between two points', () => {
-    const km = distanceKm({ lat: 12.9719, lng: 77.6412 }, { lat: 12.9345, lng: 77.6266 });
-    expect(km).toBeGreaterThan(3);
-    expect(km).toBeLessThan(6);
+  it('falls back to a date further out', () => {
+    const now = new Date(2026, 8, 3, 10, 0);
+    expect(dayLabel(iso(new Date(2026, 8, 10, 10, 0)), now)).toMatch(/Sep/);
   });
 
-  it('buckets deterministically', () => {
-    expect(hashIndex('abc', 6)).toBe(hashIndex('abc', 6));
-    expect(hashIndex('abc', 6)).toBeLessThan(6);
+  it('describes a duration in hours and minutes', () => {
+    const start = new Date(2026, 8, 3, 9, 0);
+    expect(durationLabel(iso(start), iso(new Date(2026, 8, 3, 10, 30)))).toBe('1 hr 30 min');
+    expect(durationLabel(iso(start), iso(new Date(2026, 8, 3, 11, 0)))).toBe('2 hr');
+    expect(durationLabel(iso(start), iso(new Date(2026, 8, 3, 9, 45)))).toBe('45 min');
   });
 
-  it('pluralises and initials', () => {
-    expect(pluralize(1, 'review')).toBe('1 review');
-    expect(pluralize(4, 'review')).toBe('4 reviews');
-    expect(initials('Priya Nair')).toBe('PN');
+  it('knows whether a meetup has already begun', () => {
+    const now = new Date(2026, 8, 3, 12, 0);
+    expect(hasStarted(iso(new Date(2026, 8, 3, 11, 0)), now)).toBe(true);
+    expect(hasStarted(iso(new Date(2026, 8, 3, 13, 0)), now)).toBe(false);
   });
 });
 
-describe('formatDistance', () => {
-  it('switches from metres to kilometres', () => {
-    expect(formatDistance(0.01)).toBe('Nearby');
-    expect(formatDistance(0.42)).toBe('420 m');
-    expect(formatDistance(4.23)).toBe('4.2 km');
-    expect(formatDistance(48.6)).toBe('49 km');
+describe('formatting odds and ends', () => {
+  it('shortens distances the way a person would say them', () => {
+    expect(formatDistance(0.02)).toBe('Nearby');
+    expect(formatDistance(0.6)).toBe('600 m');
+    expect(formatDistance(4.24)).toBe('4.2 km');
+    expect(formatDistance(23.6)).toBe('24 km');
+  });
+
+  it('slugifies titles into something linkable', () => {
+    expect(slugify('Deep work table — 3 hours, phones in the box')).toBe(
+      'deep-work-table-3-hours-phones-in-the-box',
+    );
+  });
+
+  it('takes at most two initials', () => {
+    expect(initials('Ananya Rao')).toBe('AR');
+    expect(initials('Arjun Kumar Reddy')).toBe('AK');
+  });
+
+  it('pluralises', () => {
+    expect(pluralize(1, 'credit')).toBe('1 credit');
+    expect(pluralize(4, 'credit')).toBe('4 credits');
   });
 });

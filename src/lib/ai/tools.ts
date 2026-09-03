@@ -1,20 +1,18 @@
 import { betaTool } from '@anthropic-ai/sdk/helpers/beta/json-schema';
-import { searchBusinesses, getBusinessBySlug } from '@/lib/data/businesses';
-import { getDinners } from '@/lib/data/dinners';
-import { getReviews } from '@/lib/data/reviews';
-import { CATEGORIES, CITIES, PLANS, SITE } from '@/lib/constants';
-import { formatMoneyForCity, openStatusLabel, priceLabel, to12h } from '@/lib/utils';
-
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+import { getMeetupBySlug, searchMeetups } from '@/lib/data/meetups';
+import { getVouches } from '@/lib/data/vouches';
+import { CATEGORIES, CITIES, FREE_CANCELLATION_HOURS, PASSES, SITE } from '@/lib/constants';
+import { durationLabel, formatFee, formatMoney, formatDateTime } from '@/lib/utils';
+import type { Level, MeetupSort, WhenFilter } from '@/types';
 
 /**
- * The tools are what make the assistant answer about *this* site rather than
- * about restaurants in general: every factual claim it makes comes back through
- * one of these, against the same data layer the pages render from.
+ * The tools are what make the assistant answer about *this* board rather than
+ * about meetups in general: every factual claim it makes comes back through one
+ * of these, against the same data layer the pages render from.
  *
  * Each returns a compact string rather than raw rows. Model context is the
- * scarce resource here, and a listing's full record — photos, geo, hours for
- * seven days — costs far more than the two lines a person actually asked for.
+ * scarce resource here, and a meetup's full record — agenda, coordinates, the
+ * host's whole bio — costs far more than the two lines a person asked for.
  *
  * Schemas are plain JSON Schema via `betaTool` rather than the SDK's zod
  * helper: that helper requires zod 4, and this app is on zod 3 for its form
@@ -24,76 +22,92 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const citySlugs = CITIES.map((c) => c.slug);
 const categorySlugs = CATEGORIES.map((c) => c.slug);
 
-export const searchPlacesTool = betaTool({
-  name: 'search_places',
+export const searchMeetupsTool = betaTool({
+  name: 'search_meetups',
   description:
-    'Search the SitNext business directory. Use for any question about places to eat, drink, or use — ' +
-    'by name, cuisine, neighbourhood, city, category, price or rating. Returns a ranked shortlist.',
+    'Search what is on across VibeClub. Use for any question about things to join — by activity, city, ' +
+    'neighbourhood, date, price or how full it is. Returns a shortlist with join fees and spots left.',
   inputSchema: {
     type: 'object',
     properties: {
-      term: { type: 'string', description: 'Free text: a name, cuisine, or what the visitor is after' },
+      term: { type: 'string', description: 'Free text: an activity, a venue, a neighbourhood' },
       city: { type: 'string', enum: citySlugs },
       category: { type: 'string', enum: categorySlugs },
-      openNow: { type: 'boolean', description: 'Only places open at this moment' },
-      minRating: { type: 'number', minimum: 0, maximum: 5 },
+      when: {
+        type: 'string',
+        enum: ['any', 'today', 'tomorrow', 'weekend', 'week'],
+        description: 'Time window. Default "any", which means everything upcoming.',
+      },
+      level: { type: 'string', enum: ['any', 'beginner', 'intermediate', 'serious'] },
+      maxFeeRupees: { type: 'number', minimum: 0, description: 'Upper bound on the join fee, in rupees' },
+      hasSpots: { type: 'boolean', description: 'Only meetups that still have room' },
+      sort: { type: 'string', enum: ['soonest', 'filling', 'cheapest', 'rating'] },
       limit: { type: 'number', minimum: 1, maximum: 8, description: 'Default 5' },
     },
     additionalProperties: false,
   } as const,
-  run: async ({ term, city, category, openNow, minRating, limit }) => {
-    const { items, total } = await searchBusinesses({
+  run: async ({ term, city, category, when, level, maxFeeRupees, hasSpots, sort, limit }) => {
+    const { items, total } = await searchMeetups({
       term: term ?? '',
       city: city ?? '',
       category: category ?? '',
-      openNow: openNow ?? false,
-      minRating: minRating ?? 0,
+      when: (when as WhenFilter) ?? 'any',
+      level: (level as Level) ?? 'any',
+      maxFeeCents: maxFeeRupees ? Math.round(maxFeeRupees * 100) : undefined,
+      hasSpots: hasSpots ?? false,
+      sort: (sort as MeetupSort) ?? 'soonest',
       perPage: limit ?? 5,
     });
-    if (!items.length) return 'No places matched. Suggest widening the search.';
-    const lines = items.map(
-      (b) =>
-        `- ${b.name} (/businesses/${b.slug}) · ${b.rating.toFixed(1)}★ from ${b.reviewCount} reviews · ` +
-        `${priceLabel(b.priceLevel, b.city)} · ${b.neighborhood}, ${b.city} · ${openStatusLabel(b.hours)}`,
-    );
+
+    if (!items.length) return 'Nothing matched. Suggest widening the time window or clearing the category.';
+
+    const lines = items.map((m) => {
+      const left = Math.max(0, m.spotsTotal - m.spotsTaken);
+      return (
+        `- ${m.title} (/meetups/${m.slug}) · ${formatDateTime(m.startsAt)} · ${m.area}, ${m.city} · ` +
+        `${formatFee(m.joinFeeCents)} to join · ${left === 0 ? 'full, waitlist open' : `${left} of ${m.spotsTotal} spots left`} · ` +
+        `hosted by ${m.host.name}`
+      );
+    });
     return `${total} match; showing ${items.length}:\n${lines.join('\n')}`;
   },
 });
 
-export const placeDetailTool = betaTool({
-  name: 'get_place',
+export const meetupDetailTool = betaTool({
+  name: 'get_meetup',
   description:
-    'Full detail for one business: description, address, contact, opening hours and recent review quotes. ' +
-    'Call this after search_places when the visitor asks about a specific place.',
+    'Full detail for one meetup: what happens, what to bring, the host, the join fee and recent feedback. ' +
+    'Call this after search_meetups when the visitor asks about a specific one.',
   inputSchema: {
     type: 'object',
     properties: {
-      slug: { type: 'string', description: 'The slug from a search result URL, e.g. "the-clerkenwell-table-london"' },
+      slug: { type: 'string', description: 'The slug from a search result URL' },
     },
     required: ['slug'],
     additionalProperties: false,
   } as const,
   run: async ({ slug }) => {
-    const b = await getBusinessBySlug(slug);
-    if (!b) return `No business with slug "${slug}".`;
-    const reviews = (await getReviews(b.id, 'recent')).slice(0, 3);
-    const hours = b.hours
-      .map((h, i) => `${DAYS[i]}: ${h.open && h.close ? `${to12h(h.open)}–${to12h(h.close)}` : 'closed'}`)
-      .join('; ');
-    const quotes = reviews.length
-      ? reviews.map((r) => `  · ${r.rating}★ "${r.body.slice(0, 160)}"`).join('\n')
-      : '  · No reviews yet.';
+    const m = await getMeetupBySlug(slug);
+    if (!m) return `No meetup with slug "${slug}".`;
+
+    const vouches = (await getVouches(m.id)).slice(0, 3);
+    const left = Math.max(0, m.spotsTotal - m.spotsTaken);
+    const quotes = vouches.length
+      ? vouches.map((v) => `  · ${v.rating}★ "${v.body.slice(0, 160)}"`).join('\n')
+      : '  · No feedback yet — it has not run since it was listed.';
+
     return [
-      `${b.name} — ${b.categorySlug} in ${b.neighborhood}, ${b.city}`,
-      b.description,
-      `Rating ${b.rating.toFixed(1)}★ from ${b.reviewCount} reviews · ${priceLabel(b.priceLevel, b.city)}`,
-      `Address: ${b.address}, ${b.city} ${b.postalCode}`,
-      b.phone ? `Phone: ${b.phone}` : '',
-      b.website ? `Web: ${b.website}` : '',
-      `Hours — ${hours}`,
-      `Status: ${openStatusLabel(b.hours)}`,
-      `Page: /businesses/${b.slug}`,
-      'Recent reviews:',
+      `${m.title} — ${m.categorySlug} in ${m.area}, ${m.city}`,
+      m.description,
+      `When: ${formatDateTime(m.startsAt)}, runs ${durationLabel(m.startsAt, m.endsAt)}${m.cadence === 'once' ? '' : `, repeats ${m.cadence}`}`,
+      `Venue: ${m.venueName} (exact address is shared only after joining)`,
+      `Join fee: ${formatFee(m.joinFeeCents)} per person`,
+      `Spots: ${left === 0 ? 'full, waitlist is free to join' : `${left} of ${m.spotsTotal} left`}`,
+      `Level: ${m.level} · Open to: ${m.audience} · Language: ${m.language}`,
+      m.bring.length ? `Bring: ${m.bring.join(', ')}` : '',
+      `Host: ${m.host.name} — ${m.host.hostedCount} hosted, ${m.host.rating.toFixed(1)}★${m.host.verified ? ', verified' : ''}`,
+      `Page: /meetups/${m.slug}`,
+      'Recent feedback:',
       quotes,
     ]
       .filter(Boolean)
@@ -101,68 +115,71 @@ export const placeDetailTool = betaTool({
   },
 });
 
-export const dinnersTool = betaTool({
-  name: 'list_dinners',
-  description:
-    'Upcoming SitNext dinners — the Wednesday tables where six strangers eat together. ' +
-    'Use for availability, dates, cities and seats left.',
-  inputSchema: {
-    type: 'object',
-    properties: { city: { type: 'string', enum: citySlugs } },
-    additionalProperties: false,
-  } as const,
-  run: async ({ city }) => {
-    const cityName = city ? CITIES.find((c) => c.slug === city)?.name : undefined;
-    const events = (await getDinners(cityName)).slice(0, 8);
-    if (!events.length) return 'No dinners scheduled for that city yet.';
-    return events
-      .map((e) => {
-        const when = new Date(e.startsAt);
-        const seatsLeft = Math.max(0, e.seatsTotal - e.seatsTaken);
-        return (
-          `- ${e.city} · ${e.neighborhood} · ${when.toDateString()} ${to12h(when.toISOString().slice(11, 16))} · ` +
-          `${seatsLeft} of ${e.seatsTotal} seats left · ${formatMoneyForCity(e.priceCents, e.city)} · ` +
-          `${e.vibe} · ${e.language} · /dinners/${e.id}`
-        );
-      })
-      .join('\n');
-  },
-});
-
 export const siteFactsTool = betaTool({
   name: 'get_site_facts',
   description:
-    'How SitNext itself works: membership plans and prices, the cities it runs in, the categories in the ' +
-    'directory, and the rules of the dinners. Use before answering any "how does it work" or pricing question.',
+    'How VibeClub itself works: what the join fee is, how passes and credits work, refunds, waitlists, ' +
+    'hosting, the cities it runs in and the kinds of meetup. Use before answering any "how does it work" ' +
+    'or pricing question.',
   inputSchema: {
     type: 'object',
-    properties: { topic: { type: 'string', enum: ['plans', 'cities', 'categories', 'dinner_rules'] } },
+    properties: {
+      topic: {
+        type: 'string',
+        enum: ['joining', 'passes', 'refunds', 'hosting', 'cities', 'categories', 'safety'],
+      },
+    },
     required: ['topic'],
     additionalProperties: false,
   } as const,
   run: async ({ topic }) => {
     switch (topic) {
-      case 'plans':
-        return PLANS.map(
-          (p) =>
-            `- ${p.name}: ${p.priceCents === 0 ? 'Free' : formatMoneyForCity(p.priceCents, 'Bengaluru')} ${p.cadence}. ` +
-            `${p.tagline} Includes: ${p.perks.join('; ')}.`,
-        ).join('\n');
-      case 'cities':
-        return CITIES.map((c) => `- ${c.name}, ${c.country} (/businesses?city=${c.slug}) — ${c.blurb}`).join('\n');
-      case 'categories':
-        return CATEGORIES.map((c) => `- ${c.name} (/businesses?category=${c.slug}) — ${c.blurb}`).join('\n');
-      case 'dinner_rules':
+      case 'joining':
         return [
-          `${SITE.name} runs two things: a review directory, and a weekly dinner.`,
-          'Dinners are every Wednesday at 8pm. Six seats per table, five strangers plus you.',
-          'A six-question matching quiz (/dinners/quiz) decides who you are seated with.',
-          'The venue is revealed 36 hours before, by email and on your bookings page.',
-          'If a table is full you join the waitlist and get first call on a drop-out.',
-          'Reviews and the directory are free forever; membership is only for the dinners.',
+          `${SITE.name} is a board of local meetups. Every meetup carries a join fee its host sets, and paying that fee is the whole transaction.`,
+          'No subscription is required — a member can use the site for a year paying only per meetup.',
+          'Join fees typically run from free to about ₹499, and cover the host\'s costs: court hire, a gym day pass, a study room, the food.',
+          'The exact street address is released only once someone has joined; the listing shows the venue name and neighbourhood.',
+          'A full meetup still takes joins onto a free waitlist. Nothing is charged unless a spot opens and the member takes it.',
+          'Payments run through Razorpay. Browse at /meetups.',
+        ].join('\n');
+      case 'passes':
+        return [
+          'Passes pre-buy joins at a lower price each. One credit covers one join on any meetup, whatever its fee.',
+          ...PASSES.map(
+            (p) =>
+              `- ${p.name}: ${p.priceCents === 0 ? 'Free' : formatMoney(p.priceCents)} ${p.cadence}. ` +
+              `${p.credits === null ? 'Unlimited joins.' : `${p.credits} credits.`} ${p.tagline} Includes: ${p.perks.join('; ')}.`,
+          ),
+          'Credits reset each month and do not roll over. Passes are at /passes.',
+        ].join('\n');
+      case 'refunds':
+        return [
+          `Cancel more than ${FREE_CANCELLATION_HOURS} hours before a meetup starts and the join fee is refunded automatically, or the pass credit returns to the balance.`,
+          `Inside ${FREE_CANCELLATION_HOURS} hours it is not refunded, because the host has usually already paid for the venue.`,
+          'If a host cancels a meetup, everyone who joined is refunded in full, always.',
+          'Members manage and cancel their joins at /my-meetups.',
+        ].join('\n');
+      case 'hosting':
+        return [
+          'Anyone with an account can host, and listing is free. The host sets the spots, the level, who it is open to, and the join fee.',
+          'The host keeps the whole join fee — no commission is taken while the product is finding its feet.',
+          'VibeClub handles the payments, the waitlist, refunds and the reminder the night before.',
+          'Start at /host.',
+        ].join('\n');
+      case 'cities':
+        return CITIES.map((c) => `- ${c.name}, ${c.state} (/meetups?city=${c.slug}) — ${c.blurb}`).join('\n');
+      case 'categories':
+        return CATEGORIES.map((c) => `- ${c.name} (/meetups?category=${c.slug}) — ${c.blurb}`).join('\n');
+      case 'safety':
+        return [
+          'Hosts can be verified — a confirmed phone number plus a public rating built only from people who actually attended.',
+          'Only a member whose join was confirmed, on a meetup that has finished, can leave feedback. That is what keeps the ratings meaningful.',
+          'The attendee count and first names are visible before paying, and hosts can open a meetup to women only.',
+          'Reports are read by a person the same day. A removed host\'s upcoming meetups are cancelled and refunded in full.',
         ].join('\n');
     }
   },
 });
 
-export const CHAT_TOOLS = [searchPlacesTool, placeDetailTool, dinnersTool, siteFactsTool];
+export const CHAT_TOOLS = [searchMeetupsTool, meetupDetailTool, siteFactsTool];

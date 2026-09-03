@@ -16,7 +16,7 @@ export default async function LoginPage({
   const { next } = await searchParams;
 
   return (
-    <AuthShell title="Welcome back." subtitle="Sign in to save places, post reviews and claim your seat.">
+    <AuthShell title="Welcome back." subtitle="Sign in to join meetups, manage your pass and see who is coming.">
       <AuthForm mode="signin" next={next ?? '/'} />
     </AuthShell>
   );

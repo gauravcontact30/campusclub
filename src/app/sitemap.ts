@@ -1,16 +1,21 @@
 import type { MetadataRoute } from 'next';
-import { getAllBusinessSlugs } from '@/lib/data/businesses';
-import { getDinners } from '@/lib/data/dinners';
-import { SITE } from '@/lib/constants';
+import { searchMeetups } from '@/lib/data/meetups';
+import { CATEGORIES, CITIES, SITE } from '@/lib/constants';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [slugs, dinners] = await Promise.all([getAllBusinessSlugs(), getDinners()]);
+  const { items } = await searchMeetups({ perPage: 1000 });
 
-  const staticRoutes = ['', '/businesses', '/dinners', '/dinners/quiz', '/pricing', '/how-it-works', '/about', '/add-business'];
+  const staticRoutes = ['', '/meetups', '/passes', '/host', '/how-it-works', '/about', '/signup', '/login'];
 
   return [
     ...staticRoutes.map((route) => ({ url: `${SITE.url}${route}`, lastModified: new Date() })),
-    ...slugs.map((slug) => ({ url: `${SITE.url}/businesses/${slug}`, lastModified: new Date() })),
-    ...dinners.map((d) => ({ url: `${SITE.url}/dinners/${d.id}`, lastModified: new Date() })),
+    // The filtered boards are real landing pages — "group study in Pune" is
+    // what somebody actually searches for.
+    ...CATEGORIES.map((c) => ({ url: `${SITE.url}/meetups?category=${c.slug}`, lastModified: new Date() })),
+    ...CITIES.map((c) => ({ url: `${SITE.url}/meetups?city=${c.slug}`, lastModified: new Date() })),
+    ...items.map((m) => ({
+      url: `${SITE.url}/meetups/${m.slug}`,
+      lastModified: new Date(m.createdAt),
+    })),
   ];
 }

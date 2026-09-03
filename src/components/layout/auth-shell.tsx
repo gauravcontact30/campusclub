@@ -14,7 +14,7 @@ export function AuthShell({
     <div className="grid min-h-[calc(100dvh-68px)] lg:grid-cols-2">
       <div className="flex items-center justify-center px-5 py-14 sm:px-10">
         <div className="w-full max-w-md">
-          <h1 className="display-lg">{title}</h1>
+          <h1 className="display-lg text-balance text-content">{title}</h1>
           <p className="lede mt-3">{subtitle}</p>
           <div className="mt-9">{children}</div>
 
@@ -36,9 +36,10 @@ export function AuthShell({
         <div aria-hidden className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-signal/20 blur-[130px]" />
         <div className="relative flex h-full flex-col justify-end p-14 text-content">
           <blockquote className="font-display text-3xl font-semibold leading-tight">
-            “I came for a restaurant recommendation and left with four people I now text every week.”
+            “I paid ₹99 to study with seven strangers because I could not do it alone. Eleven weeks later I still
+            cannot — but now I do not have to.”
           </blockquote>
-          <p className="mt-5 text-sm text-content/60">Mei Lin C. — 11 dinners in New York</p>
+          <p className="mt-5 text-sm text-content/60">Vikram S. — 34 meetups in Pune</p>
         </div>
       </div>
     </div>

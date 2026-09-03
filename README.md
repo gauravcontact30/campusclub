@@ -1,15 +1,21 @@
-# SitNext
+# VibeClub
 
-**Find the good stuff. Meet the good people.**
+**Nobody does it alone.**
 
-A local discovery platform that puts two products in one loop: a Yelp-style
-directory of neighbourhood businesses with honest, verified reviews, and a
-Timeleft-style dinner club that seats you with five strangers every Wednesday.
-The reviews decide where the dinners happen; the dinners produce the people who
-write the reviews.
+A pay-per-join board of local meetups. Someone within a kilometre of you is
+revising for the same exam, going to the same gym at the same hour, eating the
+same dinner by themselves. VibeClub is the reason to say so out loud: members
+list the things they are already doing — a 6am run, a study table, a Sunday
+dinner, a badminton court — and other members pay that meetup's **join fee** to
+take one of its spots.
+
+The join fee *is* the business model. There is no membership standing between
+somebody and their first meetup; passes exist only because the people who go
+three times a week asked for them, and they simply pre-buy joins at a lower
+price each.
 
 Built with **Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS ·
-Supabase**.
+Supabase · Razorpay**.
 
 ---
 
@@ -20,16 +26,14 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-That is the whole setup. **No Supabase keys are required to run the app** — with
-no credentials it boots in *demo mode* against a seeded in-memory dataset (24
-businesses, 100+ reviews, 24 dinner tables, 8 accounts) so every screen and
-every flow is clickable immediately.
+That is the whole setup. **No keys of any kind are required to run the app** —
+with no credentials it boots in *demo mode* against a seeded in-memory dataset
+(30 meetups across 6 cities, 12 members, 100+ pieces of feedback) and a
+clearly-labelled demo payment gateway, so every screen and every flow —
+including joining and paying — is clickable immediately.
 
 Sign in with any seeded account, e.g. `priya@example.com` / `password123`, or
 create a new one — both work in demo mode.
-
-Add Supabase credentials to `.env.local` and the identical code paths talk to
-Postgres and Supabase Auth instead. See [`supabase/README.md`](supabase/README.md).
 
 ```bash
 cp .env.example .env.local
@@ -41,57 +45,85 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | no | Browser + server client key |
 | `SUPABASE_SERVICE_ROLE_KEY` | no | Server-only; used by the seeding endpoint |
 | `NEXT_PUBLIC_SITE_URL` | no | Absolute URLs for metadata and auth redirects |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID` | no | Switches checkout from the demo gateway to Razorpay |
+| `RAZORPAY_KEY_SECRET` | no | Server-only; opens orders and verifies signatures |
+| `RAZORPAY_WEBHOOK_SECRET` | no | Server-only; verifies webhook deliveries |
+| `ANTHROPIC_API_KEY` | no | Server-only; turns the assistant from retrieval into a real conversation |
+
+Every one of these is optional, and each missing one degrades to something
+honest rather than something broken — the footer says out loud which database
+answered and which gateway is wired.
 
 ---
 
 ## What it does
 
-### The directory (the Yelp half)
+### Finding something to go to
 
-- **Search** across names, descriptions, tags and neighbourhoods, debounced and
-  reflected in the URL so any result set is shareable.
-- **Filters** for city, category, price tier, minimum rating and *open now*,
-  plus five sort orders. Price tiers render in the currency of the city being
-  filtered (`₹₹`, `$$$`, `££`).
-- **Listing pages** with a photo gallery and lightbox, opening hours that know
-  what day it is, a map card with directions hand-off, contact details,
-  amenities, related places and the full review thread.
-- **Reviews**: five-star input with live labels, one review per person per
-  business (editable, deletable), helpful votes, four sort orders and a rating
-  distribution histogram.
-- **Search near me** — one tap shares the visitor's coordinates (kept in the URL,
-  never stored), sorts nearest-first and puts a distance on every card.
-- **Saved places** — bookmark anything, revisit it from your list.
-- **Add a business** — a validated listing form, claimable by its owner.
+- **The board** (`/meetups`) — every upcoming meetup, filterable by activity,
+  city, time window (*today · tomorrow · this weekend · next 7 days*), how
+  demanding it is, join fee ceiling and whether it still has room. Five sort
+  orders, including *nearest to me* once the visitor shares their location.
+- **Filters live in the URL**, so a filtered board is a link somebody can send,
+  the back button behaves, and the server renders exactly what was asked for.
+  A hand-edited URL with a category that does not exist lands on a sensible
+  board rather than an empty one.
+- **The pass card.** Every meetup renders as a physical-pass shape: the date on
+  a stub down the left, a notched divide, and a meter showing how full it is.
+  The two facts the decision turns on — the join fee and the spots left — are on
+  the card itself, never one click away.
+- **Meetup pages** with what actually happens (a real ordered agenda), what to
+  bring, the host's record, who is already coming, and the feedback from people
+  who went. The **exact street address is withheld until somebody joins** — it
+  is often a host's home.
 
-### Owner tools
+### Joining, and the money
 
-- **Claim a listing** from its page: role, work email and phone are filed as a
-  claim record, and ownership transfers immediately (beta behaviour — the filed
-  claim is what gets spot-checked afterwards).
-- **A public right of reply** on every review, shown under the business name,
-  editable and withdrawable. Owners can never edit or delete the review itself.
-- Claimed listings carry a badge, and the owner sees how many reviews are still
-  waiting on an answer.
+- **One payment, for one meetup.** The join panel says which of three things
+  the click will do *before* it happens: spend a pass credit, take a free
+  waitlist place, or charge the join fee once, now.
+- **Razorpay Checkout** when keys are present; a labelled demo gateway when they
+  are not. A join is never written on a client's say-so — the server verifies
+  the `order_id|payment_id` HMAC against the key secret first, and the
+  **webhook** is a second, idempotent path so somebody who pays and closes the
+  tab still gets the spot they paid for.
+- **Waitlists are free.** A full meetup still takes your name and charges
+  nothing until a spot opens.
+- **Refunds have a rule, not a discretion.** Cancel more than six hours out and
+  the fee is refunded or the credit returns to the balance; inside that window
+  it is not, because the host has already paid for the venue. A host who cancels
+  refunds everyone in full, automatically.
+- **Passes** (`/passes`) are four tiers of pre-bought joins, each showing what a
+  join actually works out at — and the page leads with *you do not need one of
+  these*.
 
-### The dinners (the Timeleft half)
+### Hosting
 
-- **Upcoming tables** grouped by date, filterable by city, with live seat
-  counters and automatic waitlisting once six seats go.
-- **A six-question matching questionnaire**, persisted mid-flow so a refresh
-  never loses progress.
-- **Booking** with confirm / waitlist / cancel, seat numbers, and a venue that
-  is only revealed 36 hours before the table.
-- **Your table** — five anonymised profiles, deterministic per booking,
-  blurred until your seat is confirmed.
-- **Membership plans** with per-city pricing.
+- **Free to list, and the host keeps the whole fee.** A three-step form sets the
+  activity, the run of play, the venue and time, the spots, who it is open to,
+  and the join fee — with the guidance that fees which look like profit get very
+  few joins.
+- **`/my-meetups`** carries both sides of a member's life on the site: what they
+  are going to, what they are hosting (with spots taken and fees collected), and
+  what they have been to and not yet reviewed.
+
+### Feedback that means something
+
+- **Only people who went can leave it.** A confirmed join, on a meetup that has
+  finished — enforced in the server action, checked again before the form is
+  shown, and enforced a third time by a row-level-security policy in Postgres.
+- The rating shows its **histogram and its most-ticked highlights**, because an
+  average of 4.3 hides whether that was six 4s or five 5s and a 1.
 
 ### Everywhere
 
-Accounts and sessions, a profile with your stats and review history,
-toast notifications, skeleton and empty states, a 404 and an error boundary,
-`sitemap.xml`, `robots.txt`, per-page metadata, keyboard-visible focus rings,
-`prefers-reduced-motion` support, and a layout that works from 320px up.
+- Two themes and five palettes, chosen before first paint, with no flash.
+- English and Hindi, switched by cookie, with a Devanagari face loaded on
+  purpose rather than left to the operating system.
+- An AI assistant grounded in this app's own data, with an honest
+  retrieval-only fallback when no key is set.
+- Keyboard-reachable everything, visible focus rings, `prefers-reduced-motion`
+  respected, and AA contrast verified across all ten theme/palette combinations.
 
 ---
 
@@ -119,63 +151,67 @@ Supabase application.
 
 - **Reads** happen in Server Components (`app/**/page.tsx`) for a fast first
   paint and SEO.
-- **Live filtering** on the directory runs through TanStack Query against
-  `GET /api/businesses`, seeded with the server-rendered first page.
+- **Filtering** is a URL change, so the server re-renders the board rather than
+  the client re-fetching it; `GET /api/meetups` exposes the same repository for
+  anything external.
 - **Writes** are Server Actions (`src/app/actions/*`), validated with Zod,
   followed by `revalidatePath`.
-- **Client state** (mobile nav, toasts, quiz progress) lives in Zustand; the
-  quiz store is persisted to `localStorage`.
+- **Money** never crosses the client boundary as a decision: the action opens an
+  order, the client only carries the gateway handback, and the server verifies a
+  signature before a join exists.
+- **Client state** (mobile nav, toasts) lives in Zustand.
 
 ---
 
 ## Folder structure
 
 ```
-sitnext/
-├── e2e/                        Playwright specs (directory, auth, dinners, responsive)
-├── public/
-│   ├── img/covers/             Generated SVG cover art (no external images needed)
-│   ├── img/avatars/            Generated member avatars
-│   └── logo.svg
+vibeclub/
+├── e2e/                        Playwright: browse, join, host, passes, theme, language, chat, responsive
+├── public/logo.svg
 ├── src/
 │   ├── app/
-│   │   ├── actions/            Server Actions: auth, reviews, saves, dinners, businesses
+│   │   ├── actions/            Server Actions: auth, meetups, joins (checkout), vouches, saves
 │   │   ├── api/
-│   │   │   ├── businesses/     Search endpoint behind TanStack Query
-│   │   │   ├── dinners/        Dinner listing endpoint
+│   │   │   ├── meetups/        Read-only JSON over the same repository the pages use
+│   │   │   ├── chat/           Streaming assistant endpoint
+│   │   │   ├── payments/razorpay/webhook/   Signed, idempotent payment confirmation
 │   │   │   └── admin/seed/     Service-role seeder for Supabase
-│   │   ├── businesses/         Directory, listing page, write-a-review, claim
-│   │   ├── dinners/            Table list, table detail, matching questionnaire
-│   │   ├── about|how-it-works|pricing|add-business|profile|saved|bookings|login|signup
+│   │   ├── meetups/            The board, a meetup page, and its feedback form
+│   │   ├── host/               Put a meetup on the board
+│   │   ├── my-meetups/         Going · hosting · been to
+│   │   ├── passes/             Join fees and the four pass tiers
+│   │   ├── about|how-it-works|profile|profile/interests|saved|login|signup
 │   │   ├── layout.tsx          Fonts, metadata, nav/footer shell, providers
-│   │   ├── globals.css         Design tokens and component classes
-│   │   ├── error.tsx · loading.tsx · not-found.tsx · sitemap.ts · robots.ts
+│   │   ├── globals.css         Design tokens, the pass shape, the fill meter
+│   │   └── error.tsx · loading.tsx · not-found.tsx · sitemap.ts · robots.ts
 │   ├── components/
-│   │   ├── ui/                 Button, Badge, Field, RatingStars, Avatar, Toaster, …
-│   │   ├── layout/             Navbar, mobile drawer, account menu, footer, auth shell
-│   │   ├── home/               Hero, how-it-works, categories, testimonials, FAQ, CTA
-│   │   ├── business/           Card, search, filters, gallery, hours, map, reviews, claim, owner reply
-│   │   └── dinners/            Dinner card, booking panel, table reveal, quiz, plans
-│   ├── hooks/                  use-debounce, use-media-query, use-client-value
+│   │   ├── ui/                 Button, Badge, Field, RatingStars, Avatar, CategoryIcon, Toaster, …
+│   │   ├── layout/             Navbar, mobile drawer, account menu, footer, auth + interests forms
+│   │   ├── home/               Hero, how-it-works, upcoming rail, proof, cities, FAQ, CTA
+│   │   ├── meetups/            Pass card, filter bar, join panel, checkout, host form, feedback
+│   │   ├── passes/             The pass grid and its checkout
+│   │   └── chat/               The assistant panel
+│   ├── hooks/                  use-debounce (+ use-debounced-change), use-media-query, use-palette
 │   ├── lib/
-│   │   ├── auth/session.ts     Sign in/up/out, profile, plan — both backends
-│   │   ├── data/               seed.ts, store.ts, businesses.ts, reviews.ts, saves.ts, dinners.ts
+│   │   ├── auth/session.ts     Sign in/up/out, profile, pass grants — both backends
+│   │   ├── data/               seed · store · meetups · joins · payments · vouches · saves · hosts
+│   │   ├── payments/           Razorpay adapter, gateway config, the checkout ticket type
+│   │   ├── ai/                 Tools, system prompt, retrieval-only fallback
+│   │   ├── i18n/               Locale cookie, dictionaries, server + client providers
 │   │   ├── supabase/           Browser, server and middleware clients
-│   │   ├── constants.ts        Categories, cities, currencies, plans, quiz questions
-│   │   ├── utils.ts            Formatting, opening-hours maths, distance, slugs
+│   │   ├── constants.ts        Categories, cities, passes, fee presets, the cancellation window
+│   │   ├── utils.ts            Money, time, spots maths, distance, slugs
 │   │   ├── validators.ts       Zod schemas shared by forms and actions
 │   │   └── env.ts              The single backend-mode decision
-│   ├── store/                  Zustand: ui-store, filters-store, quiz-store
+│   ├── store/                  Zustand: ui-store
 │   ├── types/                  The domain model
 │   └── proxy.ts                Refreshes the Supabase session cookie (Next 16 renamed middleware → proxy)
 ├── supabase/
-│   ├── migrations/             0001 schema · 0002 RLS · 0003 triggers and RPCs · 0004 owner tools
-│   ├── seed.sql                Category reference data
+│   ├── migrations/             0001–0006 history · 0007 the meetup model
 │   └── README.md               Project setup, in order
 ├── tests/                      Vitest + React Testing Library
 ├── docs/claude-code-setup.md   Agent tooling: Playwright MCP, Figma, design skills
-├── .mcp.json                   Project MCP servers (Playwright)
-├── .claude/settings.json       Project permissions for Claude Code
 └── playwright.config.ts · vitest.config.ts · tailwind.config.ts · next.config.ts
 ```
 
@@ -183,27 +219,36 @@ sitnext/
 
 ## Database
 
-`supabase/migrations/0001_schema.sql` creates nine tables — `profiles`,
-`categories`, `businesses`, `reviews`, `review_votes`, `saves`,
-`dinner_events`, `dinner_bookings`, `quiz_responses` — plus a
-`businesses_with_stats` view that derives rating and review count so they can
-never drift from the reviews themselves.
+`supabase/migrations/0007_meetups.sql` is a **forward migration**, not a
+rebuild: it adds `meetups`, `joins`, `payments`, `vouches` and a new `saves`,
+carries existing members' plans across to the new pass tiers, and only then
+drops the directory and supper-club tables. An already-deployed database
+migrates; a fresh one arrives at the same place.
 
-`0002_rls.sql` enables row-level security on every table: public data stays
-readable by anyone, everything personal is owner-scoped. `0003_functions.sql`
-adds the new-user profile trigger, the helpful-vote RPC and guarded seat
-counters.
+Three views keep derived data honest. `meetups_with_stats` computes rating and
+vouch count from the vouches themselves, so they cannot drift.
+`profiles_with_host_stats` is a host's public face — hosted count and the
+average of the feedback on their meetups. `vouches_with_author` and
+`joins_with_member` resolve the names the UI shows without a second round trip.
 
-`0004_owner_tools.sql` adds the owner's reply columns and the `business_claims`
-audit table. Replies are written through a `security definer` function rather
-than a column grant: a grant is role-wide, so it would have let a reviewer forge
-an "owner response" on their own review under the existing edit-own-review
-policy. Claiming is a policy that only permits taking over a listing with no
-owner, and only by writing your own id to it.
+Row-level security is on for every table, and two policies carry real weight:
 
-Notable constraints: one review per person per business, one live booking per
-person per table (a partial unique index that still allows re-booking after a
-cancellation), and seat counters that cannot oversell or go negative.
+- **Only attendees leave feedback.** The insert policy on `vouches` requires a
+  `confirmed` join on a meetup whose `ends_at` is in the past. The same rule
+  lives in the server action and in the page, but this is the copy that cannot
+  be bypassed.
+- **A member sees their own joins; a host sees the joins on their meetups.**
+  That single `select` policy is what makes the attendee list work without
+  exposing anybody's calendar to anybody else.
+
+Seat accounting is a pair of `security definer` functions rather than a column
+grant, because a grant is role-wide and would let a member edit any meetup's
+counters. `spend_join_credit` decrements atomically and returns whether it
+actually took one, so a failed credit spend falls back to charging rather than
+granting a free join. Notable constraints: one live join per person per meetup
+(a partial unique index that still allows re-joining after a cancellation), one
+vouch per person per meetup, `ends_at > starts_at`, and `spots_taken <=
+spots_total` — the one thing this schema must never allow is overselling.
 
 ---
 
@@ -218,12 +263,15 @@ cancellation), and seat counters that cannot oversell or go negative.
 | `npm test` | Vitest unit and component tests |
 | `npm run test:e2e` | Playwright, desktop and mobile projects |
 
-Tests cover the opening-hours maths (including windows that cross midnight),
-query-string round-tripping (coordinates included), every repository behaviour
-(filtering, sorting, pagination, distance search, review upserts, helpful votes,
-save toggles, listing claims, owner replies, seat booking, waitlisting and
-cancellation), the interactive UI primitives, and the main end-to-end journeys —
-including claim-then-reply and a geolocated near-me search.
+**73 unit tests and 66 end-to-end tests.** They cover the spots and refund-window
+maths, calendar-day labelling (11pm tonight and 1am tomorrow are different
+days), the `when` filter's ranges, query-string round-tripping including
+coordinates, every repository behaviour — filtering, sorting by proportion
+filled, pagination, distance search, idempotent joins, waitlisting, cancellation
+returning both fees and credits, credit spending — the pass card and feedback
+summary, and the full journeys: browse and filter, sign up, join and pay through
+the demo gateway, cancel, buy a pass, host a meetup, switch theme, palette and
+language, and talk to the assistant.
 
 If Chromium already exists on the machine, point Playwright at it:
 
@@ -235,19 +283,28 @@ PLAYWRIGHT_CHROMIUM_PATH=/path/to/chrome npm run test:e2e
 
 ## Design
 
-**Ember**: terracotta and warm gold on a charcoal-brown ground. The product is
-two halves that pull in opposite directions — a review directory wants
-credibility, a dinner club wants warmth — and terracotta is the hue that serves
-both. It is appetite-forward and social without the romantic reading that a rose
-or pink palette picks up next to the phrase *meet five strangers*.
+**Court**: indigo-violet and amber on a blue-black ground. The product spans a
+5am study table and a Sunday dinner, so the palette has to carry both ends of a
+day. Indigo is the evening half — plans, focus, a room after dark — and amber is
+the morning one, doing the work of a signal colour without the alarm a red would
+add to a page full of "2 spots left". The neutrals are biased toward the accent
+rather than pure grey, so nothing on the page looks like it was left at a
+default.
+
+The design language is **the pass**. Every meetup renders as a physical pass:
+the date on a stub down the left in its own colour block, a notched divide drawn
+with a gradient and two punched half-circles, and a meter under it filled to the
+proportion of spots gone. Nothing on the card is decorative — the stub is the
+date, the meter is the availability, the corner is the fee.
 
 | Token | Role | Dark | Light |
 | --- | --- | --- | --- |
-| `canvas` | The ground. `canvas-700` is the raised card, `canvas-600` the hover/elevated surface, `canvas-900` the band that sets the footer apart. | `#0F0A08` → `#3A261C` | `#FDF9F5` → `#ECDDCF` |
-| `content` | Type and hairlines. Warm-tinted, so text belongs to the palette rather than sitting on top of it. | `#FAF3ED` → `#BEA898` | `#281810` → `#8C705E` |
-| `brand` | Brand and action: primary buttons, links, selected state, focus rings. | `#EA6C3A` | `#C64E20` |
-| `signal` | Affirmative signal: open-now, confirmed bookings, proof-point stats. | `#F5B342` | `#B06F14` |
-| `glint` | Ratings and small flourishes. | `#FFD68F` | `#C7801A` |
+| `canvas` | The ground. `canvas-700` is the raised card, `canvas-600` the hover/elevated surface, `canvas-900` the band that sets the footer apart. | `#0C0E14` → `#30364A` | `#F7F7FB` → `#E1E3EE` |
+| `content` | Type and hairlines. Blue-tinted, so text belongs to the palette rather than sitting on top of it. | `#ECEFF8` → `#969EB6` | `#151821` → `#6E758B` |
+| `brand` | Brand and action: primary buttons, links, selected state, focus rings, the pass stub. | `#8A7CFF` | `#5240D8` |
+| `on-brand` | Type sitting **on** a brand fill. Not `content`: the dark theme's brand is the lighter of the two and wants dark type, the light theme's is darker and wants light type — the exact opposite of `content` in both cases. | `#0C0E14` | `#FFFFFF` |
+| `signal` | Scarcity and confirmation: last spots, refunds, the per-join price. | `#F5B642` | `#955F06` |
+| `glint` | Ratings and small flourishes. | `#FFD68F` | `#A66C0C` |
 
 The tokens are named for their **role**, not their literal colour: with two
 themes, `canvas` is near-black in one and near-white in the other, so a name
@@ -271,13 +328,13 @@ a row, so nothing is unreachable by thumb.
 
 | Palette | Character |
 | --- | --- |
-| **Ember** *(default)* | Terracotta and gold. Appetite and candlelight. |
-| **Ink & Saffron** | Marigold on near-neutral ink. Festive rather than cautionary. |
-| **Olive & Amber** | Bistro green with warm amber. |
-| **Nightshade** | Indigo ground, coral accent. |
-| **Sage & Clay** | Muted and editorial; the most restrained. |
+| **Court** *(default)* | Indigo and amber. Evening plans and early mornings at once. |
+| **Turf** | Pitch green and lime. The sport and outdoors half of the board. |
+| **Dusk** | Plum and rose. Dinners, open mics, the things that happen after dark. |
+| **Tide** | Teal and sky. The quietest of the five, made for long study days. |
+| **Ember** | Terracotta and gold, carried over from the previous identity. |
 
-Each palette ships both themes, so there are ten variable sets in total. Ember
+Each palette ships both themes, so there are ten variable sets in total. Court
 is the default and lives in the base blocks; the other four override it from
 `data-palette` on `<html>`, resolved by the same blocking script that resolves
 the theme.
@@ -307,48 +364,54 @@ The header toggle picks its icon and its accessible name from `data-theme` in
 CSS rather than from React state. There is nothing to hydrate, so the button is
 correct on the very first paint and no hydration mismatch is possible.
 
-The `ember` ramp reverses between themes, and this is the part that cannot be
-automated. On black, emphasis means **more light**, so `ember-700` — the step
-used for emphatic text — is the palest. On paper, emphasis means **darker ink**,
-so the same token becomes the deepest terracotta. Reusing one ramp for both
-themes produces text that is unreadable in exactly one of them.
+The `brand` ramp reverses between themes, and this is the part that cannot be
+automated. On a dark ground, emphasis means **more light**, so `brand-700` — the
+step used for emphatic text — is the palest. On paper, emphasis means **darker
+ink**, so the same token becomes the deepest indigo. Reusing one ramp for both
+themes produces text that is unreadable in exactly one of them. `on-brand` exists
+for the same reason from the other direction: `content` on a brand fill measured
+3.13:1 and 3.67:1, below the 4.5:1 AA floor, on every primary button on the site.
 
-One consequence worth knowing: the palette is warm end to end, so status does
-not read by colour alone. Open-now and confirmed use `marigold` against `ember`
-for pending — a hue shift, but a small one next to the red/green contrast most
-interfaces lean on. Every such state is labelled in words for exactly that
-reason, which is what makes the narrow separation acceptable rather than a
-regression.
+All ten theme/palette combinations are checked rather than assumed — content on
+canvas, muted content on a card, `on-brand` on a fill, brand on canvas, and the
+signal step — and the four that came in under AA were darkened until they passed.
 
-Shadows are per-theme for the same reason: black drops no shadow on black, so
-the dark theme's depth comes from an ember bloom, while the light theme uses a
+Status never reads by colour alone. A scarce meetup turns its meter amber *and*
+says "2 spots left"; a full one greys the meter *and* says "Full — waitlist
+open". Every such state is labelled in words, which is what makes the narrow hue
+separation acceptable rather than a regression.
+
+Shadows are per-theme for the same reason: a dark ground drops no shadow, so the
+dark theme's depth comes from an indigo bloom while the light theme uses a
 conventional soft drop — a shadow tuned for one is invisible or muddy in the
-other. Display type is Bricolage
-Grotesque, body is Plus Jakarta Sans. Cards are generously rounded, buttons are
-pills, and every section is built mobile-first.
+other. Display type is **Sora**, geometric and slightly technical, holding up at
+the weight the display sizes need; body is **Manrope**, quieter, with the wider
+apertures small copy wants.
 
 ### The mark
 
-Six people seated around a round table, seen from above: each is a head with a
-shoulder cap curving behind it, facing in. The seats alternate between the two
-warm tones and between two silhouettes — a plain head, and a head with hair
-gathered above it — so the group reads as mixed rather than as six copies of
-one person.
+Two rings, and the overlap filled. A club is not one circle of people but two
+that found each other — the vibe is the part they share, so it is the only
+element solid.
 
-Two decisions carry the drawing. The shoulder cap is struck about the head
-rather than about the table, which is what stops it drifting off as a crescent.
-And the hair is a separate small disc rather than a wider head: at 32px a wider
-head just reads as a bigger head, while a detached mark still reads as a
-different hairstyle.
+The geometry is derived rather than eyeballed: equal radii of 11 on centres
+twelve apart put the intersections at `x = 20`, `y = 20 ± √(11² − 6²)`, and each
+side of the lens spans 114°, which is why both arcs carry `large-arc-flag 0`.
 
-It ships in two files, because six figures smear into a ring at favicon size:
-`public/logo.svg` is the full mark, and `public/icon-16.svg` keeps the table
-and reduces the group to four heads. `layout.tsx` offers both and lets the
-browser pick by size.
+Two properties matter more than the drawing. Everything is `currentColor`, so
+one file serves the brand lockup and both monochrome uses — a letterhead, a
+stamped receipt, a partner's press page and a disabled state all get one colour.
+And the lens is a closed path, not a shape painted in the page colour: a
+knockout filled with the background stops being a logo the moment it lands on a
+surface nobody anticipated.
 
-Cover art and avatars are generated SVGs in `public/img/`, so the app has no
-external image dependency and never shows a broken tile. `ImageWithFallback`
-degrades any remote image to a deterministic brand gradient if it fails to load.
+Because it survives 16px in a single colour, `public/logo.svg` is the only icon
+file — no simplified favicon variant is needed beside it.
+
+There are **no shipped images at all**. Member avatars render as initials in a
+token-coloured circle, so they follow whichever theme the visitor is in; a
+shipped PNG would be the one thing on the page that does not. The app therefore
+has no external image dependency and can never show a broken tile.
 
 ---
 
@@ -368,17 +431,17 @@ push you to routed locales if search traffic mattered.
 typed against the English shape. **A missing translation is a build error, not a
 blank space on the page** — delete one key from the Hindi file and `tsc` names it.
 
-Hindi also loads its own face. Neither Bricolage Grotesque nor Plus Jakarta Sans
-carries Devanagari, so Hindi was falling back to whatever the operating system
+Hindi also loads its own face. Neither Sora nor Manrope carries Devanagari, so Hindi was falling back to whatever the operating system
 happened to have — different on every machine and matched to nothing. Noto Sans
 Devanagari is appended to both stacks, so Latin glyphs still come from the brand
 faces and only Devanagari falls through to it.
 
 Translated so far: navigation, header and drawer, theme and palette controls,
-the hero and its search panel, the directory heading, the closing call to action,
-and the assistant panel. Page bodies beyond those are still English. Seeded
-business names, descriptions and reviews stay in English on purpose — that is
-member content, not interface copy, and translating it would be inventing data.
+the hero, the board heading, the join panel's vocabulary, the closing call to
+action, and the assistant panel. Page bodies beyond those are still English.
+Seeded meetup titles, descriptions and feedback stay in English on purpose —
+that is member content, not interface copy, and translating it would be
+inventing data.
 
 ---
 
@@ -386,21 +449,22 @@ member content, not interface copy, and translating it would be inventing data.
 
 A chat panel on every page, opened from the launcher bottom-right. With
 `ANTHROPIC_API_KEY` set it is a real Claude conversation (`claude-opus-5`,
-streamed) that answers from **this** site rather than from general knowledge:
-four tools sit between the model and the data layer the pages already render
+streamed) that answers from **this** board rather than from general knowledge:
+three tools sit between the model and the data layer the pages already render
 from.
 
 | Tool | Answers |
 | --- | --- |
-| `search_places` | Any "somewhere to eat / drink / go" question — by name, cuisine, city, category, price or rating |
-| `get_place` | One listing in full: hours, contact, address, recent review quotes |
-| `list_dinners` | Upcoming Wednesday tables, seats left, price per city |
-| `get_site_facts` | Plans, cities, categories, and how the dinners actually work |
+| `search_meetups` | Any "what is on" question — by activity, city, time window, level, fee ceiling or availability |
+| `get_meetup` | One meetup in full: what happens, what to bring, the host, the fee, recent feedback |
+| `get_site_facts` | Joining, passes and credits, refunds, hosting, cities, categories, safety |
 
-The system prompt forbids a factual claim that did not come back through a
-tool, so the assistant says "I don't know" rather than inventing a rating or an
-address. Tool results are labelled as data: business descriptions and review
-bodies are member-written, so the prompt tells the model to ignore anything in
+The system prompt forbids a factual claim that did not come back through a tool,
+so the assistant says "I don't know" rather than inventing a fee or a spot count.
+It is also told the thing the product actually believes: the default is paying
+per meetup, and if somebody sounds like they are trying one thing, tell them they
+do not need a pass. Tool results are labelled as data — meetup descriptions and
+feedback are member-written, so the prompt tells the model to ignore anything in
 them that reads as an instruction.
 
 Three things worth knowing about the implementation:
@@ -413,9 +477,11 @@ Three things worth knowing about the implementation:
   spends money on every call — it is in-memory, which is honest for one server
   and needs a shared store before there are two.
 - **Demo mode.** With no key the panel still answers, from retrieval only, and
-  the header says *"Demo mode — answers from the directory, not the AI"*. The
-  whole app is built to run with zero configuration; a dead panel would break
-  that, and a panel pretending to be an AI would be worse than dead.
+  the header says *"Demo mode — answers from the board, not the AI"*. The whole
+  app is built to run with zero configuration; a dead panel would break that, and
+  a panel pretending to be an AI would be worse than dead. It also refuses to
+  bluff: when the words matched nothing it says so rather than listing four
+  unrelated meetups under a confident lead.
 
 ---
 
@@ -435,5 +501,20 @@ commands and what each one does before you run it.
 
 ## Deployment
 
-Deploy to any Node host. On Vercel: import the repository, add the four
-environment variables, and ship — no other configuration is required.
+Deploy to any Node host. On Vercel: import the repository and ship — every
+environment variable is optional, and the app boots in demo mode without them.
+
+`SITE.url` resolves defensively for exactly this reason. A Vercel project with
+`NEXT_PUBLIC_SITE_URL` *defined but blank* hands the app an empty string, which
+is not `undefined`, so a `??` fallback never fires and `new URL('')` throws
+during the build. It now takes the first candidate that actually parses —
+`NEXT_PUBLIC_SITE_URL`, then `VERCEL_PROJECT_PRODUCTION_URL`, then `VERCEL_URL`,
+adding `https://` to the bare hostnames Vercel supplies — and falls back to
+localhost rather than failing the build.
+
+To go live with payments, add the three Razorpay variables and point a webhook
+at `https://<your-domain>/api/payments/razorpay/webhook` for the
+`payment.captured`, `order.paid` and `payment.failed` events. The demo gateway
+disables itself the moment real keys are present — the server-side verification
+path refuses a demo signature whenever `RAZORPAY_KEY_SECRET` is set, so it can
+never be used to skip a real payment.

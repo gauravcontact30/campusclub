@@ -1,25 +1,20 @@
 import type { Dictionary } from './en';
 
 /**
- * Typed as `Dictionary`, so a key missing here — or a key removed from English
- * and left behind here — fails the build rather than rendering an empty span.
- *
- * Product nouns stay in Latin script on purpose: "SitNext" is a name, and
- * transliterating a brand is how brands stop being recognisable. Devanagari
- * numerals are not used either, because the site shows prices and counts from
- * the same data in both languages.
+ * Typed as `Dictionary`, so a key missing here — or a key that no longer exists
+ * in English — fails `tsc` rather than rendering a blank on the page.
  */
 export const hi: Dictionary = {
   nav: {
-    businesses: 'जगहें खोजें',
-    dinners: 'डिनर',
+    meetups: 'मीटअप खोजें',
+    passes: 'पास',
+    host: 'खुद होस्ट करें',
     howItWorks: 'यह कैसे काम करता है',
-    pricing: 'सदस्यता',
   },
   header: {
-    search: 'व्यवसाय खोजें',
+    search: 'मीटअप खोजें',
     signIn: 'साइन इन',
-    join: 'डिनर में शामिल हों',
+    join: 'VibeClub जॉइन करें',
     openMenu: 'मेन्यू खोलें',
     closeMenu: 'मेन्यू बंद करें',
     themeToLight: 'लाइट थीम पर जाएँ',
@@ -30,63 +25,83 @@ export const hi: Dictionary = {
     languageHeading: 'भाषा',
   },
   drawer: {
-    signedInAs: 'इस रूप में साइन इन',
+    signedInAs: 'साइन इन:',
     profile: 'आपकी प्रोफ़ाइल',
-    saved: 'सहेजी गई जगहें',
-    bookings: 'आपके डिनर',
+    saved: 'सेव किए मीटअप',
+    myMeetups: 'आपके मीटअप',
     signOut: 'साइन आउट',
   },
   hero: {
-    badge: 'हर बुधवार, रात 8:00 बजे — {count} शहरों में',
-    titleTop: 'पाँच अजनबियों से मिलिए।',
-    titleBottom: 'अपना शहर खोजिए।',
+    badge: '{cities} शहरों में {count} मीटअप चल रहे हैं',
+    titleTop: 'अकेले कोई',
+    titleBottom: 'नहीं करता।',
     lede:
-      'SitNext दो काम ढंग से करता है। यह बताता है कि आस-पास की कौन-सी जगहें वाकई आपके पैसे के लायक हैं — समीक्षाएँ उन्हीं की जो वहाँ गए — और यह आपको पाँच ऐसे अजनबियों के साथ एक मेज़ पर बिठाता है जो शायद आपको पसंद आएँ।',
-    primaryCta: 'इस बुधवार की सीट बुक करें',
-    secondaryCta: '{count} जगहें देखें',
-    seatsFilled: '18,400+ सीटें',
-    seatsFilledSuffix: 'अब तक भरी जा चुकी हैं।',
+      'पढ़ाई, जिम, खाना, खेल — उन लोगों के साथ जो बीस मिनट की दूरी पर रहते हैं। पास में क्या हो रहा है देखिए, उस मीटअप की जॉइन फ़ीस दीजिए, और पहुँच जाइए। शुरू करने के लिए किसी मेंबरशिप की ज़रूरत नहीं।',
+    primaryCta: 'पास का मीटअप खोजें',
+    secondaryCta: 'अपना मीटअप बनाएँ',
+    statJoins: '41,200 जॉइन',
+    statJoinsSuffix: 'अब तक हो चुके हैं।',
   },
   heroSearch: {
-    title: 'आज रात आप क्या ढूँढ़ रहे हैं?',
-    subtitle: '{count}+ समीक्षित जगहें खोजें, या किसी श्रेणी से शुरू करें।',
-    termPlaceholder: 'टाकोस, नाई, पिलाटे…',
-    anywhere: 'कहीं भी',
-    submit: 'SitNext पर खोजें',
-    },
-  directory: {
-    title: 'डायरेक्टरी',
-    subtitle: '{count} जगहें, उन लोगों की समीक्षाओं के साथ जो सचमुच वहाँ गए।',
-    searchPlaceholder: 'जगहें, खाना, सेवाएँ खोजें…',
+    title: 'इस हफ़्ते आप क्या करना चाहेंगे?',
+    subtitle: '{count} आने वाले मीटअप खोजें, या किसी श्रेणी से शुरू करें।',
+    termPlaceholder: 'पढ़ाई, बैडमिंटन, सुबह की दौड़…',
+    anywhere: 'कोई भी शहर',
+    submit: 'खोजें',
+  },
+  browse: {
+    title: 'क्या-क्या हो रहा है',
+    subtitle: '{count} मीटअप जिनमें आप अभी जुड़ सकते हैं।',
+    searchPlaceholder: 'मीटअप, जगह, इलाक़ा खोजें…',
     filters: 'फ़िल्टर',
+    clear: 'सब हटाएँ',
+    noResults: 'इन फ़िल्टर से कुछ नहीं मिला',
+    noResultsBody: 'समय की सीमा बढ़ाकर देखिए, या श्रेणी हटा दीजिए — बोर्ड हर दिन बदलता है।',
+  },
+  meetup: {
+    spotsLeft: '{count} जगहें बाकी',
+    oneSpotLeft: '1 जगह बाकी',
+    full: 'भर गया',
+    joinFor: '{fee} में जॉइन करें',
+    joinFree: 'जॉइन करें — मुफ़्त',
+    joinWaitlist: 'वेटलिस्ट में जुड़ें',
+    joined: 'आप जा रहे हैं',
+    waitlisted: 'आप वेटलिस्ट पर हैं',
+    hosting: 'आप इसे होस्ट कर रहे हैं',
+    signInToJoin: 'जॉइन करने के लिए साइन इन करें',
+    hostedBy: 'होस्ट: {name}',
+    whatHappens: 'क्या होगा',
+    bring: 'साथ लाएँ',
+    where: 'कहाँ',
+    feedback: 'कैसा रहा',
+    cancelFree: 'शुरू होने से {hours} घंटे पहले तक मुफ़्त कैंसलेशन।',
   },
   cta: {
-    title: 'आपका अगला बुधवार पहले से तय है।',
-    body:
-      'छह सवाल, एक मेज़, और मौसम पर कोई बेमतलब बातचीत नहीं। या आज रात के खाने के लिए बस कोई बढ़िया जगह ढूँढ़ लीजिए — शुरुआत में दोनों मुफ़्त हैं।',
-    primary: 'अपना खाता बनाएँ',
-    secondary: 'पहले जगहें देखें',
+    title: 'सबसे मुश्किल है पहली बार जाना।',
+    body: 'इस हफ़्ते एक चीज़ चुनिए। सिर्फ़ उसी के पैसे दीजिए। पसंद न आए तो ₹149 और एक शाम गई — और पसंद आ गई तो अपने लोग मिल गए।',
+    primary: 'अकाउंट बनाएँ',
+    secondary: 'पहले देखिए क्या हो रहा है',
   },
   chat: {
-    open: 'SitNext सहायक से पूछें',
-    close: 'सहायक बंद करें',
-    title: 'SitNext से पूछें',
-    subtitleLive: 'जगहें, डिनर, और यह सब कैसे चलता है',
-    subtitleDemo: 'डेमो मोड — उत्तर डायरेक्टरी से, AI से नहीं',
-    intro: 'मैं डायरेक्टरी खोज सकता हूँ, बता सकता हूँ कि क्या खुला है, और समझा सकता हूँ कि डिनर कैसे होते हैं। पूछिए।',
-    placeholder: 'किसी जगह या डिनर के बारे में पूछें…',
+    open: 'VibeClub असिस्टेंट से पूछें',
+    close: 'असिस्टेंट बंद करें',
+    title: 'VibeClub से पूछें',
+    subtitleLive: 'मीटअप, जॉइन फ़ीस और सब कुछ',
+    subtitleDemo: 'डेमो मोड — जवाब बोर्ड से, AI से नहीं',
+    intro: 'मैं आपके पास के मीटअप खोज सकता हूँ, फ़ीस और बची जगहें बता सकता हूँ, और पास कैसे काम करते हैं समझा सकता हूँ। पूछिए।',
+    placeholder: 'किसी मीटअप या फ़ीस के बारे में पूछें…',
     inputLabel: 'आपका सवाल',
     send: 'भेजें',
     reset: 'नई बातचीत शुरू करें',
-    opener1: 'आज रात लंदन में खाने की कोई जगह',
-    opener2: 'बुधवार के डिनर कैसे होते हैं?',
-    opener3: 'सदस्यता का खर्च कितना है?',
-    opener4: 'बेंगलुरु की सबसे बढ़िया कॉफ़ी',
+    opener1: 'इस हफ़्ते बेंगलुरु में पढ़ाई के मीटअप',
+    opener2: 'जॉइन करने में कितना खर्च आता है?',
+    opener3: 'कल सुबह कुछ करने के लिए',
+    opener4: 'पास कैसे काम करते हैं?',
   },
   footer: {
     rights: 'सर्वाधिकार सुरक्षित।',
   },
   common: {
-    skipToContent: 'सामग्री पर जाएँ',
+    skipToContent: 'मुख्य सामग्री पर जाएँ',
   },
 };

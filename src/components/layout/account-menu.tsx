@@ -2,16 +2,17 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { Bookmark, CalendarHeart, ChevronDown, LogOut, Settings, Store } from 'lucide-react';
+import { Bookmark, CalendarCheck, ChevronDown, LogOut, Plus, Settings, Ticket } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { signOutAction } from '@/app/actions/auth';
 import type { UserProfile } from '@/types';
 
 const ITEMS = [
-  { href: '/profile', label: 'Your profile', icon: Settings },
-  { href: '/saved', label: 'Saved places', icon: Bookmark },
-  { href: '/bookings', label: 'Your dinners', icon: CalendarHeart },
-  { href: '/add-business', label: 'Add a business', icon: Store },
+  { href: '/my-meetups', label: 'Your meetups', icon: CalendarCheck },
+  { href: '/saved', label: 'Saved meetups', icon: Bookmark },
+  { href: '/host', label: 'Host a meetup', icon: Plus },
+  { href: '/passes', label: 'Your pass', icon: Ticket },
+  { href: '/profile', label: 'Profile & settings', icon: Settings },
 ];
 
 export function AccountMenu({ user }: { user: UserProfile }) {
