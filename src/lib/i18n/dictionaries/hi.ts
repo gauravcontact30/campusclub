@@ -14,7 +14,7 @@ export const hi: Dictionary = {
   header: {
     search: 'मीटअप खोजें',
     signIn: 'साइन इन',
-    join: 'VibeClub जॉइन करें',
+    join: 'CampusClub जॉइन करें',
     openMenu: 'मेन्यू खोलें',
     closeMenu: 'मेन्यू बंद करें',
     themeToLight: 'लाइट थीम पर जाएँ',
@@ -83,9 +83,9 @@ export const hi: Dictionary = {
     secondary: 'पहले देखिए क्या हो रहा है',
   },
   chat: {
-    open: 'VibeClub असिस्टेंट से पूछें',
+    open: 'CampusClub असिस्टेंट से पूछें',
     close: 'असिस्टेंट बंद करें',
-    title: 'VibeClub से पूछें',
+    title: 'CampusClub से पूछें',
     subtitleLive: 'मीटअप, जॉइन फ़ीस और सब कुछ',
     subtitleDemo: 'डेमो मोड — जवाब बोर्ड से, AI से नहीं',
     intro: 'मैं आपके पास के मीटअप खोज सकता हूँ, फ़ीस और बची जगहें बता सकता हूँ, और पास कैसे काम करते हैं समझा सकता हूँ। पूछिए।',

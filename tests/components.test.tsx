@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { RatingInput, RatingStars } from '@/components/ui/rating-stars';
+import { RatingBlocks, RatingInput } from '@/components/ui/rating-blocks';
 import { Badge } from '@/components/ui/badge';
 import { CategoryIcon } from '@/components/ui/category-icon';
 import { MeetupCard } from '@/components/meetups/meetup-card';
@@ -55,10 +55,10 @@ function meetup(overrides: Partial<MeetupWithHost> = {}): MeetupWithHost {
   };
 }
 
-describe('RatingStars', () => {
+describe('RatingBlocks', () => {
   it('exposes the score to assistive tech', () => {
-    render(<RatingStars value={4.3} />);
-    expect(screen.getByLabelText('4.3 out of 5 stars')).toBeInTheDocument();
+    render(<RatingBlocks value={4.3} />);
+    expect(screen.getByLabelText('4.3 out of 5')).toBeInTheDocument();
   });
 });
 

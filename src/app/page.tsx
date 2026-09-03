@@ -40,7 +40,7 @@ export default async function HomePage() {
       <HowItWorks />
       <Proof />
       <CityStrip counts={counts} />
-      <Faq />
+      <Faq compact />
       <CtaBand />
     </>
   );

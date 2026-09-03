@@ -1,8 +1,8 @@
 {
-  "name": "vibeclub",
+  "name": "campusclub",
   "version": "1.0.0",
   "private": true,
-  "description": "VibeClub — discover local businesses and join curated dinners with strangers.",
+  "description": "CampusClub — pay-per-join local meetups: group study, exam prep, gym, sport, dinners.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

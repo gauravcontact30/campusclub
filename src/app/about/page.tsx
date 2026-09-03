@@ -4,7 +4,7 @@ import { CATEGORIES, CITIES } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Why VibeClub exists: cities full of people doing the same things alone, twenty minutes apart.',
+  description: 'Why CampusClub exists: cities full of people doing the same things alone, twenty minutes apart.',
 };
 
 const MILESTONES: [string, string][] = [
@@ -19,14 +19,14 @@ export default function AboutPage() {
     <>
       <section className="container-page py-16 sm:py-24">
         <div className="max-w-3xl">
-          <p className="eyebrow">About VibeClub</p>
+          <p className="eyebrow">About CampusClub</p>
           <h1 className="display-xl mt-4 text-balance text-content">
             A city is thousands of people doing the same thing alone.
           </h1>
           <p className="lede mt-6">
             Someone within a kilometre of you is revising for the same exam, going to the same gym at the same hour,
             eating the same dinner by themselves. The distance between you is not geography — it is that neither of you
-            has a reason to say so out loud. VibeClub is the reason: a board of things happening near you, that you can
+            has a reason to say so out loud. CampusClub is the reason: a board of things happening near you, that you can
             pay to be part of, one at a time.
           </p>
         </div>

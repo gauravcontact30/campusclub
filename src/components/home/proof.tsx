@@ -1,5 +1,5 @@
 import { Avatar } from '@/components/ui/avatar';
-import { RatingStars } from '@/components/ui/rating-stars';
+import { RatingBlocks } from '@/components/ui/rating-blocks';
 
 /**
  * Real feedback shape, real specificity — including the four-star one. A wall
@@ -39,7 +39,7 @@ export function Proof() {
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {VOICES.map((voice) => (
             <figure key={voice.name} className="surface-card flex flex-col gap-4 p-6">
-              <RatingStars value={voice.rating} size={15} />
+              <RatingBlocks value={voice.rating} size={15} />
               <blockquote className="flex-1 text-sm leading-relaxed text-content/80">{voice.body}</blockquote>
               <figcaption className="flex items-center gap-3 border-t border-content/10 pt-4">
                 <Avatar name={voice.name} size={36} />

@@ -12,7 +12,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ButtonLink } from '@/components/ui/button';
 import { CategoryIcon } from '@/components/ui/category-icon';
-import { RatingStars } from '@/components/ui/rating-stars';
+import { RatingBlocks } from '@/components/ui/rating-blocks';
 import { categoryBySlug, passById } from '@/lib/constants';
 import { formatMoney, pluralize, relativeTime } from '@/lib/utils';
 
@@ -125,7 +125,7 @@ export default async function ProfilePage() {
             <>
               {hostVouches.length > 0 && (
                 <p className="mt-3 flex items-center gap-2 text-sm text-content/70">
-                  <RatingStars value={hostRating} size={14} />
+                  <RatingBlocks value={hostRating} size={14} />
                   {hostRating.toFixed(1)} from {pluralize(hostVouches.length, 'attendee')}
                 </p>
               )}

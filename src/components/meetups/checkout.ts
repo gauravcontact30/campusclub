@@ -66,7 +66,7 @@ export async function runCheckout(
       name: ticket.name,
       description: ticket.description,
       prefill: { name: member.name, email: member.email },
-      theme: { color: '#8A7CFF' },
+      theme: { color: '#C22E17' },
       modal: { ondismiss: () => resolve(null) },
       handler: (response: Record<string, string>) =>
         resolve({

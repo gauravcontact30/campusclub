@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Search } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth/session';
 import { getDictionary } from '@/lib/i18n/server';
 import { ButtonLink } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import { Logo } from './logo';
 import { ThemeToggle } from './theme-toggle';
 import { LanguageToggle } from './language-toggle';
 import { ThemePicker } from './theme-picker';
+import { SearchBar } from '@/components/meetups/search-bar';
 
 export async function Navbar() {
   const [user, t] = await Promise.all([getCurrentUser(), getDictionary()]);
@@ -17,8 +17,12 @@ export async function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-content/10 bg-canvas/95 backdrop-blur supports-[backdrop-filter]:bg-canvas/80">
       <div className="container-page flex h-[68px] items-center justify-between gap-4">
-        <div className="flex items-center gap-8">
+        <div className="flex min-w-0 items-center gap-6">
           <Logo />
+          {/* The search rides in the header from `xl` up, where there is room
+              for it beside the nav. Below that the board's own bar carries it,
+              and the magnifier link is the way in. */}
+          <SearchBar className="hidden w-[17rem] xl:flex" />
           <nav className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((link) => (
               <Link
@@ -40,13 +44,6 @@ export async function Navbar() {
               hides entirely, because the drawer carries the same swatches. */}
           <ThemePicker className="hidden sm:inline-flex" />
 
-          <Link
-            href="/meetups"
-            aria-label={t.header.search}
-            className="hidden h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content transition-colors hover:border-content/50 sm:inline-flex"
-          >
-            <Search size={16} />
-          </Link>
 
           {user ? (
             <AccountMenu user={user} />

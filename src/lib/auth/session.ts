@@ -4,7 +4,7 @@ import { isSupabaseConfigured } from '@/lib/env';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { db, nextId } from '@/lib/data/store';
 
-export const DEMO_COOKIE = 'vc_demo_session';
+export const DEMO_COOKIE = 'cc_demo_session';
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -31,7 +31,7 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
     return {
       id: user.id,
       email: user.email ?? '',
-      fullName: profile?.full_name ?? user.user_metadata?.full_name ?? 'VibeClub member',
+      fullName: profile?.full_name ?? user.user_metadata?.full_name ?? 'CampusClub member',
       avatarUrl: profile?.avatar_url ?? null,
       city: profile?.city ?? '',
       bio: profile?.bio ?? '',

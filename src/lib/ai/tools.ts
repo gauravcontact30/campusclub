@@ -25,7 +25,7 @@ const categorySlugs = CATEGORIES.map((c) => c.slug);
 export const searchMeetupsTool = betaTool({
   name: 'search_meetups',
   description:
-    'Search what is on across VibeClub. Use for any question about things to join — by activity, city, ' +
+    'Search what is on across CampusClub. Use for any question about things to join — by activity, city, ' +
     'neighbourhood, date, price or how full it is. Returns a shortlist with join fees and spots left.',
   inputSchema: {
     type: 'object',
@@ -118,7 +118,7 @@ export const meetupDetailTool = betaTool({
 export const siteFactsTool = betaTool({
   name: 'get_site_facts',
   description:
-    'How VibeClub itself works: what the join fee is, how passes and credits work, refunds, waitlists, ' +
+    'How CampusClub itself works: what the join fee is, how passes and credits work, refunds, waitlists, ' +
     'hosting, the cities it runs in and the kinds of meetup. Use before answering any "how does it work" ' +
     'or pricing question.',
   inputSchema: {
@@ -164,7 +164,7 @@ export const siteFactsTool = betaTool({
         return [
           'Anyone with an account can host, and listing is free. The host sets the spots, the level, who it is open to, and the join fee.',
           'The host keeps the whole join fee — no commission is taken while the product is finding its feet.',
-          'VibeClub handles the payments, the waitlist, refunds and the reminder the night before.',
+          'CampusClub handles the payments, the waitlist, refunds and the reminder the night before.',
           'Start at /host.',
         ].join('\n');
       case 'cities':

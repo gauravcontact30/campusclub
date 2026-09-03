@@ -8,7 +8,7 @@ type Row = Record<string, unknown>;
 function fromRow(row: Row): HostSummary {
   return {
     id: String(row.id),
-    name: String(row.full_name ?? 'A VibeClub member'),
+    name: String(row.full_name ?? 'A CampusClub member'),
     avatarUrl: (row.avatar_url as string | null) ?? null,
     city: String(row.city ?? ''),
     bio: String(row.bio ?? ''),
