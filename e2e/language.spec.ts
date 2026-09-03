@@ -32,7 +32,7 @@ test('the choice survives a reload and can be switched back', async ({ page }) =
 });
 
 test('an unknown locale cookie falls back to English rather than breaking', async ({ page, context }) => {
-  await context.addCookies([{ name: 'sitnext-locale', value: 'zz', url: 'http://127.0.0.1:3000' }]);
+  await context.addCookies([{ name: 'vibeclub-locale', value: 'zz', url: 'http://127.0.0.1:3000' }]);
   await page.goto('/');
   expect(await langOf(page)).toBe('en');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Meet five strangers');

@@ -21,7 +21,7 @@ export interface DemoDb {
   dinners: typeof SEED_DINNERS;
 }
 
-const globalRef = globalThis as unknown as { __sitnextDb?: DemoDb };
+const globalRef = globalThis as unknown as { __vibeclubDb?: DemoDb };
 
 function createDb(): DemoDb {
   return {
@@ -41,14 +41,14 @@ function createDb(): DemoDb {
 }
 
 export function db(): DemoDb {
-  if (!globalRef.__sitnextDb) globalRef.__sitnextDb = createDb();
-  return globalRef.__sitnextDb;
+  if (!globalRef.__vibeclubDb) globalRef.__vibeclubDb = createDb();
+  return globalRef.__vibeclubDb;
 }
 
 /** Test helper — wipes mutations back to the seeded baseline. */
 export function resetDb() {
-  globalRef.__sitnextDb = createDb();
-  return globalRef.__sitnextDb;
+  globalRef.__vibeclubDb = createDb();
+  return globalRef.__vibeclubDb;
 }
 
 /** Rating + review count are derived, never stored, so they can't drift. */

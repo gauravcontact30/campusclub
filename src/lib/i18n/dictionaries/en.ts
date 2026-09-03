@@ -35,7 +35,7 @@ export const en = {
     titleTop: 'Meet five strangers.',
     titleBottom: 'Find your city.',
     lede:
-      'SitNext does two things properly. It tells you which local places are actually worth your money — reviewed by people who went — and it seats you at a table with five strangers you would probably like.',
+      'VibeClub does two things properly. It tells you which local places are actually worth your money — reviewed by people who went — and it seats you at a table with five strangers you would probably like.',
     primaryCta: 'Book a seat this Wednesday',
     secondaryCta: 'Explore {count} places',
     seatsFilled: '18,400+ seats',
@@ -46,7 +46,7 @@ export const en = {
     subtitle: 'Search {count}+ reviewed places, or start with a category.',
     termPlaceholder: 'Tacos, barbers, pilates…',
     anywhere: 'Anywhere',
-    submit: 'Search SitNext',
+    submit: 'Search VibeClub',
   },
   directory: {
     title: 'The directory',
@@ -62,9 +62,9 @@ export const en = {
     secondary: 'Browse places first',
   },
   chat: {
-    open: 'Ask the SitNext assistant',
+    open: 'Ask the VibeClub assistant',
     close: 'Close the assistant',
-    title: 'Ask SitNext',
+    title: 'Ask VibeClub',
     subtitleLive: 'Places, dinners and how it all works',
     subtitleDemo: 'Demo mode — answers from the directory, not the AI',
     intro: 'I can search the directory, check what is open, and explain how the dinners work. Ask away.',

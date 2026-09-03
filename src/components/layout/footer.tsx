@@ -26,7 +26,7 @@ const columns = [
   {
     title: 'Company',
     links: [
-      { href: '/about', label: 'About SitNext' },
+      { href: '/about', label: 'About VibeClub' },
       { href: '/add-business', label: 'List your business' },
       { href: '/how-it-works', label: 'Trust & safety' },
       { href: '/signup', label: 'Create an account' },

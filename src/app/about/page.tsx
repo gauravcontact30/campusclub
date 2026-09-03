@@ -4,7 +4,7 @@ import { CITIES } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'Why SitNext exists: better local recommendations, and somebody to use them with.',
+  description: 'Why VibeClub exists: better local recommendations, and somebody to use them with.',
 };
 
 const MILESTONES = [
@@ -19,11 +19,11 @@ export default function AboutPage() {
     <>
       <section className="container-page py-16 sm:py-24">
         <div className="max-w-3xl">
-          <p className="eyebrow">About SitNext</p>
+          <p className="eyebrow">About VibeClub</p>
           <h1 className="display-xl mt-4">Cities are full of good places and lonely people.</h1>
           <p className="lede mt-6">
             We started with a spreadsheet and a booking for six. The idea has not changed since: the internet is very
-            good at telling you where to eat and terrible at giving you someone to eat with. SitNext does both, and
+            good at telling you where to eat and terrible at giving you someone to eat with. VibeClub does both, and
             each half makes the other better — our reviews come from people who actually sat down, and our dinners
             happen in places those reviews vouch for.
           </p>
@@ -64,7 +64,7 @@ export default function AboutPage() {
 
         <div className="mt-10 flex flex-col gap-3 sm:flex-row">
           <ButtonLink href="/signup" size="lg">
-            Join SitNext
+            Join VibeClub
           </ButtonLink>
           <ButtonLink href="/add-business" variant="outline" size="lg">
             List your business

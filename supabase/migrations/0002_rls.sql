@@ -1,5 +1,5 @@
 -- =============================================================================
--- SitNext — row level security
+-- VibeClub — row level security
 -- Public data stays readable by anyone; everything personal is owner-scoped.
 -- =============================================================================
 

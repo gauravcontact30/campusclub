@@ -1,4 +1,4 @@
-# SitNext
+# VibeClub
 
 **Find the good stuff. Meet the good people.**
 
@@ -131,7 +131,7 @@ Supabase application.
 ## Folder structure
 
 ```
-sitnext/
+vibeclub/
 ├── e2e/                        Playwright specs (directory, auth, dinners, responsive)
 ├── public/
 │   ├── img/covers/             Generated SVG cover art (no external images needed)
@@ -329,24 +329,17 @@ pills, and every section is built mobile-first.
 
 ### The mark
 
-Two circles: places, and people. SitNext is both — a directory of somewhere to
-go, and a table of who to go with — and the business is the part where they
-meet, so the overlap is the only element filled in.
+A V inside a ring — the members-club badge, which is the register the name asks
+for. The ring is the club; the V is the name.
 
-The geometry is derived rather than eyeballed: equal radii of 11 on centres
-twelve apart put the intersections at `x = 20`, `y = 20 ± √(11² − 6²)`, and each
-side of the lens spans 114°, which is why both arcs carry `large-arc-flag 0`.
+The V is drawn as three points rather than a glyph, so it never depends on a
+font being present, and it sits slightly below the ring's centre: a V carries
+its visual weight high, so it is optically centred rather than mathematically.
 
-Two properties matter more than the drawing. Everything is `currentColor`, so
-one file serves the brand lockup and both monochrome uses — a letterhead, a
-stamped receipt, a partner's press page and a disabled state all get one colour.
-And the lens is a closed path, not a shape painted in the page colour: a
-knockout filled with the background stops being a logo the moment it lands on a
-surface nobody anticipated.
-
-Because it survives 16px in a single colour, `public/logo.svg` is the only icon
-file — the previous mark needed a simplified favicon variant beside it, and this
-one does not.
+Everything is `currentColor` at a single stroke weight, so one file serves the
+header lockup, the favicon and any monochrome use — a letterhead, a stamped
+receipt, a disabled state. `public/logo.svg` is the only icon file; the mark is
+legible at 16px unmodified, so no simplified favicon variant exists.
 
 Cover art and avatars are generated SVGs in `public/img/`, so the app has no
 external image dependency and never shows a broken tile. `ImageWithFallback`

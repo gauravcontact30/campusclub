@@ -4,7 +4,7 @@ import type { Dictionary } from './en';
  * Typed as `Dictionary`, so a key missing here — or a key removed from English
  * and left behind here — fails the build rather than rendering an empty span.
  *
- * Product nouns stay in Latin script on purpose: "SitNext" is a name, and
+ * Product nouns stay in Latin script on purpose: "VibeClub" is a name, and
  * transliterating a brand is how brands stop being recognisable. Devanagari
  * numerals are not used either, because the site shows prices and counts from
  * the same data in both languages.
@@ -41,7 +41,7 @@ export const hi: Dictionary = {
     titleTop: 'पाँच अजनबियों से मिलिए।',
     titleBottom: 'अपना शहर खोजिए।',
     lede:
-      'SitNext दो काम ढंग से करता है। यह बताता है कि आस-पास की कौन-सी जगहें वाकई आपके पैसे के लायक हैं — समीक्षाएँ उन्हीं की जो वहाँ गए — और यह आपको पाँच ऐसे अजनबियों के साथ एक मेज़ पर बिठाता है जो शायद आपको पसंद आएँ।',
+      'VibeClub दो काम ढंग से करता है। यह बताता है कि आस-पास की कौन-सी जगहें वाकई आपके पैसे के लायक हैं — समीक्षाएँ उन्हीं की जो वहाँ गए — और यह आपको पाँच ऐसे अजनबियों के साथ एक मेज़ पर बिठाता है जो शायद आपको पसंद आएँ।',
     primaryCta: 'इस बुधवार की सीट बुक करें',
     secondaryCta: '{count} जगहें देखें',
     seatsFilled: '18,400+ सीटें',
@@ -52,7 +52,7 @@ export const hi: Dictionary = {
     subtitle: '{count}+ समीक्षित जगहें खोजें, या किसी श्रेणी से शुरू करें।',
     termPlaceholder: 'टाकोस, नाई, पिलाटे…',
     anywhere: 'कहीं भी',
-    submit: 'SitNext पर खोजें',
+    submit: 'VibeClub पर खोजें',
     },
   directory: {
     title: 'डायरेक्टरी',
@@ -68,9 +68,9 @@ export const hi: Dictionary = {
     secondary: 'पहले जगहें देखें',
   },
   chat: {
-    open: 'SitNext सहायक से पूछें',
+    open: 'VibeClub सहायक से पूछें',
     close: 'सहायक बंद करें',
-    title: 'SitNext से पूछें',
+    title: 'VibeClub से पूछें',
     subtitleLive: 'जगहें, डिनर, और यह सब कैसे चलता है',
     subtitleDemo: 'डेमो मोड — उत्तर डायरेक्टरी से, AI से नहीं',
     intro: 'मैं डायरेक्टरी खोज सकता हूँ, बता सकता हूँ कि क्या खुला है, और समझा सकता हूँ कि डिनर कैसे होते हैं। पूछिए।',

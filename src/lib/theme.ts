@@ -1,8 +1,8 @@
 export type Theme = 'light' | 'dark';
 export type PaletteId = 'ember' | 'saffron' | 'olive' | 'nightshade' | 'sage';
 
-export const THEME_STORAGE_KEY = 'sitnext-theme';
-export const PALETTE_STORAGE_KEY = 'sitnext-palette';
+export const THEME_STORAGE_KEY = 'vibeclub-theme';
+export const PALETTE_STORAGE_KEY = 'vibeclub-palette';
 
 /**
  * The five selectable palettes. `swatch` is the pair shown in the picker —
@@ -54,7 +54,7 @@ export function currentPalette(): PaletteId {
  * component learns it changed. This is also what keeps the pickers free of a
  * setState-in-effect, which the React Compiler lint rule rejects outright.
  */
-const PALETTE_EVENT = 'sitnext:palettechange';
+const PALETTE_EVENT = 'vibeclub:palettechange';
 
 export function subscribePalette(onChange: () => void) {
   window.addEventListener(PALETTE_EVENT, onChange);

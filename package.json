@@ -1,8 +1,8 @@
 {
-  "name": "sitnext",
+  "name": "vibeclub",
   "version": "1.0.0",
   "private": true,
-  "description": "SitNext — discover local businesses and join curated dinners with strangers.",
+  "description": "VibeClub — discover local businesses and join curated dinners with strangers.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

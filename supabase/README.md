@@ -23,7 +23,7 @@ Either with the CLI:
 
 ```bash
 supabase link --project-ref <ref>
-supabase db push          # runs migrations/0001 → 0005
+supabase db push          # runs migrations/0001 → 0006
 psql "$DATABASE_URL" -f supabase/seed.sql
 ```
 
@@ -35,7 +35,8 @@ psql "$DATABASE_URL" -f supabase/seed.sql
 | `migrations/0002_rls.sql` | row-level security for every table |
 | `migrations/0003_functions.sql` | new-user trigger, helpful-vote RPC, seat counters |
 | `migrations/0004_owner_tools.sql` | owner responses, business claims, `set_owner_response()` |
-| `migrations/0005_rename_brand.sql` | brand rename — only needed on a database created before it |
+| `migrations/0005_rename_brand.sql` | brand rename to SitNext — only needed on a database created before it |
+| `migrations/0006_rename_to_vibeclub.sql` | brand rename to VibeClub — same |
 | `seed.sql` | the eight fixed categories |
 
 ## 3. Load the demo content

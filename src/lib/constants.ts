@@ -1,10 +1,10 @@
 import type { Category, SubscriptionPlan } from '@/types';
 
 export const SITE = {
-  name: 'SitNext',
+  name: 'VibeClub',
   tagline: 'Find the good stuff. Meet the good people.',
   description:
-    'SitNext is a local discovery platform: read and write honest reviews of neighbourhood businesses, then book a seat at a curated dinner with five strangers who share your taste.',
+    'VibeClub is a local discovery platform: read and write honest reviews of neighbourhood businesses, then book a seat at a curated dinner with five strangers who share your taste.',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
 };
 

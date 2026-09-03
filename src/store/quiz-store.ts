@@ -29,6 +29,6 @@ export const useQuizStore = create<QuizState>()(
       goTo: (step) => set({ step }),
       reset: () => set({ step: 0, answers: {} }),
     }),
-    { name: 'sitnext-quiz' },
+    { name: 'vibeclub-quiz' },
   ),
 );

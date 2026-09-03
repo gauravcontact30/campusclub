@@ -2,27 +2,35 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 /**
- * Two circles: places, and people. SitNext is both — a directory of somewhere to
- * go, and a table of who to go with — and the business is the part where they
- * meet. So the overlap is the only thing filled in.
+ * A V inside a ring — the members-club badge, which is the register the name
+ * asks for. The ring is the club; the V is the name.
  *
- * Geometry is exact rather than eyeballed. Equal radii of 11 on centres twelve
- * apart put the intersections at x = 20, y = 20 ± sqrt(11² − 6²), and each side
- * of the lens spans 114°, which is why both arcs take large-arc-flag 0.
+ * The V is drawn as three points rather than a glyph so it never depends on a
+ * font being available, and it sits a touch below the ring's centre because a
+ * V carries its visual weight high — optically centred, not mathematically.
  *
- * Everything is `currentColor` and the lens is a closed path rather than a shape
- * painted in the page colour — the mark is genuinely one colour on any ground,
- * which is what lets it survive a letterhead, a receipt, or a favicon.
+ * Everything is `currentColor` and equal-stroke throughout, so one file serves
+ * the lockup, the favicon and any single-colour use.
  */
-function OverlapMark({ className }: { className?: string }) {
+function ClubMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" aria-hidden className={cn('h-9 w-9', className)}>
-      <circle cx="14" cy="20" r="11" fill="none" stroke="currentColor" strokeWidth="3" />
-      <circle cx="26" cy="20" r="11" fill="none" stroke="currentColor" strokeWidth="3" />
+      <circle
+        cx="20"
+        cy="20"
+        r="14.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        className="origin-center transition-transform duration-500 group-hover:scale-105"
+      />
       <path
-        d="M20 10.78 A11 11 0 0 1 20 29.22 A11 11 0 0 1 20 10.78 Z"
-        fill="currentColor"
-        className="origin-center transition-transform duration-500 group-hover:scale-110"
+        d="M13 14.5 L20 27 L27 14.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -32,15 +40,15 @@ export function Logo({ className }: { className?: string }) {
   return (
     <Link
       href="/"
-      aria-label="SitNext home"
+      aria-label="VibeClub home"
       className={cn(
         'group inline-flex items-center gap-2.5 font-display text-[1.35rem] font-semibold tracking-[-0.03em] text-content',
         className,
       )}
     >
-      <OverlapMark className="text-brand" />
+      <ClubMark className="text-brand" />
       <span>
-        Sit<span className="text-brand">Next</span>
+        Vibe<span className="text-brand">Club</span>
       </span>
     </Link>
   );

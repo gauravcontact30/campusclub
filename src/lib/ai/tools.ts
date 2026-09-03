@@ -27,7 +27,7 @@ const categorySlugs = CATEGORIES.map((c) => c.slug);
 export const searchPlacesTool = betaTool({
   name: 'search_places',
   description:
-    'Search the SitNext business directory. Use for any question about places to eat, drink, or use — ' +
+    'Search the VibeClub business directory. Use for any question about places to eat, drink, or use — ' +
     'by name, cuisine, neighbourhood, city, category, price or rating. Returns a ranked shortlist.',
   inputSchema: {
     type: 'object',
@@ -104,7 +104,7 @@ export const placeDetailTool = betaTool({
 export const dinnersTool = betaTool({
   name: 'list_dinners',
   description:
-    'Upcoming SitNext dinners — the Wednesday tables where six strangers eat together. ' +
+    'Upcoming VibeClub dinners — the Wednesday tables where six strangers eat together. ' +
     'Use for availability, dates, cities and seats left.',
   inputSchema: {
     type: 'object',
@@ -132,7 +132,7 @@ export const dinnersTool = betaTool({
 export const siteFactsTool = betaTool({
   name: 'get_site_facts',
   description:
-    'How SitNext itself works: membership plans and prices, the cities it runs in, the categories in the ' +
+    'How VibeClub itself works: membership plans and prices, the cities it runs in, the categories in the ' +
     'directory, and the rules of the dinners. Use before answering any "how does it work" or pricing question.',
   inputSchema: {
     type: 'object',

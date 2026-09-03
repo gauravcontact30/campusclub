@@ -10,7 +10,7 @@ const FAQS = [
   },
   {
     q: 'How do I know where to go?',
-    a: 'The venue is revealed 36 hours before the dinner, by email and in your bookings page. It is always somewhere with a strong review record on SitNext itself.',
+    a: 'The venue is revealed 36 hours before the dinner, by email and in your bookings page. It is always somewhere with a strong review record on VibeClub itself.',
   },
   {
     q: 'What does it cost?',
