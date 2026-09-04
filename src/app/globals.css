@@ -593,6 +593,16 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* `type="search"` is the right role for a search field, but WebKit draws its
+     own clear button inside it. Where we render our own — styled, positioned
+     and labelled — the native one sits beside it and the field shows two
+     crosses that do the same thing. */
+  .search-field::-webkit-search-cancel-button,
+  .search-field::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

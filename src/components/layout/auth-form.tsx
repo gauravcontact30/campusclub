@@ -18,6 +18,23 @@ export function AuthForm({ mode, next }: { mode: 'signin' | 'signup'; next: stri
     if (state && !state.ok && state.message) pushToast({ title: state.message, tone: 'error' });
   }, [state, pushToast]);
 
+  // A confirmation instruction has to stay on screen — a toast that fades
+  // after four seconds is the wrong carrier for "go and check your inbox".
+  if (state?.ok && state.message) {
+    return (
+      <div className="surface-card p-6 text-center" role="status">
+        <p className="font-display text-lg font-semibold text-content">Almost there.</p>
+        <p className="mt-2 text-sm leading-relaxed text-content/70">{state.message}</p>
+        <Link
+          href={`/login?next=${encodeURIComponent(next)}`}
+          className="link-underline mt-5 inline-block font-semibold text-content"
+        >
+          Go to sign in →
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <form action={formAction} className="space-y-5">
       <input type="hidden" name="next" value={next} />

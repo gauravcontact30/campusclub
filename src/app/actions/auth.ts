@@ -26,6 +26,16 @@ export async function signUpAction(_prev: ActionResult | null, formData: FormDat
   const result = await signUp(parsed.data);
   if (!result.ok) return { ok: false, message: result.message };
 
+  // With "Confirm email" on there is no session yet, so redirecting would drop
+  // a signed-out visitor onto a members-only page and look like a failed
+  // sign-up. Tell them to go and click the link instead.
+  if (result.needsEmailConfirmation) {
+    return {
+      ok: true,
+      message: `Account created. Check ${parsed.data.email} for a confirmation link, then sign in.`,
+    };
+  }
+
   revalidatePath('/', 'layout');
   // Straight into picking interests — the feed is much better with them, and
   // this is the one moment a new member is willing to answer four questions.

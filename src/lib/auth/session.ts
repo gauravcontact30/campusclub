@@ -62,6 +62,13 @@ export async function requireUser(): Promise<UserProfile | null> {
 export interface AuthOutcome {
   ok: boolean;
   message?: string;
+  /**
+   * Supabase accepted the sign-up but issued no session, because the project
+   * has *Authentication → Providers → Email → Confirm email* switched on.
+   * The account exists and is unusable until the link is clicked, so there is
+   * nothing to redirect into — the caller has to say so instead.
+   */
+  needsEmailConfirmation?: boolean;
 }
 
 export async function signIn(email: string, password: string): Promise<AuthOutcome> {
@@ -92,14 +99,38 @@ export async function signUp(input: {
     const { data, error } = await supabase.auth.signUp({
       email: input.email,
       password: input.password,
+      // Read back by the on_auth_user_created trigger, which is what actually
+      // creates the profile row — see supabase/baseline.sql.
       options: { data: { full_name: input.fullName, city: input.city } },
     });
     if (error) return { ok: false, message: error.message };
-    if (data.user) {
-      await supabase
-        .from('profiles')
-        .upsert({ id: data.user.id, full_name: input.fullName, city: input.city }, { onConflict: 'id' });
+
+    // Signing up with an address that already has an account is not an error
+    // to Supabase — it returns a user with no identities rather than confirm
+    // to a stranger that the address is registered. Without this the form
+    // would report success and send them into an account that is not theirs.
+    if (data.user && data.user.identities?.length === 0) {
+      return { ok: false, message: 'An account with that email already exists. Sign in instead.' };
     }
+
+    // No session means confirmation is on. The profile row is created by the
+    // trigger when they confirm, so there is nothing to write here — and
+    // nothing to sign in as.
+    if (!data.session) return { ok: true, needsEmailConfirmation: true };
+
+    // Belt and braces for a project whose trigger was never applied. It runs
+    // as the newly signed-in user, so the "insert own profile" policy accepts
+    // it; before the session check above it ran anonymously and RLS rejected
+    // it every time, silently, because the error was never read.
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .upsert({ id: data.user!.id, full_name: input.fullName, city: input.city }, { onConflict: 'id' });
+    if (profileError) {
+      // Not fatal: the account exists, and getCurrentUser falls back to the
+      // signup metadata when no profile row is found. Worth seeing in logs.
+      console.error('[auth] profile upsert after sign-up failed:', profileError.message);
+    }
+
     return { ok: true };
   }
 

@@ -94,9 +94,28 @@ end to end and says, everywhere it is visible, that nothing is charged.
 
 ## 5. Auth settings
 
-*Authentication → Providers → Email*: enable email/password. Turn **Confirm
-email** off while developing, or sign-ups will sit unverified. Add
+*Authentication → Providers → Email*: enable email/password. Add
 `http://localhost:3000/**` to *URL Configuration → Redirect URLs*.
+
+**Confirm email** decides which of two sign-up flows you get, and both work:
+
+| Setting | What happens |
+| --- | --- |
+| Off (easiest while developing) | `signUp` returns a session, the visitor is signed in immediately and lands on interest-picking. |
+| On | Supabase returns **no session**. The app says "check your inbox" and stays on the sign-up page rather than redirecting a signed-out visitor into a members-only page. They confirm, then sign in. |
+
+The profile row is created by the `on_auth_user_created` trigger in
+`baseline.sql`, from the `full_name` and `city` passed as sign-up metadata —
+not by the app. That matters because with confirmation on there is no session
+at sign-up time, so the app *cannot* write to `profiles`: the
+`insert own profile` policy requires `auth.uid() = id`. If sign-ups succeed
+but every profile comes out as "CampusClub member" with no city, the trigger
+is missing — re-run the functions section of `baseline.sql`.
+
+Signing up with an address that already has an account is not an error to
+Supabase: it returns a user with an empty `identities` array rather than
+confirm to a stranger that the address is registered. The app treats that as
+"account exists, sign in instead".
 
 ## 6. Cover images (optional)
 

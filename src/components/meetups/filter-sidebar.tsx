@@ -170,7 +170,7 @@ export function FilterSidebar({ query, resultCount }: { query: MeetupQuery; resu
       </Collapsible>
 
       <Group label="City">
-        {/* 44 cities do not fit as a flat list, so a search narrows it and a
+        {/* The city list does not fit flat, so a search narrows it and a
             capped, scrollable area carries the rest — the same "one choice per
             axis" shape as every other filter, just with a way in. */}
         <input
