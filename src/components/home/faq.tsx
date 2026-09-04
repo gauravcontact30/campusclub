@@ -29,33 +29,59 @@ const FAQS = [
 
 /**
  * `compact` shows the four questions people actually ask before their first
- * join and links out; the full set lives on /help. The same array feeds both,
- * so an answer is never edited in one place and stale in the other.
+ * join and links out to the help centre; /how-it-works renders all six. The
+ * same array feeds both, so an answer is never edited in one place and stale
+ * in the other.
+ *
+ * Laid out as a heading rail beside the answers rather than a question column
+ * beside an answer column. The old two-column grid sized the question side to
+ * the longest question, so every short one — "Can I get my money back?" — left
+ * a third of the row empty, and the section read as two lists that had drifted
+ * apart. Putting each answer under its own question closes that gap and gives
+ * the prose a proper measure, and the heading moves into the space it was
+ * already leaving blank.
+ *
+ * Deliberately not an accordion. The answers are four short paragraphs and the
+ * section is called Straight answers — hiding them behind a click to save a
+ * screen of scroll would contradict the only promise it makes.
  */
 export function Faq({ compact = false }: { compact?: boolean }) {
   const shown = compact ? FAQS.slice(0, 4) : FAQS;
 
   return (
     <section className="container-page py-20" aria-labelledby="faq-heading">
-      <p className="eyebrow">Straight answers</p>
-      <h2 id="faq-heading" className="display-lg mt-3 text-balance text-content">
-        The things people ask before joining.
-      </h2>
+      <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+        {/* The rail. Sticky from `lg`, so the heading stays with the answers
+            somebody is reading rather than scrolling away at the first one. */}
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <p className="eyebrow">Straight answers</p>
+          <h2 id="faq-heading" className="display-lg mt-3 text-balance text-content">
+            The things people ask before joining.
+          </h2>
+          <p className="lede mt-4 max-w-sm">
+            No small print anywhere else on this site, and none here either.
+          </p>
 
-      <dl className="mt-10 divide-y divide-content/12 border-y border-content/12">
-        {shown.map((faq) => (
-          <div key={faq.q} className="grid gap-2 py-6 md:grid-cols-[0.9fr_1.1fr] md:gap-8">
-            <dt className="font-display text-lg font-semibold text-content">{faq.q}</dt>
-            <dd className="text-[0.95rem] leading-relaxed text-content/70">{faq.a}</dd>
-          </div>
-        ))}
-      </dl>
+          {compact && (
+            <Link href="/help" className="link-underline mt-6 inline-block font-semibold text-content">
+              Everything else, on one page →
+            </Link>
+          )}
+        </div>
 
-      {compact && (
-        <Link href="/help" className="link-underline mt-8 inline-block font-semibold text-content">
-          Everything else, on one page →
-        </Link>
-      )}
+        {/* No icon on the questions. Every one of them ends in a question mark
+            already, so a question glyph beside each would be the same fact
+            twice — decoration where the section's whole promise is plainness.
+            The hierarchy is carried by weight and colour instead. */}
+        <dl className="surface-card divide-y divide-content/10 px-6 sm:px-9">
+          {shown.map((faq) => (
+            <div key={faq.q} className="py-7 first:pt-9 last:pb-9">
+              <dt className="font-display text-lg font-semibold leading-snug text-content">{faq.q}</dt>
+              <dd className="mt-2.5 max-w-prose text-[0.95rem] leading-relaxed text-content/70">{faq.a}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
     </section>
   );
 }
