@@ -6,6 +6,7 @@ import type { Dictionary } from '@/lib/i18n/dictionaries/en';
  */
 export const NAV_LINKS = [
   { href: '/meetups', key: 'meetups' },
+  { href: '/cities', key: 'cities' },
   { href: '/host', key: 'host' },
   { href: '/passes', key: 'passes' },
   { href: '/how-it-works', key: 'howItWorks' },

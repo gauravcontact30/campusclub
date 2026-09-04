@@ -33,13 +33,33 @@ const columns = [
     ],
   },
   {
-    title: 'Hosts',
+    title: 'Hosts & partners',
     links: [
       { href: '/host', label: 'Host a meetup' },
+      { href: '/partners', label: 'Partner your venue' },
+      { href: '/ambassadors', label: 'Campus ambassadors' },
       { href: '/how-it-works#hosting', label: 'What hosts earn' },
-      { href: '/how-it-works#safety', label: 'Trust & safety' },
-      { href: '/about', label: 'About CampusClub' },
       { href: '/signup', label: 'Create an account' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { href: '/about', label: 'About CampusClub' },
+      { href: '/stories', label: 'Stories' },
+      { href: '/careers', label: 'Careers' },
+      { href: '/press', label: 'Press' },
+      { href: '/contact', label: 'Contact' },
+    ],
+  },
+  {
+    title: 'Support',
+    links: [
+      { href: '/help', label: 'Help centre' },
+      { href: '/safety', label: 'Trust & safety' },
+      { href: '/legal/refunds', label: 'Refund policy' },
+      { href: '/legal/terms', label: 'Terms of service' },
+      { href: '/legal/privacy', label: 'Privacy policy' },
     ],
   },
 ];
@@ -64,7 +84,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
             {columns.map((col) => (
               <div key={col.title}>
                 <h3 className="font-display text-sm font-semibold uppercase tracking-widest text-content/50">
@@ -85,8 +105,11 @@ export function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col gap-3 border-t border-content/15 pt-6 text-xs text-content/50 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © {new Date().getFullYear()} {SITE.name}. Built with Next.js, React and Supabase.
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span>© {new Date().getFullYear()} {SITE.name}.</span>
+            <Link href="/legal/terms" className="hover:text-brand">Terms</Link>
+            <Link href="/legal/privacy" className="hover:text-brand">Privacy</Link>
+            <Link href="/legal/cookies" className="hover:text-brand">Cookies</Link>
           </p>
           {/* Two honest labels rather than a fake "secure payments" badge: this
               says out loud which database answered and which gateway is wired. */}

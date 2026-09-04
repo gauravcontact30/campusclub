@@ -79,7 +79,7 @@ test('the drawer carries its own toggle, labelled', async ({ page }) => {
 });
 
 const paletteOf = (page: import('@playwright/test').Page) =>
-  page.evaluate(() => document.documentElement.dataset.palette ?? 'court');
+  page.evaluate(() => document.documentElement.dataset.palette ?? 'paper');
 
 const brandOf = (page: import('@playwright/test').Page) =>
   page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--brand').trim());
@@ -88,12 +88,12 @@ test('each swatch repaints the site and the choice survives a reload', async ({ 
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
-  expect(await paletteOf(page)).toBe('court');
+  expect(await paletteOf(page)).toBe('paper');
 
   await page.getByRole('button', { name: 'Choose a colour theme' }).click();
 
   const seen = new Set<string>([await brandOf(page)]);
-  for (const name of ['Turf', 'Dusk', 'Tide', 'Ember']) {
+  for (const name of ['Court', 'Turf', 'Dusk', 'Ember']) {
     await page.getByRole('menuitemradio', { name: new RegExp(name) }).click();
     const brand = await brandOf(page);
     expect(seen.has(brand), `${name} reused another palette's brand colour`).toBe(false);
@@ -130,7 +130,7 @@ test('the drawer offers the same swatches', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Open menu' }).click();
 
-  await page.getByRole('radio', { name: 'Tide' }).click();
-  expect(await paletteOf(page)).toBe('tide');
-  await expect(page.getByRole('radio', { name: 'Tide' })).toHaveAttribute('aria-checked', 'true');
+  await page.getByRole('radio', { name: 'Court' }).click();
+  expect(await paletteOf(page)).toBe('court');
+  await expect(page.getByRole('radio', { name: 'Court' })).toHaveAttribute('aria-checked', 'true');
 });

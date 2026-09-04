@@ -7,6 +7,7 @@ import type { Dictionary } from './en';
 export const hi: Dictionary = {
   nav: {
     meetups: 'मीटअप खोजें',
+    cities: 'शहर',
     passes: 'पास',
     host: 'खुद होस्ट करें',
     howItWorks: 'यह कैसे काम करता है',

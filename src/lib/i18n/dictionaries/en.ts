@@ -6,6 +6,7 @@
 export const en = {
   nav: {
     meetups: 'Find a meetup',
+    cities: 'Cities',
     passes: 'Passes',
     host: 'Host one',
     howItWorks: 'How it works',

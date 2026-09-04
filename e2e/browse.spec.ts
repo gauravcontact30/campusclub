@@ -1,6 +1,10 @@
 import { expect, test } from '@playwright/test';
 
 test('the board lists meetups with a fee and spots left on every card', async ({ page }) => {
+  // Pinned wide: below `sm` the fee and spots move out of the row into a
+  // sibling strip (`MeetupRowFacts`) so this assertion, which is about content
+  // correctness rather than the responsive layout, checks one unambiguous place.
+  await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/meetups');
   await expect(page.getByRole('heading', { name: 'What’s on', level: 1 })).toBeVisible();
 
@@ -10,8 +14,8 @@ test('the board lists meetups with a fee and spots left on every card', async ({
   // The two facts the business model turns on have to be on the card itself,
   // not one click away.
   const first = cards.first();
-  await expect(first.getByText(/to join|Free/)).toBeVisible();
-  await expect(first.getByText(/spots? left|waitlist/)).toBeVisible();
+  await expect(first.getByText(/to join|no fee/)).toBeVisible();
+  await expect(first.getByText(/spots? left|waitlist/i)).toBeVisible();
 });
 
 test('a category filter narrows the board and survives a reload', async ({ page }) => {
@@ -26,8 +30,12 @@ test('a category filter narrows the board and survives a reload', async ({ page 
 });
 
 test('filters live in the URL, so a filtered board is a shareable link', async ({ page }) => {
+  // The rail is a persistent <aside> at `lg` and up and a button-triggered
+  // panel below it. Pinning desktop width means the same interaction — click
+  // the city row directly — works the same regardless of which Playwright
+  // project runs it.
+  await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/meetups');
-  await page.getByRole('button', { name: /^Filters/ }).click();
 
   await page.getByRole('button', { name: 'Pune', exact: true }).click();
   await expect(page).toHaveURL(/city=pune/);
@@ -36,7 +44,11 @@ test('filters live in the URL, so a filtered board is a shareable link', async (
 
 test('searching filters down to matching meetups', async ({ page }) => {
   await page.goto('/meetups');
-  await page.getByRole('searchbox', { name: 'Search meetups' }).fill('badminton');
+  // The board renders its own search bar plus the header carries one too past
+  // `xl` — scope to the first, and submit like a real visitor would (Enter),
+  // since the bar is a real form navigation rather than a live filter.
+  await page.getByRole('textbox', { name: 'What do you want to do?' }).first().fill('badminton');
+  await page.keyboard.press('Enter');
 
   await expect(page).toHaveURL(/term=badminton/, { timeout: 10_000 });
   const titles = await page.locator('article h3').allInnerTexts();

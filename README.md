@@ -115,6 +115,17 @@ answered and which gateway is wired.
 - The rating shows its **histogram and its most-ticked highlights**, because an
   average of 4.3 hides whether that was six 4s or five 5s and a 1.
 
+### The rest of the site
+
+A meetup marketplace needs more than a board and a checkout to read as a real
+product: `/cities` and `/cities/[slug]` (per-city landing pages with live
+counts), `/stories` and `/stories/[slug]` (editorial posts on the model and
+the data behind it), `/help` (a categorised FAQ beyond the home page's four),
+`/contact`, `/safety`, `/partners` (venues), `/ambassadors` (opening a new
+city or campus), `/careers`, `/press`, and the legal set at `/legal/*` (terms,
+privacy, refunds, cookies). All of it is wired into the footer, the sitemap,
+and — where it makes sense — the header nav.
+
 ### Everywhere
 
 - Two themes and five palettes, chosen before first paint, with no flash.
