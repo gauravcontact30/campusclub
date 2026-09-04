@@ -35,6 +35,30 @@ describe('generatedCover', () => {
     }
   });
 
+  it('keeps one hue per category but varies the composition per meetup', () => {
+    // A category-filtered board is the case this protects: every result shares
+    // a category, so if the whole cover were seeded on the category alone the
+    // page would be the same tile repeated down the column.
+    const a = generatedCover('exam-prep', 'gate-5am-club');
+    const b = generatedCover('exam-prep', 'neet-biology-one-system-a-week');
+
+    expect(b.from).toBe(a.from);
+    expect(b.to).toBe(a.to);
+    expect([a.angle, a.highlight, a.tilt]).not.toEqual([b.angle, b.highlight, b.tilt]);
+  });
+
+  it('draws visibly different covers across a real category-filtered board', () => {
+    const examPrep = SEED_MEETUPS.filter((m) => m.categorySlug === 'exam-prep');
+    expect(examPrep.length).toBeGreaterThan(1);
+
+    const compositions = examPrep.map((m) => {
+      const c = generatedCover(m.categorySlug, m.slug);
+      return `${c.angle}|${c.highlight}|${c.tilt}`;
+    });
+    // Not every one need be unique, but they must not all collapse to one.
+    expect(new Set(compositions).size).toBeGreaterThan(1);
+  });
+
   it('still returns a usable cover for a category outside the table', () => {
     const cover = generatedCover('some-future-category');
     expect(cover.from).toMatch(/^#[0-9A-Fa-f]{6}$/);

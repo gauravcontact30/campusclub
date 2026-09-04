@@ -3,6 +3,7 @@ import { FilterSidebar } from '@/components/meetups/filter-sidebar';
 import { SortBar } from '@/components/meetups/sort-bar';
 import { SearchBar } from '@/components/meetups/search-bar';
 import { CategoryRail } from '@/components/meetups/category-rail';
+import { BoardHeader } from '@/components/meetups/board-header';
 import { MeetupRow, MeetupRowFacts } from '@/components/meetups/meetup-row';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ButtonLink } from '@/components/ui/button';
@@ -12,7 +13,6 @@ import { getSavedMeetupIds } from '@/lib/data/saves';
 import { getCurrentUser } from '@/lib/auth/session';
 import { parseMeetupQuery, toSearchParams } from '@/lib/query-string';
 import { CITIES, categoryBySlug, cityBySlug } from '@/lib/constants';
-import { pluralize } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'What’s on',
@@ -43,12 +43,6 @@ export default async function MeetupsPage({
   const category = query.category ? categoryBySlug(query.category) : undefined;
   const city = query.city ? cityBySlug(query.city) : undefined;
 
-  const heading = category
-    ? `${category.name}${city ? ` in ${city.name}` : ''}`
-    : city
-      ? `What’s on in ${city.name}`
-      : 'What’s on';
-
   const firstRank = ((query.page ?? 1) - 1) * (query.perPage ?? 12);
 
   return (
@@ -63,14 +57,7 @@ export default async function MeetupsPage({
       </div>
 
       <div className="container-page py-8">
-        <header className="max-w-2xl">
-          <h1 className="display-md text-content">{heading}</h1>
-          <p className="mt-2 text-sm text-content/65">
-            {results.total > 0
-              ? `${pluralize(results.total, 'meetup')}. Every fee shown is what one person pays for one meetup.`
-              : 'Nothing matches those filters yet.'}
-          </p>
-        </header>
+        <BoardHeader category={category} city={city} total={results.total} />
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[15rem_1fr] lg:gap-10">
           <div className="lg:sticky lg:top-24 lg:self-start">

@@ -23,6 +23,8 @@ export interface GeneratedCover {
   /** Gradient stops. Fixed hues — see CATEGORY_TONES for why. */
   from: string;
   to: string;
+  /** Gradient direction, in degrees. Varies per meetup, not per category. */
+  angle: number;
   /** Where the soft highlight sits, so sibling cards do not look stamped. */
   highlight: string;
   /** Rotation of the oversized glyph, in degrees. */
@@ -107,17 +109,31 @@ const FALLBACK_TONES: [string, string][] = [
 ];
 
 const HIGHLIGHTS = ['22% 18%', '78% 22%', '30% 78%', '72% 70%'];
+const ANGLES = [135, 115, 155, 100, 170];
+const TILTS = [-12, -6, 7, 14];
 
-/** Stable per category, so every gym meetup reads as the same section. */
-export function generatedCover(seed: string): GeneratedCover {
-  const [from, to] = CATEGORY_TONES[seed] ?? FALLBACK_TONES[hashIndex(seed, FALLBACK_TONES.length)];
+/**
+ * Colour comes from the category; composition comes from the meetup.
+ *
+ * Splitting the two seeds is what makes a category-filtered board work. Seeded
+ * wholly on the category, every result on `?category=exam-prep` drew the exact
+ * same tile and the list looked duplicated. Seeded wholly on the meetup, the
+ * colour stops meaning anything. Hue per category, angle and light and tilt
+ * per meetup: the page still reads as one activity, and no two covers on it
+ * are the same picture.
+ */
+export function generatedCover(categorySlug: string, variantSeed?: string): GeneratedCover {
+  const [from, to] =
+    CATEGORY_TONES[categorySlug] ?? FALLBACK_TONES[hashIndex(categorySlug, FALLBACK_TONES.length)];
+  const variant = variantSeed ?? categorySlug;
   return {
     kind: 'generated',
     from,
     to,
-    highlight: HIGHLIGHTS[hashIndex(`${seed}-h`, HIGHLIGHTS.length)],
+    angle: ANGLES[hashIndex(`${variant}-a`, ANGLES.length)],
+    highlight: HIGHLIGHTS[hashIndex(`${variant}-h`, HIGHLIGHTS.length)],
     // A small, deterministic tilt — enough that a grid does not look tiled.
-    tilt: [-12, -6, 7, 14][hashIndex(`${seed}-t`, 4)],
+    tilt: TILTS[hashIndex(`${variant}-t`, TILTS.length)],
   };
 }
 
@@ -135,9 +151,18 @@ export function coverFor(
     return { kind: 'photo', src: pool[hashIndex(meetup.slug, pool.length)] };
   }
 
-  // Seeded on the category, not the slug: covers group the board by activity,
-  // which is the distinction a visitor is actually scanning for.
-  return generatedCover(meetup.categorySlug);
+  // Category for the hue, slug for the composition — see generatedCover.
+  return generatedCover(meetup.categorySlug, meetup.slug);
+}
+
+/**
+ * A category's signature colour, for anywhere that is not a cover — the filter
+ * rail, a chip, a legend. Sharing one source with `generatedCover` is what
+ * makes the colour on a pill mean the same thing as the colour on the card it
+ * filters to.
+ */
+export function categoryAccent(slug: string): string {
+  return generatedCover(slug).from;
 }
 
 /** Flat list of every configured photo URL — what `npm run media:check` reads. */

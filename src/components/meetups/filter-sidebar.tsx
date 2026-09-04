@@ -2,12 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { SlidersHorizontal, X } from 'lucide-react';
+import { ChevronDown, SlidersHorizontal, X } from 'lucide-react';
 import type { Level, MeetupQuery, MeetupSort, WhenFilter } from '@/types';
-import { CATEGORIES, CITIES, FEE_PRESETS, LEVELS, SORT_OPTIONS, WHEN_OPTIONS } from '@/lib/constants';
+import { CATEGORIES, CITIES, FEE_PRESETS, LEVELS, SORT_OPTIONS, WHEN_OPTIONS, categoryBySlug, cityBySlug } from '@/lib/constants';
 import { activeFilterCount, toSearchParams } from '@/lib/query-string';
 import { cn, formatMoney } from '@/lib/utils';
 import { CategoryIcon } from '@/components/ui/category-icon';
+import { categoryAccent } from '@/lib/media/covers';
 import { Button } from '@/components/ui/button';
 
 /**
@@ -18,6 +19,13 @@ import { Button } from '@/components/ui/button';
  * They are radio-style throughout — one city, one activity, one time window.
  * Multi-select reads as more powerful and produces result sets nobody
  * predicted; a single choice per axis is what makes a dense list legible.
+ *
+ * Everything short enough to fit is a wrapping chip row rather than a column
+ * of full-width rows. Six fee presets stacked ran taller than the four results
+ * they were filtering, which is the wrong way round: the filters should never
+ * be the tallest thing on the page. The two long axes — 24 activities and 44
+ * cities — collapse behind a header carrying the current choice, so the rail
+ * opens at a height somebody can take in at once.
  */
 export function FilterSidebar({ query, resultCount }: { query: MeetupQuery; resultCount: number }) {
   const router = useRouter();
@@ -54,62 +62,146 @@ export function FilterSidebar({ query, resultCount }: { query: MeetupQuery; resu
     );
   }
 
+  /* What is currently applied, as removable chips. Reading the filters back is
+     otherwise a matter of scanning five groups for whichever row is tinted. */
+  const applied: { key: string; label: string; clear: Partial<MeetupQuery> }[] = [];
+  if (query.category) {
+    applied.push({
+      key: 'category',
+      label: categoryBySlug(query.category)?.name ?? query.category,
+      clear: { category: '' },
+    });
+  }
+  if (query.city) {
+    applied.push({ key: 'city', label: cityBySlug(query.city)?.name ?? query.city, clear: { city: '' } });
+  }
+  if (query.when && query.when !== 'any') {
+    applied.push({
+      key: 'when',
+      label: WHEN_OPTIONS.find((o) => o.value === query.when)?.label ?? query.when,
+      clear: { when: 'any' as WhenFilter },
+    });
+  }
+  if (query.maxFeeCents) {
+    applied.push({ key: 'fee', label: `Up to ${formatMoney(query.maxFeeCents)}`, clear: { maxFeeCents: undefined } });
+  }
+  if (query.level && query.level !== 'any') {
+    applied.push({
+      key: 'level',
+      label: LEVELS.find((l) => l.value === query.level)?.label ?? query.level,
+      clear: { level: 'any' as Level },
+    });
+  }
+  if (query.hasSpots) {
+    applied.push({ key: 'spots', label: 'Has spots', clear: { hasSpots: false } });
+  }
+
+  const activeCategory = query.category ? categoryBySlug(query.category) : undefined;
+
   const panel = (
-    <div className="space-y-7">
+    <div className="space-y-5">
+      {applied.length > 0 && (
+        <div className="rounded-2xl border border-content/10 bg-canvas-700/70 p-3">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-content/45">Applied</span>
+            <button
+              type="button"
+              onClick={() => router.push('/meetups', { scroll: false })}
+              className="text-xs font-semibold text-brand hover:underline"
+            >
+              Clear all
+            </button>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {applied.map((chip) => (
+              <button
+                key={chip.key}
+                type="button"
+                onClick={() => push(chip.clear)}
+                className="group inline-flex items-center gap-1 rounded-full bg-brand/12 py-1 pl-2.5 pr-1.5 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand/20"
+              >
+                {chip.label}
+                <X size={12} className="opacity-60 group-hover:opacity-100" />
+                <span className="sr-only">— remove this filter</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <Group label="When">
-        {WHEN_OPTIONS.map((option) => (
-          <Row
-            key={option.value}
-            active={(query.when ?? 'any') === option.value}
-            onClick={() => push({ when: option.value as WhenFilter })}
-          >
-            {option.label}
-          </Row>
-        ))}
+        <ChipRow>
+          {WHEN_OPTIONS.map((option) => (
+            <Chip
+              key={option.value}
+              active={(query.when ?? 'any') === option.value}
+              onClick={() => push({ when: option.value as WhenFilter })}
+            >
+              {option.label}
+            </Chip>
+          ))}
+        </ChipRow>
       </Group>
 
-      <Group label="Activity">
-        <Row active={!query.category} onClick={() => push({ category: '' })}>
-          Everything
-        </Row>
-        {CATEGORIES.map((c) => (
-          <Row key={c.slug} active={query.category === c.slug} onClick={() => push({ category: c.slug })}>
-            <CategoryIcon slug={c.slug} size={14} className="shrink-0 text-content/50" />
-            {c.name}
-          </Row>
-        ))}
-      </Group>
+      {/* 24 activities is the longest axis, and the rail above the results
+          already offers all of them — so this opens closed, showing what is
+          picked rather than the whole catalogue. */}
+      <Collapsible
+        label="Activity"
+        summary={activeCategory?.name ?? 'Everything'}
+        defaultOpen={false}
+      >
+        <ChipRow>
+          <Chip active={!query.category} onClick={() => push({ category: '' })}>
+            Everything
+          </Chip>
+          {CATEGORIES.map((c) => (
+            <Chip key={c.slug} active={query.category === c.slug} onClick={() => push({ category: c.slug })}>
+              <CategoryIcon
+                slug={c.slug}
+                size={13}
+                className="shrink-0"
+                style={query.category === c.slug ? undefined : { color: categoryAccent(c.slug) }}
+              />
+              {c.name}
+            </Chip>
+          ))}
+        </ChipRow>
+      </Collapsible>
 
       <Group label="City">
-        <Row active={!query.city} onClick={() => push({ city: '' })}>
-          Any city
-        </Row>
         {/* 44 cities do not fit as a flat list, so a search narrows it and a
-            capped, scrollable list carries the rest — the same "one choice
-            per axis" shape as every other filter, just with a way in. */}
+            capped, scrollable area carries the rest — the same "one choice per
+            axis" shape as every other filter, just with a way in. */}
         <input
           type="text"
           value={cityFilter}
           onChange={(e) => setCityFilter(e.target.value)}
           placeholder="Search cities…"
-          className="mb-1 w-full rounded-lg border border-content/15 bg-transparent px-2.5 py-1.5 text-sm text-content placeholder:text-content/45 focus:border-brand/50 focus:outline-none"
+          aria-label="Search cities"
+          className="mb-2 w-full rounded-lg border border-content/15 bg-transparent px-2.5 py-1.5 text-sm text-content placeholder:text-content/45 focus:border-brand/50 focus:outline-none"
         />
-        <div className="max-h-52 overflow-y-auto pr-1">
+        <div className="max-h-44 overflow-y-auto pr-1">
           {visibleCities.length ? (
-            visibleCities.map((c) => (
-              <Row key={c.slug} active={query.city === c.slug} onClick={() => push({ city: c.slug })}>
-                {c.name}
-              </Row>
-            ))
+            <ChipRow>
+              <Chip active={!query.city} onClick={() => push({ city: '' })}>
+                Any city
+              </Chip>
+              {visibleCities.map((c) => (
+                <Chip key={c.slug} active={query.city === c.slug} onClick={() => push({ city: c.slug })}>
+                  {c.name}
+                </Chip>
+              ))}
+            </ChipRow>
           ) : (
-            <p className="px-2.5 py-1.5 text-sm text-content/50">No city matches “{cityFilter}”.</p>
+            <p className="py-1 text-sm text-content/50">No city matches “{cityFilter}”.</p>
           )}
         </div>
         <button
           type="button"
           onClick={useMyLocation}
           className={cn(
-            'mt-1 w-full rounded-lg border px-3 py-2 text-left text-sm font-semibold transition-colors',
+            'mt-2 w-full rounded-lg border px-3 py-2 text-sm font-semibold transition-colors',
             hasLocation
               ? 'border-signal/50 bg-signal/10 text-signal-600'
               : 'border-content/20 text-content/75 hover:border-content/40 hover:text-content',
@@ -120,44 +212,37 @@ export function FilterSidebar({ query, resultCount }: { query: MeetupQuery; resu
       </Group>
 
       <Group label="Join fee">
-        <Row active={!query.maxFeeCents} onClick={() => push({ maxFeeCents: undefined })}>
-          Any fee
-        </Row>
-        {FEE_PRESETS.map((fee) => (
-          <Row key={fee} active={query.maxFeeCents === fee} onClick={() => push({ maxFeeCents: fee })}>
-            Up to {formatMoney(fee)}
-          </Row>
-        ))}
+        <ChipRow>
+          <Chip active={!query.maxFeeCents} onClick={() => push({ maxFeeCents: undefined })}>
+            Any
+          </Chip>
+          {FEE_PRESETS.map((fee) => (
+            <Chip key={fee} active={query.maxFeeCents === fee} onClick={() => push({ maxFeeCents: fee })}>
+              ≤ {formatMoney(fee)}
+            </Chip>
+          ))}
+        </ChipRow>
       </Group>
 
       <Group label="How demanding">
-        {LEVELS.map((l) => (
-          <Row
-            key={l.value}
-            active={(query.level ?? 'any') === l.value}
-            onClick={() => push({ level: l.value as Level })}
-          >
-            {l.label}
-          </Row>
-        ))}
+        <ChipRow>
+          {LEVELS.map((l) => (
+            <Chip
+              key={l.value}
+              active={(query.level ?? 'any') === l.value}
+              onClick={() => push({ level: l.value as Level })}
+            >
+              {l.label}
+            </Chip>
+          ))}
+        </ChipRow>
       </Group>
 
       <Group label="Availability">
-        <Row active={Boolean(query.hasSpots)} onClick={() => push({ hasSpots: !query.hasSpots })}>
+        <Toggle on={Boolean(query.hasSpots)} onClick={() => push({ hasSpots: !query.hasSpots })}>
           Hide full meetups
-        </Row>
+        </Toggle>
       </Group>
-
-      {count > 0 && (
-        <Button
-          variant="outline"
-          size="sm"
-          full
-          onClick={() => router.push('/meetups', { scroll: false })}
-        >
-          <X size={14} /> Clear {count} {count === 1 ? 'filter' : 'filters'}
-        </Button>
-      )}
     </div>
   );
 
@@ -232,13 +317,54 @@ export function SortSelect({
 function Group({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <fieldset>
-      <legend className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-content/45">{label}</legend>
-      <div className="space-y-0.5">{children}</div>
+      <legend className="mb-2 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-content/45">{label}</legend>
+      {children}
     </fieldset>
   );
 }
 
-function Row({
+/**
+ * A group whose contents are too long to sit open. The header states the
+ * current choice, so collapsing hides the options without hiding the answer.
+ */
+function Collapsible({
+  label,
+  summary,
+  defaultOpen,
+  children,
+}: {
+  label: string;
+  summary: string;
+  defaultOpen: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <fieldset>
+      <legend className="sr-only">{label}</legend>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 text-left"
+      >
+        <span className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-content/45">{label}</span>
+        <span className="ml-auto truncate text-xs font-semibold text-content/75">{summary}</span>
+        <ChevronDown
+          size={14}
+          className={cn('shrink-0 text-content/45 transition-transform duration-200', open && 'rotate-180')}
+        />
+      </button>
+      {open && <div className="mt-2.5">{children}</div>}
+    </fieldset>
+  );
+}
+
+function ChipRow({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-wrap gap-1.5">{children}</div>;
+}
+
+function Chip({
   active,
   onClick,
   children,
@@ -253,10 +379,47 @@ function Row({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-sm transition-colors',
-        active ? 'bg-brand/12 font-semibold text-brand-700' : 'text-content/75 hover:bg-content/6 hover:text-content',
+        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.8rem] transition-colors',
+        active
+          ? 'border-brand bg-brand text-on-brand font-semibold'
+          : 'border-content/15 text-content/75 hover:border-content/35 hover:bg-content/5 hover:text-content',
       )}
     >
+      {children}
+    </button>
+  );
+}
+
+function Toggle({
+  on,
+  onClick,
+  children,
+}: {
+  on: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      role="switch"
+      aria-checked={on}
+      className="flex w-full items-center gap-2.5 text-left text-sm text-content/80"
+    >
+      <span
+        className={cn(
+          'relative h-5 w-9 shrink-0 rounded-full transition-colors duration-200',
+          on ? 'bg-brand' : 'bg-content/20',
+        )}
+      >
+        <span
+          className={cn(
+            'absolute top-0.5 h-4 w-4 rounded-full bg-canvas shadow-sm transition-transform duration-200',
+            on ? 'translate-x-[1.125rem]' : 'translate-x-0.5',
+          )}
+        />
+      </span>
       {children}
     </button>
   );

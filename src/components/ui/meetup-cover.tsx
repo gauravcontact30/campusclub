@@ -60,7 +60,7 @@ export function MeetupCover({
 
   return (
     <DrawnCover
-      cover={generatedCover(categorySlug)}
+      cover={generatedCover(categorySlug, slug)}
       categorySlug={categorySlug}
       alt={alt}
       className={className}
@@ -87,7 +87,7 @@ function DrawnCover({
       role="img"
       aria-label={alt}
       className={cn('relative overflow-hidden', className)}
-      style={{ backgroundImage: `linear-gradient(135deg, ${cover.from}, ${cover.to})` }}
+      style={{ backgroundImage: `linear-gradient(${cover.angle}deg, ${cover.from}, ${cover.to})` }}
     >
       {/* A soft off-centre light, so the fill has depth rather than reading as
           a flat swatch. */}
