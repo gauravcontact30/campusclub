@@ -8,10 +8,11 @@
 --   ready — no migration chain, no renames, no dropped legacy tables.
 --
 -- WHEN TO USE WHICH
---   Fresh project  → this file only. Do NOT also run migrations/0001–0009.
---   Existing project (already carries some of 0001–0009) → run the numbered
---     chain instead; it migrates forward and preserves rows. Running this file
---     on such a database is harmless but redundant.
+--   This is the only schema file. The numbered migration chain it replaced has
+--   been deleted, so there is nothing to run alongside it and no order to get
+--   right. Every statement is guarded (if not exists / or replace / drop policy
+--   if exists), so re-running it on a database that already has the schema is
+--   safe and changes nothing.
 --
 -- APPLY
 --   psql "$DATABASE_URL" -f supabase/baseline.sql
@@ -476,8 +477,8 @@ create policy "members manage their own saves" on public.saves
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- ======================================================== admin_events ======
--- Backs the Super Admin dashboard. See migrations/0010_admin_telemetry.sql;
--- kept in step with it.
+-- Backs the Super Admin dashboard: the request log it reads, and nothing else
+-- writes to it. Kept in step with src/lib/admin/.
 
 create table if not exists public.admin_events (
   id          uuid primary key default gen_random_uuid(),

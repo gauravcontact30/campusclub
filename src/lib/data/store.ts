@@ -6,7 +6,7 @@ import { SEED_HOSTS, SEED_MEETUPS, SEED_PAYMENTS, SEED_USERS, SEED_VOUCHES } fro
  *
  * A module-level singleton pinned to `globalThis` so it survives Next's HMR and
  * is shared by every route handler / server action in the process. It mirrors
- * exactly the tables defined in `supabase/migrations`, which is what lets the
+ * exactly the tables defined in `supabase/baseline.sql`, which is what lets the
  * repository layer swap between the two without pages noticing.
  */
 export interface DemoDb {
