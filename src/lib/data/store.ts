@@ -1,5 +1,5 @@
-import type { HostSummary, Join, Meetup, Payment, UserProfile, Vouch } from '@/types';
-import { SEED_HOSTS, SEED_MEETUPS, SEED_USERS, SEED_VOUCHES } from './seed';
+import type { AdminEvent, HostSummary, Join, Meetup, Payment, UserProfile, Vouch } from '@/types';
+import { SEED_HOSTS, SEED_MEETUPS, SEED_PAYMENTS, SEED_USERS, SEED_VOUCHES } from './seed';
 
 /**
  * Demo-mode database.
@@ -17,6 +17,12 @@ export interface DemoDb {
   joins: Join[];
   payments: Payment[];
   saves: { userId: string; meetupId: string }[];
+  /**
+   * Admin telemetry, newest last. Capped by `recordEvent` — this lives in a
+   * long-running process, and an uncapped array fed by every request is a
+   * memory leak with a dashboard attached.
+   */
+  events: AdminEvent[];
 }
 
 const globalRef = globalThis as unknown as { __campusclubDb?: DemoDb };
@@ -28,11 +34,12 @@ function createDb(): DemoDb {
     vouches: SEED_VOUCHES.map((v) => ({ ...v })),
     users: SEED_USERS.map((u) => ({ ...u })),
     joins: [],
-    payments: [],
+    payments: SEED_PAYMENTS.map((p) => ({ ...p })),
     saves: [
       { userId: 'u001', meetupId: 'm002' },
       { userId: 'u001', meetupId: 'm017' },
     ],
+    events: [],
   };
 }
 

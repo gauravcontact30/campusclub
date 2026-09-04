@@ -3,6 +3,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase/server';
 import { SUPABASE_SERVICE_ROLE_KEY, isSupabaseConfigured } from '@/lib/env';
 import { SEED_MEETUPS, SEED_USERS } from '@/lib/data/seed';
 import { CATEGORIES } from '@/lib/constants';
+import { withLogging } from '@/lib/admin/with-logging';
 
 /**
  * Pushes the TypeScript seed dataset into Supabase so both backends show the
@@ -11,7 +12,7 @@ import { CATEGORIES } from '@/lib/constants';
  *   curl -X POST http://localhost:3000/api/admin/seed \
  *        -H "x-seed-key: $SUPABASE_SERVICE_ROLE_KEY"
  */
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   if (!isSupabaseConfigured()) {
     return NextResponse.json(
       { message: 'Supabase is not configured — the app is running in demo mode.' },
@@ -89,3 +90,6 @@ export async function POST(request: NextRequest) {
     seeded: { categories: categories.length, meetups: meetups.length },
   });
 }
+
+/** Wrapped so every call lands in the Super Admin API log. */
+export const POST = withLogging(handlePOST, 'Seed API');

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { CHAT_TOOLS } from '@/lib/ai/tools';
 import { SYSTEM_PROMPT } from '@/lib/ai/system-prompt';
 import { demoAnswer } from '@/lib/ai/fallback';
+import { withLogging } from '@/lib/admin/with-logging';
 
 /** Tools hit the data layer, which reads cookies — this cannot run on the edge. */
 export const runtime = 'nodejs';
@@ -57,7 +58,7 @@ const STREAM_HEADERS = {
   'X-Accel-Buffering': 'no',
 };
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: 'Malformed request.' }, { status: 400 });
@@ -116,3 +117,6 @@ export async function POST(request: NextRequest) {
 
   return new Response(stream, { headers: { ...STREAM_HEADERS, 'X-Chat-Mode': 'live' } });
 }
+
+/** Wrapped so every call lands in the Super Admin API log. */
+export const POST = withLogging(handlePOST, 'Assistant');

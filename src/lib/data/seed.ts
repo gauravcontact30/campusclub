@@ -1,5 +1,6 @@
-import type { Audience, Cadence, HostSummary, Level, Meetup, UserProfile, Vouch } from '@/types';
+import type { Audience, Cadence, HostSummary, Level, Meetup, Payment, UserProfile, Vouch } from '@/types';
 import { slugify } from '@/lib/utils';
+import { CURRENCY } from '@/lib/constants';
 
 /* ------------------------------------------------------------------ */
 /* Time helpers                                                        */
@@ -46,6 +47,10 @@ const people: [name: string, email: string, city: string, bio: string, interests
   ['Nisha Gupta', 'nisha@example.com', 'Delhi', 'UPSC, mains cleared once. Runs the morning answer-writing table in Rajinder Nagar.', ['exam-prep', 'breakfast-lunch']],
   ['Tanvi Deshmukh', 'tanvi@example.com', 'Pune', 'Architecture student. Long lunches, longer arguments.', ['breakfast-lunch', 'skills']],
   ['Arjun Reddy', 'arjun@example.com', 'Hyderabad', 'Box cricket organiser since college. Owns four bats, none of them good.', ['sports', 'dinner']],
+  // The owner's account, so /admin is reachable in demo mode without a
+  // database. In Supabase mode this row is irrelevant — sign up with the same
+  // address there and the allowlist in lib/admin/config.ts recognises it.
+  ['Gaurav', 'garvcontact30@gmail.com', 'Bengaluru', 'Runs CampusClub.', ['group-study', 'gym']],
 ];
 
 export const SEED_USERS: (UserProfile & { password: string })[] = people.map((p, i) => ({
@@ -79,6 +84,10 @@ const hostStats: [hosted: number, rating: number, verified: boolean][] = [
   [31, 4.9, true],
   [7, 4.6, false],
   [26, 4.8, true],
+  // The owner's account. Indexed by position, so this array must stay exactly
+  // as long as `people` — a missing row here is a crash in SEED_HOSTS, not a
+  // missing badge.
+  [3, 4.8, true],
 ];
 
 export const SEED_HOSTS: HostSummary[] = SEED_USERS.map((u, i) => ({
@@ -566,3 +575,75 @@ export const SEED_VOUCHES: Vouch[] = SEED_MEETUPS.flatMap((meetup, mi) => {
     };
   });
 });
+
+/* ------------------------------------------------------------------ */
+/* Payment history                                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Two weeks of completed payments, so the Super Admin dashboard has arithmetic
+ * to do rather than a column of zeroes on a fresh boot.
+ *
+ * These are demo rows in the same table a live gateway writes to — the totals
+ * on the dashboard are computed from them exactly as they would be from real
+ * ones. The footer says the dataset is seeded; nothing here pretends otherwise.
+ * In Supabase mode this array is not used: that database holds whatever real
+ * payments have happened.
+ */
+export const SEED_PAYMENTS: Payment[] = (() => {
+  const rows: Payment[] = [];
+  const joinFees = [4900, 9900, 14900, 19900, 29900];
+
+  for (let day = 13; day >= 0; day--) {
+    // A deterministic weekday-ish rhythm rather than random noise, so the
+    // chart looks like a business and reads the same on every boot.
+    const perDay = [4, 6, 3, 5, 7, 9, 6][day % 7];
+
+    for (let i = 0; i < perDay; i++) {
+      const user = SEED_USERS[(day * 3 + i) % SEED_USERS.length];
+      const meetup = SEED_MEETUPS[(day * 5 + i) % SEED_MEETUPS.length];
+      const amount = joinFees[(day + i) % joinFees.length];
+      // Roughly one in fourteen fails and one in twenty is refunded, which is
+      // what makes the failure and refund tiles worth having on the dashboard.
+      const status: Payment['status'] =
+        (day * 7 + i) % 14 === 0 ? 'failed' : (day * 5 + i) % 20 === 0 ? 'refunded' : 'paid';
+
+      rows.push({
+        id: `pay-seed-${day}-${i}`,
+        userId: user.id,
+        provider: 'demo',
+        purpose: 'join',
+        orderId: `order_seed_${day}_${i}`,
+        gatewayPaymentId: status === 'paid' ? `pay_seed_${day}_${i}` : null,
+        amountCents: amount,
+        currency: CURRENCY.code,
+        status,
+        meetupId: meetup.id,
+        passId: null,
+        createdAt: daysAgo(day),
+      });
+    }
+
+    // A pass sale every few days — the recurring half of the revenue split.
+    if (day % 3 === 0) {
+      const buyer = SEED_USERS[(day * 2) % SEED_USERS.length];
+      const pass = day % 6 === 0 ? 'regular' : 'starter';
+      rows.push({
+        id: `pay-seed-pass-${day}`,
+        userId: buyer.id,
+        provider: 'demo',
+        purpose: 'pass',
+        orderId: `order_seed_pass_${day}`,
+        gatewayPaymentId: `pay_seed_pass_${day}`,
+        amountCents: pass === 'regular' ? 79900 : 39900,
+        currency: CURRENCY.code,
+        status: 'paid',
+        meetupId: null,
+        passId: pass,
+        createdAt: daysAgo(day),
+      });
+    }
+  }
+
+  return rows;
+})();

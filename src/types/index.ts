@@ -238,6 +238,60 @@ export interface Paginated<T> {
   pages: number;
 }
 
+/* ------------------------------------------------------------------ */
+/* Admin telemetry                                                     */
+/* ------------------------------------------------------------------ */
+
+/** What produced the event. */
+export type AdminEventKind = 'page' | 'api' | 'auth';
+
+/**
+ * How it went. `alert` is not a third status code — it is a success or a
+ * failure that someone should look at anyway: a 4xx on a payment route, an
+ * unusually slow response, a sign-in that was refused.
+ */
+export type AdminEventOutcome = 'success' | 'fail' | 'alert';
+
+export interface AdminEvent {
+  id: string;
+  occurredAt: string;
+  kind: AdminEventKind;
+  /** Route the event happened on: '/meetups', '/api/chat'. */
+  path: string;
+  /** What that route is, in words, so the log reads as features not URLs. */
+  label: string;
+  method: string | null;
+  status: number | null;
+  durationMs: number | null;
+  outcome: AdminEventOutcome;
+  /** Error text or a short note. Never a stack trace and never a payload. */
+  message: string | null;
+  /** Set once somebody is signed in; null for anonymous traffic. */
+  userId: string | null;
+  userEmail: string | null;
+  /**
+   * Anonymous, rotating id from a first-party cookie. It is what lets the
+   * dashboard say "one person read four pages" rather than "four page views",
+   * without knowing anything about who that person is.
+   */
+  visitorId: string;
+  referrer: string | null;
+}
+
+/** One visitor's session, rolled up from their events. */
+export interface VisitorSession {
+  visitorId: string;
+  userId: string | null;
+  userEmail: string | null;
+  userName: string | null;
+  firstSeen: string;
+  lastSeen: string;
+  pageViews: number;
+  /** Distinct pages, most recent first. */
+  path: { path: string; label: string; at: string }[];
+  referrer: string | null;
+}
+
 export interface ActionResult<T = undefined> {
   ok: boolean;
   message?: string;

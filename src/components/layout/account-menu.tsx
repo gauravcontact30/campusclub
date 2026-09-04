@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { Bookmark, CalendarCheck, ChevronDown, LogOut, Plus, Settings, Ticket } from 'lucide-react';
+import { Bookmark, CalendarCheck, ChevronDown, LogOut, Plus, Settings, ShieldCheck, Ticket } from 'lucide-react';
+import { isSuperAdmin } from '@/lib/admin/config';
 import { Avatar } from '@/components/ui/avatar';
 import { signOutAction } from '@/app/actions/auth';
 import type { UserProfile } from '@/types';
@@ -56,6 +57,18 @@ export function AccountMenu({ user }: { user: UserProfile }) {
             <p className="truncate text-sm font-semibold text-content">{user.fullName}</p>
             <p className="truncate text-xs text-content/55">{user.email}</p>
           </div>
+          {/* Only rendered for the owner. The gate is the /admin layout, not
+              this link — hiding it is convenience, not security. */}
+          {isSuperAdmin(user) && (
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold text-brand hover:bg-content/5"
+            >
+              <ShieldCheck size={15} />
+              Super Admin
+            </Link>
+          )}
           {ITEMS.map(({ href, label, icon: Icon }) => (
             <Link
               key={href}

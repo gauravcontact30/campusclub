@@ -88,6 +88,7 @@ const RELATIONS = [
   'payments',
   'vouches',
   'saves',
+  'admin_events',
   'meetups_with_stats',
   'profiles_with_host_stats',
   'vouches_with_author',
@@ -101,6 +102,7 @@ const RPCS = [
   ['increment_spots_taken', { p_meetup_id: '00000000-0000-0000-0000-000000000000' }],
   ['decrement_spots_taken', { p_meetup_id: '00000000-0000-0000-0000-000000000000' }],
   ['spend_join_credit', { p_user_id: '00000000-0000-0000-0000-000000000000' }],
+  ['prune_admin_events', { p_keep_days: 3650 }],
   ['reply_to_vouch', {
     p_vouch_id: '00000000-0000-0000-0000-000000000000',
     p_host_id: '00000000-0000-0000-0000-000000000000',
@@ -127,7 +129,7 @@ async function main() {
   if (!SERVICE) {
     warn(
       'SUPABASE_SERVICE_ROLE_KEY',
-      'Missing. The app still runs, but /api/admin/seed and the payment webhook need it.',
+      'Missing. The app still runs, but /api/admin/seed, the payment webhook and the\n      Super Admin dashboard need it — without it /admin can only read what the\n      signed-in admin owns, so revenue and the event log come back near-empty.',
     );
   } else {
     ok('SUPABASE_SERVICE_ROLE_KEY', 'set');

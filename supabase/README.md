@@ -133,6 +133,27 @@ deploying, because a dead one falls back silently:
 npm run media:check
 ```
 
+## 7. The Super Admin dashboard
+
+`/admin` is gated by an email allowlist in `src/lib/admin/config.ts`, defaulting
+to the owner's address and overridable with `SUPER_ADMIN_EMAILS` (comma
+separated). Sign up with that address in this project and the dashboard opens;
+everybody else is redirected home.
+
+It reads through the **service-role** key. Every table it reports on is
+protected by row-level security written for members — `payments` is readable
+only by whoever made it, and `admin_events` has no select policy at all — so
+without `SUPABASE_SERVICE_ROLE_KEY` the revenue page shows only the admin's own
+payments and the log comes back empty. That is RLS working, not a bug, but it
+makes the dashboard useless; set the key.
+
+`admin_events` grows with traffic. Prune it on a schedule
+(*Integrations → Cron*):
+
+```sql
+select public.prune_admin_events(30);   -- keep 30 days
+```
+
 ## How the two backends stay interchangeable
 
 Every repository function in `src/lib/data/*` branches on
