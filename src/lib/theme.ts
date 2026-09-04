@@ -1,21 +1,39 @@
 export type Theme = 'light' | 'dark';
-export type PaletteId = 'paper' | 'court' | 'turf' | 'dusk' | 'ember';
+export type PaletteId =
+  | 'paper'
+  | 'slate'
+  | 'graphite'
+  | 'harbour'
+  | 'court'
+  | 'claret'
+  | 'ember'
+  | 'turf'
+  | 'dusk';
 
 export const THEME_STORAGE_KEY = 'campusclub-theme';
 export const PALETTE_STORAGE_KEY = 'campusclub-palette';
 
 /**
- * The five selectable palettes. `swatch` is the pair shown in the picker — the
- * brand colour and its supporting signal — taken from each palette's LIGHT
- * values, because light is now the default theme and the chips should match
- * what a first-time visitor is actually looking at.
+ * The nine selectable palettes, ordered from most restrained to most
+ * expressive rather than alphabetically — somebody opening this menu is
+ * usually deciding how loud they want the product to be, so that is the axis
+ * the list should read along.
+ *
+ * `swatch` is the pair shown in the picker — the brand colour and its
+ * supporting signal — taken from each palette's LIGHT values, because light is
+ * the default theme and the chips should match what a first-time visitor is
+ * actually looking at.
  */
 export const PALETTES: { id: PaletteId; name: string; blurb: string; swatch: [string, string] }[] = [
   { id: 'paper', name: 'Paper', blurb: 'Cream and signal red', swatch: ['#C22E17', '#A06204'] },
+  { id: 'slate', name: 'Slate', blurb: 'Corporate blue on cool grey', swatch: ['#1D4ED8', '#A16207'] },
+  { id: 'graphite', name: 'Graphite', blurb: 'Monochrome, weight over hue', swatch: ['#22242C', '#8C5C0A'] },
+  { id: 'harbour', name: 'Harbour', blurb: 'Deep teal and amber', swatch: ['#0D6E6A', '#A65E0C'] },
   { id: 'court', name: 'Court', blurb: 'Indigo and amber', swatch: ['#5240D8', '#955F06'] },
+  { id: 'claret', name: 'Claret', blurb: 'Wine and brass', swatch: ['#961A3E', '#92640E'] },
+  { id: 'ember', name: 'Ember', blurb: 'Terracotta and gold', swatch: ['#C44C1E', '#A46308'] },
   { id: 'turf', name: 'Turf', blurb: 'Pitch green and lime', swatch: ['#147A47', '#5C6A0C'] },
   { id: 'dusk', name: 'Dusk', blurb: 'Plum and rose', swatch: ['#A82C84', '#B24428'] },
-  { id: 'ember', name: 'Ember', blurb: 'Terracotta and gold', swatch: ['#C44C1E', '#A46308'] },
 ];
 
 const IDS = PALETTES.map((p) => p.id);

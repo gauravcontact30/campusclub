@@ -3,7 +3,7 @@ import { isSupabaseConfigured } from '@/lib/env';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { FREE_CANCELLATION_HOURS } from '@/lib/constants';
 import { db, nextId } from './store';
-import { getMeetupById, getMeetupsByIds } from './meetups';
+import { getMeetupById, getMeetupsByIds, getMeetupsHostedBy } from './meetups';
 
 type Row = Record<string, unknown>;
 
@@ -64,6 +64,41 @@ export async function getJoinsForUser(userId: string): Promise<JoinWithMeetup[]>
     })
     .filter((j): j is JoinWithMeetup => j !== null)
     .sort((a, b) => +new Date(a.meetup.startsAt) - +new Date(b.meetup.startsAt));
+}
+
+/**
+ * Every join across every meetup this member hosts — the raw material for
+ * their earnings.
+ *
+ * Computed from join rows rather than `fee × spotsTaken`, which is the
+ * tempting shortcut and is wrong twice over: a waitlisted join holds a spot
+ * without paying, and a credit-covered join records an amount of zero even
+ * though the host is still owed the fee.
+ */
+export async function getJoinsForHost(hostId: string): Promise<JoinWithMeetup[]> {
+  const hosted = await getMeetupsHostedBy(hostId);
+  if (!hosted.length) return [];
+
+  const byId = new Map(hosted.map((m) => [m.id, m]));
+  const ids = [...byId.keys()];
+  let joins: Join[];
+
+  if (isSupabaseConfigured()) {
+    const supabase = await createSupabaseServerClient();
+    if (!supabase) return [];
+    const { data } = await supabase.from('joins').select('*').in('meetup_id', ids);
+    joins = (data ?? []).map(fromRow);
+  } else {
+    joins = db().joins.filter((j) => byId.has(j.meetupId));
+  }
+
+  return joins
+    .map((j) => {
+      const meetup = byId.get(j.meetupId);
+      return meetup ? { ...j, meetup } : null;
+    })
+    .filter((j): j is JoinWithMeetup => j !== null)
+    .sort((a, b) => +new Date(b.meetup.startsAt) - +new Date(a.meetup.startsAt));
 }
 
 /** Who is coming — what a host sees on their own meetup. */

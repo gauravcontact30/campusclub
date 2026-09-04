@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import { getCurrentUser } from '@/lib/auth/session';
+import { getJoinsForUser } from '@/lib/data/joins';
 import { PassGrid } from '@/components/passes/pass-grid';
+import { PassCalculator } from '@/components/passes/pass-calculator';
 import { PASSES, FREE_CANCELLATION_HOURS } from '@/lib/constants';
+import { memberSpend, monthlyJoinRate } from '@/lib/economics';
 import { PAYMENT_MODE } from '@/lib/payments/config';
 
 export const metadata: Metadata = {
@@ -31,6 +34,12 @@ const NOTES = [
 export default async function PassesPage() {
   const user = await getCurrentUser();
 
+  // Seed the calculator from what this member actually does, so a signed-in
+  // visitor lands on their own answer rather than a made-up default.
+  const joins = user ? await getJoinsForUser(user.id) : [];
+  const spend = memberSpend(joins);
+  const typicalJoins = user ? monthlyJoinRate(spend.joins, user.createdAt) : 4;
+
   return (
     <div className="container-page py-10 sm:py-14">
       <header className="max-w-2xl">
@@ -51,6 +60,14 @@ export default async function PassesPage() {
           payments.
         </p>
       )}
+
+      <div className="mt-10">
+        <PassCalculator
+          currentPass={user?.pass}
+          defaultJoins={typicalJoins}
+          defaultFeeCents={spend.typicalFeeCents}
+        />
+      </div>
 
       <div className="mt-10">
         <PassGrid passes={PASSES} user={user} />

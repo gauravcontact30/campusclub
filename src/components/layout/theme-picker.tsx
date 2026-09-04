@@ -56,7 +56,9 @@ export function ThemePicker({ className }: { className?: string }) {
           <p className="px-4 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-content/50">
             {t.header.paletteHeading}
           </p>
-          <div className="p-2 pt-1">
+          {/* Nine palettes overrun a short viewport, so the list scrolls
+              inside the menu rather than the menu running off the screen. */}
+          <div className="max-h-[min(28rem,60vh)] overflow-y-auto p-2 pt-1">
             {PALETTES.map((p) => (
               <button
                 key={p.id}
