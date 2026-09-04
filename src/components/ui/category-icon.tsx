@@ -66,12 +66,15 @@ export function CategoryIcon({
   size = 18,
   className,
   style,
+  strokeWidth,
 }: {
   slug: string;
   size?: number;
   className?: string;
   style?: CSSProperties;
+  /** Thinner strokes read better once the glyph is scaled up as cover art. */
+  strokeWidth?: number;
 }) {
   const Icon = ICONS[categoryBySlug(slug)?.icon ?? ''] ?? Sparkles;
-  return <Icon size={size} className={className} style={style} aria-hidden />;
+  return <Icon size={size} className={className} style={style} strokeWidth={strokeWidth} aria-hidden />;
 }

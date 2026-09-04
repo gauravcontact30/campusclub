@@ -1,4 +1,4 @@
-# Supabase setup
+# Supabase setup — `campusclub_db`
 
 The app runs without any of this — with no keys it uses a seeded in-memory
 dataset so every screen and flow works locally. Follow these steps when you want
@@ -6,7 +6,8 @@ real persistence.
 
 ## 1. Create the project
 
-1. Create a project at [supabase.com](https://supabase.com).
+1. Create a project at [supabase.com](https://supabase.com). Any project name
+   works; this document calls the database `campusclub_db`.
 2. Copy **Project URL**, **anon key** and **service_role key** from
    *Project Settings → API*.
 3. Put them in `.env.local`:
@@ -17,17 +18,27 @@ real persistence.
    SUPABASE_SERVICE_ROLE_KEY=ey...        # server only, never expose
    ```
 
+The app switches backends on those keys alone — no code change, no flag. With
+both public keys present every repository function talks to Postgres; without
+them it talks to the in-memory store.
+
 ## 2. Apply the schema
 
-Either with the CLI:
+**On a fresh project, run one file:**
 
 ```bash
-supabase link --project-ref <ref>
-supabase db push          # runs migrations/0001 → 0009
-psql "$DATABASE_URL" -f supabase/seed.sql
+psql "$DATABASE_URL" -f supabase/baseline.sql
 ```
 
-…or by pasting each file into the SQL editor **in order**:
+…or paste `supabase/baseline.sql` into the SQL editor and run it. It is the
+whole current schema — tables, indexes, views, functions, the signup trigger,
+row-level security and all 24 categories — and it is idempotent, so running it
+twice is safe. **Do not also run `migrations/0001`–`0009` on a fresh project:**
+the baseline is those nine files collapsed, minus the renames and the retired
+directory tables.
+
+**On a database that already carries part of the chain**, run the numbered
+migrations instead — they migrate forward and keep existing rows:
 
 | File | What it creates |
 | --- | --- |
@@ -45,14 +56,25 @@ psql "$DATABASE_URL" -f supabase/seed.sql
 `0007` is a forward migration, so an existing database migrates rather than
 being rebuilt: members' old plans are carried across to the new pass tiers
 before the `plan` column is dropped, and the old tables are only dropped once
-everything new is in place. On a fresh project the earlier files still have to
-run first — they create `profiles` and the auth trigger that `0007` builds on.
+everything new is in place.
+
+## 2b. Check it took
+
+```bash
+npm run db:check
+```
+
+It verifies the keys are readable, the project answers, every table, view and
+RPC the app calls exists, the 24 categories are loaded, and that row-level
+security really is on — an anonymous client must not be able to read
+`payments`. It exits non-zero on any failure, so it can gate a deploy.
 
 ## 3. Load the demo content
 
 The meetups live in `src/lib/data/seed.ts` so both backends share one source of
 truth. Meetups reference a host in `profiles`, which only exists once somebody
-has signed up — so **create at least one account first**, then push:
+has signed up — so **turn on email auth (step 5) and create at least one
+account first**, then push:
 
 ```bash
 curl -X POST http://localhost:3000/api/admin/seed \
@@ -75,6 +97,22 @@ end to end and says, everywhere it is visible, that nothing is charged.
 *Authentication → Providers → Email*: enable email/password. Turn **Confirm
 email** off while developing, or sign-ups will sit unverified. Add
 `http://localhost:3000/**` to *URL Configuration → Redirect URLs*.
+
+## 6. Cover images (optional)
+
+`meetups.cover_image` holds a URL per meetup and always wins when set — upload
+to Supabase Storage and store the public URL there. When it is null the app
+falls back to `PHOTO_COVERS` in `src/lib/media/covers.ts` (keyed by category),
+and when that is empty too it draws a themed cover from the category's colour
+pair. All three paths are supported; nothing is a placeholder.
+
+Whichever host you use must be allowlisted in `next.config.ts` — Unsplash and
+`*.supabase.co` already are. Prove every configured URL resolves before
+deploying, because a dead one falls back silently:
+
+```bash
+npm run media:check
+```
 
 ## How the two backends stay interchangeable
 

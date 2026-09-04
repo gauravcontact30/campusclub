@@ -524,6 +524,12 @@ const vouchCopy: { rating: number; body: string; highlights: string[] }[] = [
   { rating: 4, body: 'Good energy, well run, and the equipment was all there as promised. Docking one only because parking nearby is genuinely awful — come by metro.', highlights: ['Host was organised', 'Good group energy'] },
   { rating: 5, body: 'I was the only beginner and it never once felt like it. Three separate people quietly adjusted something for me without making a moment of it.', highlights: ['Welcoming to newcomers', 'Quiet enough to focus'] },
   { rating: 5, body: 'Booked it as a one-off to fill a Saturday. Have now been to five and know most of the group by name. Not what I expected from a paid meetup.', highlights: ['Good group energy', 'Would join again'] },
+  { rating: 4, body: 'Turns out the hard part really is the first ten minutes. Somebody handed me a chair and after that it was just a normal evening with people I had not met.', highlights: ['Welcoming to newcomers', 'Good group energy'] },
+  { rating: 5, body: 'The listing said what it would cost and that was what it cost. After a year of "free" events that turn into a sales pitch, paying up front is the feature.', highlights: ['Host was organised'] },
+  { rating: 3, body: 'Decent, but the venue had a wedding on and we could barely hear each other. Not the host\'s fault and they offered to move us, though by then half had left.', highlights: ['Would join again'] },
+  { rating: 5, body: 'I came for the activity and stayed for the walk to the metro afterwards, which is when everyone actually talks. Give yourself the extra twenty minutes.', highlights: ['Good group energy', 'Would join again'] },
+  { rating: 4, body: 'Cap of eight is the right number. I have been to bigger versions of this and you end up talking to two people; here you genuinely meet everyone.', highlights: ['Quiet enough to focus', 'Host was organised'] },
+  { rating: 5, body: 'Booked at eleven at night for the next morning, half expecting nobody to show. Six people did, on time, in the rain.', highlights: ['Started on time', 'Would join again'] },
 ];
 
 const hostReplies = [
@@ -537,7 +543,12 @@ export const SEED_VOUCHES: Vouch[] = SEED_MEETUPS.flatMap((meetup, mi) => {
   // have not happened yet carry a little less — which is honest.
   const count = meetup.cadence === 'once' ? 2 + (mi % 3) : 4 + (mi % 4);
   return Array.from({ length: count }, (_, vi) => {
-    const copy = vouchCopy[(mi * 5 + vi * 3) % vouchCopy.length];
+    // Both strides are coprime with the pool length (18), which is what stops
+    // a meetup from quoting the same review twice and stops two rows next to
+    // each other on the board from carrying the identical sentence. A stride
+    // sharing a factor with the pool — the old `vi * 3` against 12 entries —
+    // walks a short cycle and repeats after four reviews.
+    const copy = vouchCopy[(mi * 7 + vi * 5) % vouchCopy.length];
     const author = SEED_USERS[(mi + vi * 4 + 1) % SEED_USERS.length];
     const replies = copy.rating <= 4 && vi === 0;
     return {
