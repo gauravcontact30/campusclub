@@ -53,10 +53,9 @@ const people: [name: string, email: string, city: string, bio: string, interests
   ['Gaurav', 'garvcontact30@gmail.com', 'Bengaluru', 'Runs CampusClub.', ['group-study', 'gym']],
 ];
 
-export const SEED_USERS: (UserProfile & { password: string })[] = people.map((p, i) => ({
+export const SEED_USERS: UserProfile[] = people.map((p, i) => ({
   id: `u${String(i + 1).padStart(3, '0')}`,
   email: p[1],
-  password: 'password123',
   fullName: p[0],
   // Null on purpose: the Avatar falls back to token-coloured initials, which
   // follow the theme. A shipped PNG would be the one thing on the page that

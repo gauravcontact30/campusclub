@@ -5,7 +5,7 @@ import { SITE } from '@/lib/constants';
 export const metadata: Metadata = { title: 'Cookie policy' };
 
 const COOKIES: { name: string; purpose: string; expires: string }[] = [
-  { name: 'cc_demo_session', purpose: 'Keeps you signed in. Strictly necessary — the site cannot know who you are without it.', expires: '30 days' },
+  { name: 'sb-<project>-auth-token', purpose: 'Your Supabase Auth session. Strictly necessary — the site cannot know who you are without it. Set only once you sign in, and cleared when you sign out.', expires: '1 hour, refreshed while you browse' },
   { name: 'campusclub-theme', purpose: 'Remembers whether you chose light or dark, rather than following your system setting on every visit.', expires: '1 year' },
   { name: 'campusclub-palette', purpose: 'Remembers which of the five colour palettes you picked in the theme menu.', expires: '1 year' },
   { name: 'campusclub-locale', purpose: 'Remembers whether you switched the site to Hindi.', expires: '1 year' },
@@ -19,7 +19,7 @@ export default function CookiesPage() {
         <Revised date="3 September 2026" />
         <Prose>
           <p>
-            {SITE.name} sets four cookies, all first-party, none for advertising. We do not run third-party
+            {SITE.name} sets a handful of cookies, all first-party, none for advertising. We do not run third-party
             trackers, ad pixels, or cross-site analytics — there is nothing here to opt out of beyond the browser&rsquo;s
             own cookie controls.
           </p>

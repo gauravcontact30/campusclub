@@ -13,7 +13,9 @@ export interface DemoDb {
   meetups: Meetup[];
   hosts: HostSummary[];
   vouches: Vouch[];
-  users: (UserProfile & { password: string })[];
+  /** Member rows the demo data layer reads for hosts, attendees and vouch
+   *  authors. Credentials never live here — Supabase Auth owns those. */
+  users: UserProfile[];
   joins: Join[];
   payments: Payment[];
   saves: { userId: string; meetupId: string }[];

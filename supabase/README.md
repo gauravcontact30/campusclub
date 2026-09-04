@@ -31,32 +31,40 @@ psql "$DATABASE_URL" -f supabase/baseline.sql
 ```
 
 …or paste `supabase/baseline.sql` into the SQL editor and run it. It is the
-whole current schema — tables, indexes, views, functions, the signup trigger,
+whole schema — tables, indexes, views, functions, the sign-up trigger,
 row-level security and all 24 categories — and it is idempotent, so running it
-twice is safe. **Do not also run `migrations/0001`–`0009` on a fresh project:**
-the baseline is those nine files collapsed, minus the renames and the retired
-directory tables.
+twice is safe.
 
-**On a database that already carries part of the chain**, run the numbered
-migrations instead — they migrate forward and keep existing rows:
+There is no numbered migration chain any more. It described a product that no
+longer exists (a business directory, two brand renames, a supper club) and the
+baseline is the single source of truth for `campusclub_db`. If you are bringing
+an older database forward, the honest path now is to run the baseline against a
+fresh project and migrate the rows you want to keep.
 
 | File | What it creates |
 | --- | --- |
-| `migrations/0001_schema.sql` | tables, indexes, `businesses_with_stats` view |
-| `migrations/0002_rls.sql` | row-level security for every table |
-| `migrations/0003_functions.sql` | new-user trigger, helpful-vote RPC, seat counters |
-| `migrations/0004_owner_tools.sql` | owner responses, business claims, `set_owner_response()` |
-| `migrations/0005_rename_brand.sql` | brand rename to SitNext — only needed on a database created before it |
-| `migrations/0006_rename_to_vibeclub.sql` | brand rename to VibeClub — same |
-| `migrations/0007_meetups.sql` | **the current model**: `meetups`, `joins`, `payments`, `vouches`, the three stats views, seat and credit functions, RLS — and it retires the directory and supper-club tables at the end |
-| `migrations/0008_rename_to_campusclub.sql` | brand rename to CampusClub: the `profiles.full_name` default, the placeholder rows, and the signup trigger |
-| `migrations/0009_more_categories.sql` | sixteen more categories alongside the original eight — movies, gaming, book club, cycling, and the rest of `src/lib/constants.ts`'s `CATEGORIES` |
-| `seed.sql` | all 24 fixed categories, for a fresh project seeded outside the migration chain |
+| `baseline.sql` | Everything: `profiles`, `meetups`, `joins`, `payments`, `vouches`, `saves`, the three stats views, the seat and credit functions, the sign-up trigger, RLS on every table, and the 24 categories |
+| `seed.sql` | Just the 24 fixed categories, for reseeding the catalogue on its own |
 
-`0007` is a forward migration, so an existing database migrates rather than
-being rebuilt: members' old plans are carried across to the new pass tiers
-before the `plan` column is dropped, and the old tables are only dropped once
-everything new is in place.
+### How sign-up actually works
+
+`auth.users` is Supabase's, and holds the email and password hash. `profiles`
+is ours, one row per user, and is written by the `on_auth_user_created`
+trigger the moment an account is created — it reads `full_name` and `city`
+out of the sign-up metadata the app sends.
+
+That trigger runs **inside the same transaction as the `auth.users` insert**,
+so anything it raises rolls the whole sign-up back and Supabase answers with
+the famously unhelpful *"Database error saving new user"*. Ours therefore
+catches every exception, logs a warning and lets the account through: the app
+falls back to the sign-up metadata when no profile row exists, so a missing
+row is a cosmetic problem while a blocked sign-up is a broken product.
+
+`profiles` is readable only by its owner. Public reads of a member — host
+cards, attendee lists, vouch authors — go through the
+`profiles_with_host_stats`, `joins_with_member` and `vouches_with_author`
+views, which expose display fields only. A blanket public select on the table
+would hand `pass` and `credits` to anyone who called PostgREST directly.
 
 ## 2b. Check it took
 

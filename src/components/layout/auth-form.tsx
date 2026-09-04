@@ -66,7 +66,7 @@ export function AuthForm({ mode, next }: { mode: 'signin' | 'signup'; next: stri
       <Field
         label="Password"
         htmlFor="password"
-        hint={mode === 'signup' ? 'At least 6 characters.' : undefined}
+        hint={mode === 'signup' ? 'At least 8 characters.' : undefined}
         error={state?.fieldErrors?.password}
       >
         <Input
@@ -78,6 +78,14 @@ export function AuthForm({ mode, next }: { mode: 'signin' | 'signup'; next: stri
           required
         />
       </Field>
+
+      {mode === 'signin' && (
+        <p className="-mt-1 text-right">
+          <Link href="/forgot-password" className="text-sm font-medium text-content/60 hover:text-brand">
+            Forgotten your password?
+          </Link>
+        </p>
+      )}
 
       <Button type="submit" size="lg" full disabled={pending}>
         {pending ? 'One moment…' : mode === 'signin' ? 'Sign in' : 'Create account'}

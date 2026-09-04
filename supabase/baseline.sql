@@ -311,8 +311,21 @@ begin
 end;
 $$;
 
--- Every new auth user gets a profile row, so the rest of the app can assume
--- one exists rather than defensively upserting on every read.
+-- ======================================================= auth wiring ======
+-- Supabase Auth owns credentials. `auth.users` holds the email and the
+-- password hash; `public.profiles` holds everything else, one row per user,
+-- written by this trigger the moment an account is created.
+--
+-- The exception handler is the important part. A trigger on auth.users runs
+-- inside the same transaction as the INSERT, so ANY error it raises rolls the
+-- whole sign-up back and Supabase answers the API call with the notoriously
+-- opaque "Database error saving new user". That turns a cosmetic problem —
+-- an over-long city string, a column added later with no default — into a
+-- product that cannot register anybody.
+--
+-- The account matters more than the profile row: the app already falls back
+-- to the sign-up metadata when no profile is found (see getCurrentUser), so
+-- failing soft here costs nothing and failing hard costs everything.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -323,13 +336,25 @@ begin
   insert into public.profiles (id, full_name, city)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data ->> 'full_name', 'CampusClub member'),
-    coalesce(new.raw_user_meta_data ->> 'city', '')
+    -- Trimmed and length-capped so a hostile or accidental 10k-character
+    -- metadata value cannot be what breaks the insert. `coalesce` around the
+    -- `nullif` matters: full_name is NOT NULL, and passing an explicit NULL
+    -- does not fall back to the column default — it raises.
+    coalesce(nullif(left(trim(coalesce(new.raw_user_meta_data ->> 'full_name', '')), 80), ''), 'CampusClub member'),
+    left(trim(coalesce(new.raw_user_meta_data ->> 'city', '')), 80)
   )
   on conflict (id) do nothing;
   return new;
+exception
+  when others then
+    -- Logged, not raised. The account is created either way.
+    raise warning 'handle_new_user failed for %: %', new.id, sqlerrm;
+    return new;
 end;
 $$;
+
+-- Nobody should be able to call this directly; it exists for the trigger.
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
@@ -348,13 +373,27 @@ alter table public.vouches    enable row level security;
 alter table public.saves      enable row level security;
 
 -- ---------------------------------------------------------------- profiles --
+-- Owner-only, deliberately.
+--
+-- A blanket "profiles are public" select policy was exposing `pass` and
+-- `credits` — what a member pays for and how much of it is left — to any
+-- anonymous caller who hit PostgREST directly. Nothing in the product needs
+-- that: every public read of a member (host cards, attendee lists, vouch
+-- authors) goes through profiles_with_host_stats, joins_with_member or
+-- vouches_with_author, which select only display fields and, being plain
+-- views, are not subject to this policy.
 drop policy if exists "profiles are public" on public.profiles;
-create policy "profiles are public" on public.profiles for select using (true);
+drop policy if exists "read own profile" on public.profiles;
+create policy "read own profile" on public.profiles
+  for select using (auth.uid() = id);
 
 drop policy if exists "insert own profile" on public.profiles;
 create policy "insert own profile" on public.profiles
   for insert with check (auth.uid() = id);
 
+-- The columns a member may change are limited by the app, not by this policy;
+-- `pass` and `credits` are only ever written by the service role after a
+-- verified payment, which bypasses RLS.
 drop policy if exists "update own profile" on public.profiles;
 create policy "update own profile" on public.profiles
   for update using (auth.uid() = id) with check (auth.uid() = id);

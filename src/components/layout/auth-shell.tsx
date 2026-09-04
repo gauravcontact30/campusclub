@@ -18,13 +18,16 @@ export function AuthShell({
           <p className="lede mt-3">{subtitle}</p>
           <div className="mt-9">{children}</div>
 
+          {/* Accounts are Supabase Auth and nothing else, so with no project
+              configured there is no sign-in to offer. Saying so beats a form
+              that fails on submit for a reason the visitor cannot see. */}
           {BACKEND_MODE === 'demo' && (
             <div className="mt-8 rounded-2xl border border-dashed border-content/25 p-4 text-xs leading-relaxed text-content/60">
-              <p className="font-semibold text-content">Demo mode is on</p>
+              <p className="font-semibold text-content">Accounts are not configured on this deployment</p>
               <p className="mt-1">
-                No Supabase keys detected, so accounts live in the seeded dataset. Sign in with{' '}
-                <span className="font-mono text-content">priya@example.com</span> /{' '}
-                <span className="font-mono text-content">password123</span>, or create a new account — both work.
+                Browsing works without a database, but signing in needs a Supabase project. Add{' '}
+                <span className="font-mono text-content">NEXT_PUBLIC_SUPABASE_URL</span> and{' '}
+                <span className="font-mono text-content">NEXT_PUBLIC_SUPABASE_ANON_KEY</span>, then reload.
               </p>
             </div>
           )}
