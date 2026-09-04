@@ -1,15 +1,35 @@
 import { z } from 'zod';
 import { AUDIENCES, CADENCES, CATEGORY_SLUGS, LEVELS } from '@/lib/constants';
 
+const email = z.string().trim().toLowerCase().email('Enter a valid email address.');
+
+/**
+ * Sign-in does not check password strength. The rule applies to passwords
+ * being *set*, and enforcing it here would lock out an account that was
+ * created before the rule tightened — with a validation error that suggests
+ * the member typed it wrong.
+ */
 export const signInSchema = z.object({
-  email: z.string().email('Enter a valid email address.'),
-  password: z.string().min(6, 'Passwords are at least 6 characters.'),
+  email,
+  password: z.string().min(1, 'Enter your password.'),
 });
 
-export const signUpSchema = signInSchema.extend({
-  fullName: z.string().min(2, 'Tell us what to call you.'),
+/** Eight characters is the floor Supabase Auth is configured to accept. */
+const newPassword = z
+  .string()
+  .min(8, 'Use at least 8 characters.')
+  .max(72, 'Passwords are limited to 72 characters.');
+
+export const signUpSchema = z.object({
+  email,
+  password: newPassword,
+  fullName: z.string().trim().min(2, 'Tell us what to call you.'),
   city: z.string().min(2, 'Pick your city.'),
 });
+
+export const resetRequestSchema = z.object({ email });
+
+export const newPasswordSchema = z.object({ password: newPassword });
 
 export const profileSchema = z.object({
   fullName: z.string().min(2, 'Name is required.'),

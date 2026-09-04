@@ -11,7 +11,7 @@ const MILESTONES: [string, string][] = [
   ['2024', 'A WhatsApp group of nine people in Indiranagar who kept turning up to the same 6am run.'],
   ['Early 2025', 'The group hit its cap. We started charging ₹40 a head to cover the chai and nobody minded — that was the whole insight.'],
   ['Mid 2025', 'Study tables, gym slots and badminton courts. Pune and Hyderabad open.'],
-  ['Today', 'Six cities, eight kinds of meetup, and a rule that only people who went can rate it.'],
+  ['Today', `${CITIES.length} cities, ${CATEGORIES.length} kinds of meetup, and a rule that only people who went can rate it.`],
 ];
 
 export default function AboutPage() {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent } from 'react';
 import { Search } from 'lucide-react';
 import { CITIES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -30,6 +30,12 @@ export function SearchBar({
   const router = useRouter();
   const [term, setTerm] = useState(defaultTerm);
   const [city, setCity] = useState(defaultCity);
+  // The header and a page body can both render a SearchBar at once — a fixed
+  // id would collide and make both labels point at whichever input won,
+  // which is invalid HTML and breaks the accessible name for the other.
+  const id = useId();
+  const whatId = `${id}-what`;
+  const whereId = `${id}-where`;
 
   function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -43,11 +49,11 @@ export function SearchBar({
 
   return (
     <form onSubmit={onSubmit} role="search" className={cn('searchbar', big && 'shadow-lift', className)}>
-      <label className="sr-only" htmlFor="q-what">
+      <label className="sr-only" htmlFor={whatId}>
         What do you want to do?
       </label>
       <input
-        id="q-what"
+        id={whatId}
         name="term"
         value={term}
         onChange={(e) => setTerm(e.target.value)}
@@ -57,11 +63,11 @@ export function SearchBar({
 
       <span className="searchbar-divide" aria-hidden />
 
-      <label className="sr-only" htmlFor="q-where">
+      <label className="sr-only" htmlFor={whereId}>
         Which city?
       </label>
       <select
-        id="q-where"
+        id={whereId}
         name="city"
         value={city}
         onChange={(e) => setCity(e.target.value)}

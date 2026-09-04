@@ -13,9 +13,10 @@ test('English is the default and the toggle switches to Hindi', async ({ page })
   // The whole server-rendered tree re-renders, not just the label.
   await expect(page.getByRole('heading', { level: 1 })).toContainText('अकेले कोई', { timeout: 10_000 });
   expect(await langOf(page)).toBe('hi');
-  // The desktop nav is hidden on small screens, so assert on the hero CTA,
-  // which is present at every width.
-  await expect(page.getByRole('link', { name: /पास का मीटअप खोजें/ })).toBeVisible();
+  // The desktop nav is hidden on small screens, so assert on the hero's host
+  // CTA, which is present at every width (the search bar took over the
+  // "primary" slot, so this is the one link left in the hero itself).
+  await expect(page.getByRole('link', { name: /अपना मीटअप बनाएँ/ })).toBeVisible();
 });
 
 test('the choice survives a reload and can be switched back', async ({ page }) => {

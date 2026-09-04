@@ -1,5 +1,6 @@
-import type { Audience, Cadence, HostSummary, Level, Meetup, UserProfile, Vouch } from '@/types';
+import type { Audience, Cadence, HostSummary, Level, Meetup, Payment, UserProfile, Vouch } from '@/types';
 import { slugify } from '@/lib/utils';
+import { CURRENCY } from '@/lib/constants';
 
 /* ------------------------------------------------------------------ */
 /* Time helpers                                                        */
@@ -46,12 +47,15 @@ const people: [name: string, email: string, city: string, bio: string, interests
   ['Nisha Gupta', 'nisha@example.com', 'Delhi', 'UPSC, mains cleared once. Runs the morning answer-writing table in Rajinder Nagar.', ['exam-prep', 'breakfast-lunch']],
   ['Tanvi Deshmukh', 'tanvi@example.com', 'Pune', 'Architecture student. Long lunches, longer arguments.', ['breakfast-lunch', 'skills']],
   ['Arjun Reddy', 'arjun@example.com', 'Hyderabad', 'Box cricket organiser since college. Owns four bats, none of them good.', ['sports', 'dinner']],
+  // The owner's account, so /admin is reachable in demo mode without a
+  // database. In Supabase mode this row is irrelevant — sign up with the same
+  // address there and the allowlist in lib/admin/config.ts recognises it.
+  ['Gaurav', 'garvcontact30@gmail.com', 'Bengaluru', 'Runs CampusClub.', ['group-study', 'gym']],
 ];
 
-export const SEED_USERS: (UserProfile & { password: string })[] = people.map((p, i) => ({
+export const SEED_USERS: UserProfile[] = people.map((p, i) => ({
   id: `u${String(i + 1).padStart(3, '0')}`,
   email: p[1],
-  password: 'password123',
   fullName: p[0],
   // Null on purpose: the Avatar falls back to token-coloured initials, which
   // follow the theme. A shipped PNG would be the one thing on the page that
@@ -79,6 +83,10 @@ const hostStats: [hosted: number, rating: number, verified: boolean][] = [
   [31, 4.9, true],
   [7, 4.6, false],
   [26, 4.8, true],
+  // The owner's account. Indexed by position, so this array must stay exactly
+  // as long as `people` — a missing row here is a crash in SEED_HOSTS, not a
+  // missing badge.
+  [3, 4.8, true],
 ];
 
 export const SEED_HOSTS: HostSummary[] = SEED_USERS.map((u, i) => ({
@@ -524,6 +532,12 @@ const vouchCopy: { rating: number; body: string; highlights: string[] }[] = [
   { rating: 4, body: 'Good energy, well run, and the equipment was all there as promised. Docking one only because parking nearby is genuinely awful — come by metro.', highlights: ['Host was organised', 'Good group energy'] },
   { rating: 5, body: 'I was the only beginner and it never once felt like it. Three separate people quietly adjusted something for me without making a moment of it.', highlights: ['Welcoming to newcomers', 'Quiet enough to focus'] },
   { rating: 5, body: 'Booked it as a one-off to fill a Saturday. Have now been to five and know most of the group by name. Not what I expected from a paid meetup.', highlights: ['Good group energy', 'Would join again'] },
+  { rating: 4, body: 'Turns out the hard part really is the first ten minutes. Somebody handed me a chair and after that it was just a normal evening with people I had not met.', highlights: ['Welcoming to newcomers', 'Good group energy'] },
+  { rating: 5, body: 'The listing said what it would cost and that was what it cost. After a year of "free" events that turn into a sales pitch, paying up front is the feature.', highlights: ['Host was organised'] },
+  { rating: 3, body: 'Decent, but the venue had a wedding on and we could barely hear each other. Not the host\'s fault and they offered to move us, though by then half had left.', highlights: ['Would join again'] },
+  { rating: 5, body: 'I came for the activity and stayed for the walk to the metro afterwards, which is when everyone actually talks. Give yourself the extra twenty minutes.', highlights: ['Good group energy', 'Would join again'] },
+  { rating: 4, body: 'Cap of eight is the right number. I have been to bigger versions of this and you end up talking to two people; here you genuinely meet everyone.', highlights: ['Quiet enough to focus', 'Host was organised'] },
+  { rating: 5, body: 'Booked at eleven at night for the next morning, half expecting nobody to show. Six people did, on time, in the rain.', highlights: ['Started on time', 'Would join again'] },
 ];
 
 const hostReplies = [
@@ -537,7 +551,12 @@ export const SEED_VOUCHES: Vouch[] = SEED_MEETUPS.flatMap((meetup, mi) => {
   // have not happened yet carry a little less — which is honest.
   const count = meetup.cadence === 'once' ? 2 + (mi % 3) : 4 + (mi % 4);
   return Array.from({ length: count }, (_, vi) => {
-    const copy = vouchCopy[(mi * 5 + vi * 3) % vouchCopy.length];
+    // Both strides are coprime with the pool length (18), which is what stops
+    // a meetup from quoting the same review twice and stops two rows next to
+    // each other on the board from carrying the identical sentence. A stride
+    // sharing a factor with the pool — the old `vi * 3` against 12 entries —
+    // walks a short cycle and repeats after four reviews.
+    const copy = vouchCopy[(mi * 7 + vi * 5) % vouchCopy.length];
     const author = SEED_USERS[(mi + vi * 4 + 1) % SEED_USERS.length];
     const replies = copy.rating <= 4 && vi === 0;
     return {
@@ -555,3 +574,75 @@ export const SEED_VOUCHES: Vouch[] = SEED_MEETUPS.flatMap((meetup, mi) => {
     };
   });
 });
+
+/* ------------------------------------------------------------------ */
+/* Payment history                                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Two weeks of completed payments, so the Super Admin dashboard has arithmetic
+ * to do rather than a column of zeroes on a fresh boot.
+ *
+ * These are demo rows in the same table a live gateway writes to — the totals
+ * on the dashboard are computed from them exactly as they would be from real
+ * ones. The footer says the dataset is seeded; nothing here pretends otherwise.
+ * In Supabase mode this array is not used: that database holds whatever real
+ * payments have happened.
+ */
+export const SEED_PAYMENTS: Payment[] = (() => {
+  const rows: Payment[] = [];
+  const joinFees = [4900, 9900, 14900, 19900, 29900];
+
+  for (let day = 13; day >= 0; day--) {
+    // A deterministic weekday-ish rhythm rather than random noise, so the
+    // chart looks like a business and reads the same on every boot.
+    const perDay = [4, 6, 3, 5, 7, 9, 6][day % 7];
+
+    for (let i = 0; i < perDay; i++) {
+      const user = SEED_USERS[(day * 3 + i) % SEED_USERS.length];
+      const meetup = SEED_MEETUPS[(day * 5 + i) % SEED_MEETUPS.length];
+      const amount = joinFees[(day + i) % joinFees.length];
+      // Roughly one in fourteen fails and one in twenty is refunded, which is
+      // what makes the failure and refund tiles worth having on the dashboard.
+      const status: Payment['status'] =
+        (day * 7 + i) % 14 === 0 ? 'failed' : (day * 5 + i) % 20 === 0 ? 'refunded' : 'paid';
+
+      rows.push({
+        id: `pay-seed-${day}-${i}`,
+        userId: user.id,
+        provider: 'demo',
+        purpose: 'join',
+        orderId: `order_seed_${day}_${i}`,
+        gatewayPaymentId: status === 'paid' ? `pay_seed_${day}_${i}` : null,
+        amountCents: amount,
+        currency: CURRENCY.code,
+        status,
+        meetupId: meetup.id,
+        passId: null,
+        createdAt: daysAgo(day),
+      });
+    }
+
+    // A pass sale every few days — the recurring half of the revenue split.
+    if (day % 3 === 0) {
+      const buyer = SEED_USERS[(day * 2) % SEED_USERS.length];
+      const pass = day % 6 === 0 ? 'regular' : 'starter';
+      rows.push({
+        id: `pay-seed-pass-${day}`,
+        userId: buyer.id,
+        provider: 'demo',
+        purpose: 'pass',
+        orderId: `order_seed_pass_${day}`,
+        gatewayPaymentId: `pay_seed_pass_${day}`,
+        amountCents: pass === 'regular' ? 79900 : 39900,
+        currency: CURRENCY.code,
+        status: 'paid',
+        meetupId: null,
+        passId: pass,
+        createdAt: daysAgo(day),
+      });
+    }
+  }
+
+  return rows;
+})();

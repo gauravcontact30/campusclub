@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { CalendarDays, MapPin, Ticket } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth/session';
-import { getPastJoins, getUpcomingJoins, isRefundable } from '@/lib/data/joins';
+import { getJoinsForHost, getPastJoins, getUpcomingJoins, isRefundable } from '@/lib/data/joins';
 import { getMeetupsHostedBy } from '@/lib/data/meetups';
 import { getVouches } from '@/lib/data/vouches';
 import { CancelJoinButton } from '@/components/meetups/cancel-join-button';
@@ -12,8 +12,10 @@ import { MeetupCard } from '@/components/meetups/meetup-card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ButtonLink } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { formatDateTime, formatFee, pluralize, spotsState } from '@/lib/utils';
+import { formatDateTime, formatFee, formatMoney, pluralize, spotsState } from '@/lib/utils';
 import { passById } from '@/lib/constants';
+import { hostEarnings, projectedTake } from '@/lib/economics';
+import { Stat } from '@/components/ui/stat';
 
 export const metadata: Metadata = { title: 'Your meetups' };
 
@@ -21,11 +23,14 @@ export default async function MyMeetupsPage() {
   const user = await getCurrentUser();
   if (!user) redirect('/login?next=/my-meetups');
 
-  const [upcoming, past, hosting] = await Promise.all([
+  const [upcoming, past, hosting, hostJoins] = await Promise.all([
     getUpcomingJoins(user.id),
     getPastJoins(user.id),
     getMeetupsHostedBy(user.id),
+    getJoinsForHost(user.id),
   ]);
+
+  const earnings = hostEarnings(hostJoins);
 
   // Which past meetups still want feedback — the one nudge worth making here.
   const reviewed = await Promise.all(
@@ -110,7 +115,7 @@ export default async function MyMeetupsPage() {
       </section>
 
       {hosting.length > 0 && (
-        <section className="mt-14 space-y-4" aria-labelledby="hosting-heading">
+        <section className="mt-14 space-y-5" aria-labelledby="hosting-heading">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id="hosting-heading" className="display-md text-content">
               You are hosting
@@ -120,9 +125,51 @@ export default async function MyMeetupsPage() {
             </ButtonLink>
           </div>
 
+          {/* The strongest claim the product makes to a host is that they keep
+              the whole fee. Showing the number is the only way that claim
+              stops being marketing copy. */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Stat
+              label="Earned"
+              value={formatMoney(earnings.totalCents)}
+              hint={`Across ${pluralize(earnings.confirmedJoins, 'join')} — you keep all of it`}
+            />
+            <Stat
+              label="Already yours"
+              value={formatMoney(earnings.settledCents)}
+              hint="From meetups that have run"
+              tone="good"
+            />
+            <Stat
+              label="Still to come"
+              value={formatMoney(earnings.pendingCents)}
+              hint="Held until the meetup happens"
+            />
+            <Stat
+              label="People hosted"
+              value={String(earnings.uniqueMembers)}
+              hint={
+                earnings.waitlisted > 0
+                  ? `${pluralize(earnings.waitlisted, 'more')} waiting on a spot`
+                  : 'Distinct members, not joins'
+              }
+            />
+          </div>
+
+          {earnings.creditJoins > 0 && (
+            <p className="rounded-2xl border border-content/12 bg-canvas-700 p-4 text-sm leading-relaxed text-content/70">
+              <span className="font-semibold text-content">
+                {formatMoney(earnings.creditCents)} of that came from pass credits.
+              </span>{' '}
+              {pluralize(earnings.creditJoins, 'member')} used a credit rather than paying at the door — you are
+              still owed the full fee, and CampusClub settles those out of pass revenue.
+            </p>
+          )}
+
           <ul className="space-y-3">
             {hosting.map((meetup) => {
               const spots = spotsState(meetup.spotsTaken, meetup.spotsTotal);
+              const take = projectedTake(meetup.joinFeeCents, spots.total, spots.taken);
               return (
                 <li key={meetup.id} className="surface-card flex flex-wrap items-center gap-4 p-5">
                   <div className="min-w-0 flex-1">
@@ -133,8 +180,20 @@ export default async function MyMeetupsPage() {
                       {meetup.title}
                     </Link>
                     <p className="mt-1.5 text-sm text-content/60">
-                      {formatDateTime(meetup.startsAt)} · {spots.taken} of {spots.total} spots taken ·{' '}
-                      {formatFee(meetup.joinFeeCents * spots.taken)} collected
+                      {formatDateTime(meetup.startsAt)} · {spots.taken} of {spots.total} spots taken
+                    </p>
+                    {/* The gap between what it has made and what it could make
+                        is the number that tells a host whether to promote it. */}
+                    <p className="mt-1 text-sm">
+                      <span className="font-semibold tabular-nums text-content">{formatFee(take.soFar)}</span>
+                      <span className="text-content/55"> earned</span>
+                      {take.remaining > 0 && (
+                        <span className="text-content/55">
+                          {' · '}
+                          <span className="font-medium text-content/75">{formatMoney(take.remaining)}</span> more if
+                          it fills
+                        </span>
+                      )}
                     </p>
                   </div>
                   <CancelMeetupButton meetupId={meetup.id} joined={spots.taken} />

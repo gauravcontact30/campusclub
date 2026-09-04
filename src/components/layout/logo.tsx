@@ -2,41 +2,34 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 /**
- * A table seen from above: a heavy ring of seats with one place still open, and
- * the person about to take it sitting in the gap. The silhouette is a C, so it
- * doubles as the monogram.
+ * A place, not just a person: the product is local meetups, and a location
+ * pin says "right here" before anyone reads a word of the wordmark next to
+ * it. The three dots inside are the people already there — the same
+ * attendee-cluster idea as the hero's avatar stack, just small enough to
+ * live inside a pin head.
  *
- * The weight is the point. A hairline outline disappears against a strong red
- * at 16px and reads as timid at any size, so the ring is stroked at 6 on r=12 —
- * a solid band rather than a line — which is what lets the mark sit beside a
- * serif wordmark without looking like a diagram of one.
+ * The dots sit ON the pin's fill, so they use `--on-brand` — the token this
+ * codebase already reserves for exactly that relationship — rather than
+ * `--content`, which flips with the theme independently of what colour the
+ * pin happens to be. One dot takes `--glint` instead, purely so three
+ * identical white dots don't read as a single blob at 16px.
  *
- * The geometry is derived, not eyeballed: a 52° opening centred on 3 o'clock
- * puts the arc's ends at 26° and 334°, giving 308° of sweep — hence
- * large-arc-flag 1 — and a chord of 10.52 across the gap. The dot is 8 across,
- * so it clears the band by 1.26 on each side: near enough to belong to the
- * opening, far enough not to weld shut when the whole thing is 16 pixels wide.
- *
- * Everything is `currentColor` and nothing is knocked out in the page colour,
- * so one file serves the brand lockup, a stamped receipt and a disabled state.
+ * The whole mark drops half a pixel on hover, like a map pin settling into
+ * place — a smaller, quieter gesture than a scale, and one a pin shape
+ * specifically earns.
  */
 function CampusMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" aria-hidden className={cn('h-8 w-8', className)}>
-      <path
-        d="M30.79 25.26 A12 12 0 1 1 30.79 14.74"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
-      <circle
-        cx="32"
-        cy="20"
-        r="4"
-        fill="currentColor"
-        className="origin-center transition-transform duration-500 group-hover:scale-[1.15]"
-      />
+      <g className="origin-bottom transition-transform duration-300 group-hover:-translate-y-0.5">
+        <path
+          d="M20 3c-7.2 0-13 5.8-13 13 0 9.7 13 21 13 21s13-11.3 13-21c0-7.2-5.8-13-13-13z"
+          fill="rgb(var(--brand))"
+        />
+        <circle cx="15.5" cy="17.5" r="3" fill="rgb(var(--glint))" />
+        <circle cx="20.5" cy="14" r="3" fill="rgb(var(--on-brand))" />
+        <circle cx="24.5" cy="18" r="3" fill="rgb(var(--on-brand))" />
+      </g>
     </svg>
   );
 }
@@ -53,7 +46,7 @@ export function Logo({ className }: { className?: string }) {
         className,
       )}
     >
-      <CampusMark className="shrink-0 text-brand" />
+      <CampusMark className="shrink-0" />
       <span className="whitespace-nowrap">
         Campus<span className="text-brand">Club</span>
       </span>

@@ -5,6 +5,7 @@ import { getPaymentByOrderId, markPaymentStatus } from '@/lib/data/payments';
 import { commitJoin } from '@/lib/data/joins';
 import { grantPass } from '@/lib/auth/session';
 import { passById } from '@/lib/constants';
+import { withLogging } from '@/lib/admin/with-logging';
 
 // Signature verification needs the raw bytes, and node:crypto needs Node.
 export const runtime = 'nodejs';
@@ -18,7 +19,7 @@ export const dynamic = 'force-dynamic';
  * Both paths are idempotent: whichever arrives second finds the payment already
  * `paid` and `commitJoin` returns the existing join instead of a duplicate.
  */
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   if (!RAZORPAY_WEBHOOK_SECRET) {
     return NextResponse.json({ message: 'Webhooks are not configured.' }, { status: 501 });
   }
@@ -75,3 +76,6 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ ok: true });
 }
+
+/** Wrapped so every call lands in the Super Admin API log. */
+export const POST = withLogging(handlePOST, 'Payment webhook');

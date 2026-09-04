@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "db:check": "node scripts/db-check.mjs",
+    "media:check": "node scripts/media-check.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.123.0",

@@ -96,6 +96,66 @@
     --shadow-glow: 0 0 0 1px rgba(240, 110, 80, 0.28), 0 12px 40px -16px rgba(240, 110, 80, 0.5);
   }
 
+  /* ------------------------------------------------------- category tints --
+     A dozen light "sticker" colours for the activity catalogue, one theme
+     pair each. Unlike the five palettes above, these do NOT change with
+     `data-palette` — a rainbow of 24 different activities is legible
+     precisely because it stays the same rainbow no matter which single-hue
+     palette the rest of the page is wearing. Only light/dark varies. */
+  :root {
+    --tint-rose: 254 226 230;
+    --tint-rose-ink: 190 24 93;
+    --tint-amber: 254 243 199;
+    --tint-amber-ink: 146 90 6;
+    --tint-lime: 236 252 203;
+    --tint-lime-ink: 77 124 15;
+    --tint-teal: 204 251 241;
+    --tint-teal-ink: 15 118 110;
+    --tint-sky: 224 242 254;
+    --tint-sky-ink: 3 105 161;
+    --tint-violet: 237 233 254;
+    --tint-violet-ink: 109 40 217;
+    --tint-fuchsia: 250 232 255;
+    --tint-fuchsia-ink: 162 28 175;
+    --tint-orange: 255 237 213;
+    --tint-orange-ink: 194 65 12;
+    --tint-emerald: 209 250 229;
+    --tint-emerald-ink: 4 120 87;
+    --tint-indigo: 224 231 255;
+    --tint-indigo-ink: 67 56 202;
+    --tint-cyan: 207 250 254;
+    --tint-cyan-ink: 14 116 144;
+    --tint-yellow: 254 249 195;
+    --tint-yellow-ink: 133 100 4;
+  }
+
+  :root[data-theme='dark'] {
+    --tint-rose: 72 20 38;
+    --tint-rose-ink: 251 182 206;
+    --tint-amber: 69 49 10;
+    --tint-amber-ink: 252 211 120;
+    --tint-lime: 36 54 16;
+    --tint-lime-ink: 190 230 120;
+    --tint-teal: 10 54 50;
+    --tint-teal-ink: 135 231 214;
+    --tint-sky: 12 44 66;
+    --tint-sky-ink: 145 207 250;
+    --tint-violet: 44 30 74;
+    --tint-violet-ink: 196 181 253;
+    --tint-fuchsia: 60 20 64;
+    --tint-fuchsia-ink: 240 171 252;
+    --tint-orange: 66 32 10;
+    --tint-orange-ink: 253 186 140;
+    --tint-emerald: 10 54 38;
+    --tint-emerald-ink: 110 231 183;
+    --tint-indigo: 30 32 74;
+    --tint-indigo-ink: 165 180 252;
+    --tint-cyan: 10 50 58;
+    --tint-cyan-ink: 103 232 249;
+    --tint-yellow: 60 52 10;
+    --tint-yellow-ink: 240 220 110;
+  }
+
   /* ------------------------------------------------------- palette swatches --
      Four alternates. The selectors are deliberately over-qualified:
      `:root[data-palette='x']` and `:root[data-theme='dark']` have identical
@@ -370,6 +430,279 @@
     --shadow-glow: 0 0 0 1px rgba(234, 108, 58, 0.28), 0 12px 40px -16px rgba(234, 108, 58, 0.5);
   }
 
+  /* Slate — corporate blue on cool grey. The most conventional of the set,
+     and the one an employer or a partner is least likely to have an opinion about. */
+  :root[data-palette='slate']:not([data-theme='dark']) {
+    --canvas: 248 250 252;
+    --canvas-900: 226 232 240;
+    --canvas-800: 248 250 252;
+    --canvas-700: 255 255 255;
+    --canvas-600: 241 245 249;
+    --canvas-500: 219 226 235;
+
+    --content: 15 23 42;
+    --content-100: 8 13 25;
+    --content-200: 62 74 96;
+    --content-300: 106 118 140;
+
+    --on-brand: 255 255 255;
+    --brand: 29 78 216;
+    --brand-600: 24 62 175;
+    --brand-700: 19 48 138;
+    --brand-200: 224 232 254;
+
+    --signal: 161 98 7;
+    --signal-600: 128 78 5;
+
+    --glint: 150 92 6;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(29, 78, 216, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(161, 98, 7, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -16px rgba(15, 23, 42, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(19, 48, 138, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(29, 78, 216, 0.2), 0 12px 40px -16px rgba(29, 78, 216, 0.26);
+  }
+
+  :root[data-palette='slate'][data-theme='dark'] {
+    --canvas: 13 18 28;
+    --canvas-900: 8 11 18;
+    --canvas-800: 13 18 28;
+    --canvas-700: 22 29 43;
+    --canvas-600: 33 43 61;
+    --canvas-500: 51 65 88;
+
+    --content: 237 242 249;
+    --content-100: 250 252 255;
+    --content-200: 201 211 226;
+    --content-300: 152 165 186;
+
+    --on-brand: 13 18 28;
+    --brand: 118 162 255;
+    --brand-600: 156 189 255;
+    --brand-700: 201 219 255;
+    --brand-200: 24 44 92;
+
+    --signal: 245 185 74;
+    --signal-600: 250 208 134;
+
+    --glint: 252 214 150;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(118, 162, 255, 0.16), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(245, 185, 74, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
+    --shadow-lift: 0 22px 56px -28px rgba(118, 162, 255, 0.45);
+    --shadow-glow: 0 0 0 1px rgba(118, 162, 255, 0.28), 0 12px 40px -16px rgba(118, 162, 255, 0.45);
+  }
+
+  /* Harbour — deep teal. Reads as trust rather than energy, which suits the
+     pages where somebody is deciding whether to hand over money. */
+  :root[data-palette='harbour']:not([data-theme='dark']) {
+    --canvas: 247 251 251;
+    --canvas-900: 223 236 236;
+    --canvas-800: 247 251 251;
+    --canvas-700: 255 255 255;
+    --canvas-600: 238 247 247;
+    --canvas-500: 214 231 231;
+
+    --content: 12 30 32;
+    --content-100: 6 18 20;
+    --content-200: 58 84 87;
+    --content-300: 96 122 125;
+
+    --on-brand: 255 255 255;
+    --brand: 13 110 106;
+    --brand-600: 10 88 85;
+    --brand-700: 8 68 66;
+    --brand-200: 214 240 238;
+
+    --signal: 166 94 12;
+    --signal-600: 132 74 8;
+
+    --glint: 154 88 10;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(13, 110, 106, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(166, 94, 12, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(12, 30, 32, 0.05), 0 12px 28px -16px rgba(12, 30, 32, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(8, 68, 66, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(13, 110, 106, 0.2), 0 12px 40px -16px rgba(13, 110, 106, 0.26);
+  }
+
+  :root[data-palette='harbour'][data-theme='dark'] {
+    --canvas: 9 20 22;
+    --canvas-900: 5 13 14;
+    --canvas-800: 9 20 22;
+    --canvas-700: 16 32 35;
+    --canvas-600: 25 47 51;
+    --canvas-500: 40 71 76;
+
+    --content: 232 244 244;
+    --content-100: 247 253 253;
+    --content-200: 194 216 217;
+    --content-300: 146 172 175;
+
+    --on-brand: 9 20 22;
+    --brand: 58 200 190;
+    --brand-600: 114 222 214;
+    --brand-700: 176 240 235;
+    --brand-200: 10 62 60;
+
+    --signal: 242 176 88;
+    --signal-600: 248 202 142;
+
+    --glint: 250 210 156;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(58, 200, 190, 0.16), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(242, 176, 88, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
+    --shadow-lift: 0 22px 56px -28px rgba(58, 200, 190, 0.45);
+    --shadow-glow: 0 0 0 1px rgba(58, 200, 190, 0.28), 0 12px 40px -16px rgba(58, 200, 190, 0.45);
+  }
+
+  /* Graphite — monochrome, with the brand doing its work through weight rather
+     than hue. The most restrained option, for anyone who wants the interface to
+     disappear behind the content. */
+  :root[data-palette='graphite']:not([data-theme='dark']) {
+    --canvas: 250 250 250;
+    --canvas-900: 230 230 231;
+    --canvas-800: 250 250 250;
+    --canvas-700: 255 255 255;
+    --canvas-600: 244 244 245;
+    --canvas-500: 222 222 224;
+
+    --content: 18 18 20;
+    --content-100: 9 9 11;
+    --content-200: 66 66 71;
+    --content-300: 112 112 118;
+
+    --on-brand: 255 255 255;
+    --brand: 34 36 44;
+    --brand-600: 22 24 30;
+    --brand-700: 14 15 20;
+    --brand-200: 228 229 233;
+
+    --signal: 140 92 10;
+    --signal-600: 112 73 6;
+
+    --glint: 132 86 8;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(34, 36, 44, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(140, 92, 10, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(18, 18, 20, 0.05), 0 12px 28px -16px rgba(18, 18, 20, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(14, 15, 20, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(34, 36, 44, 0.2), 0 12px 40px -16px rgba(34, 36, 44, 0.26);
+  }
+
+  :root[data-palette='graphite'][data-theme='dark'] {
+    --canvas: 12 12 14;
+    --canvas-900: 7 7 8;
+    --canvas-800: 12 12 14;
+    --canvas-700: 22 22 25;
+    --canvas-600: 34 34 38;
+    --canvas-500: 54 54 60;
+
+    --content: 240 240 243;
+    --content-100: 252 252 253;
+    --content-200: 203 203 210;
+    --content-300: 153 153 162;
+
+    --on-brand: 12 12 14;
+    --brand: 226 228 236;
+    --brand-600: 240 241 246;
+    --brand-700: 250 250 252;
+    --brand-200: 42 43 50;
+
+    --signal: 240 184 92;
+    --signal-600: 246 206 146;
+
+    --glint: 248 212 158;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(226, 228, 236, 0.16), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(240, 184, 92, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
+    --shadow-lift: 0 22px 56px -28px rgba(226, 228, 236, 0.45);
+    --shadow-glow: 0 0 0 1px rgba(226, 228, 236, 0.28), 0 12px 40px -16px rgba(226, 228, 236, 0.45);
+  }
+
+  /* Claret — wine and brass. The same family as Paper but taken darker and
+     quieter, for a more formal register. */
+  :root[data-palette='claret']:not([data-theme='dark']) {
+    --canvas: 252 249 250;
+    --canvas-900: 238 227 231;
+    --canvas-800: 252 249 250;
+    --canvas-700: 255 255 255;
+    --canvas-600: 249 242 244;
+    --canvas-500: 232 217 222;
+
+    --content: 30 16 21;
+    --content-100: 19 9 13;
+    --content-200: 86 62 70;
+    --content-300: 130 106 114;
+
+    --on-brand: 255 255 255;
+    --brand: 150 26 62;
+    --brand-600: 124 20 51;
+    --brand-700: 98 15 40;
+    --brand-200: 250 226 233;
+
+    --signal: 146 100 14;
+    --signal-600: 116 79 10;
+
+    --glint: 138 94 12;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(150, 26, 62, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(146, 100, 14, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(30, 16, 21, 0.05), 0 12px 28px -16px rgba(30, 16, 21, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(98, 15, 40, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(150, 26, 62, 0.2), 0 12px 40px -16px rgba(150, 26, 62, 0.26);
+  }
+
+  :root[data-palette='claret'][data-theme='dark'] {
+    --canvas: 22 12 16;
+    --canvas-900: 14 7 10;
+    --canvas-800: 22 12 16;
+    --canvas-700: 33 19 25;
+    --canvas-600: 48 28 36;
+    --canvas-500: 71 43 54;
+
+    --content: 246 236 240;
+    --content-100: 253 248 250;
+    --content-200: 216 197 205;
+    --content-300: 168 148 157;
+
+    --on-brand: 22 12 16;
+    --brand: 240 122 158;
+    --brand-600: 246 158 186;
+    --brand-700: 250 198 214;
+    --brand-200: 78 22 44;
+
+    --signal: 236 178 96;
+    --signal-600: 244 204 148;
+
+    --glint: 246 210 160;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(240, 122, 158, 0.16), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(236, 178, 96, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
+    --shadow-lift: 0 22px 56px -28px rgba(240, 122, 158, 0.45);
+    --shadow-glow: 0 0 0 1px rgba(240, 122, 158, 0.28), 0 12px 40px -16px rgba(240, 122, 158, 0.45);
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -532,6 +865,16 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* `type="search"` is the right role for a search field, but WebKit draws its
+     own clear button inside it. Where we render our own — styled, positioned
+     and labelled — the native one sits beside it and the field shows two
+     crosses that do the same thing. */
+  .search-field::-webkit-search-cancel-button,
+  .search-field::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
   }
 }
 

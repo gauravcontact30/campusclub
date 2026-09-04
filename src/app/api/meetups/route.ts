@@ -1,12 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { searchMeetups } from '@/lib/data/meetups';
 import { parseMeetupQuery } from '@/lib/query-string';
+import { withLogging } from '@/lib/admin/with-logging';
 
 /**
  * Read-only JSON over the same repository the pages use, so the browse page's
  * client-side filtering and anything external agree on what a meetup is.
  */
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
   const params = Object.fromEntries(request.nextUrl.searchParams.entries());
   const query = parseMeetupQuery(params);
 
@@ -22,3 +23,6 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+/** Wrapped so every call lands in the Super Admin API log. */
+export const GET = withLogging(handleGET, 'Meetups API');

@@ -29,11 +29,11 @@ test('the mobile drawer opens, navigates and closes', async ({ page }) => {
 
 test('the board filters collapse behind a button on small screens', async ({ page }) => {
   await page.goto('/meetups');
-  await expect(page.getByRole('button', { name: 'Show results' })).toBeHidden();
+  await expect(page.getByRole('button', { name: /^Show \d/ })).toBeHidden();
 
   await page.getByRole('button', { name: /^Filters/ }).click();
-  await expect(page.getByRole('button', { name: 'Show results' })).toBeVisible();
-  await expect(page.getByRole('group', { name: 'Join fee up to' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Show \d/ })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Join fee' })).toBeVisible();
 });
 
 test('no horizontal overflow on the key pages', async ({ page }) => {

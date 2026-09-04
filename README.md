@@ -26,14 +26,20 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-That is the whole setup. **No keys of any kind are required to run the app** —
-with no credentials it boots in *demo mode* against a seeded in-memory dataset
-(30 meetups across 6 cities, 12 members, 100+ pieces of feedback) and a
-clearly-labelled demo payment gateway, so every screen and every flow —
-including joining and paying — is clickable immediately.
+That gets you a browsable site immediately: with no credentials the data layer
+runs in *demo mode* against a seeded in-memory dataset (30 meetups across the
+city list, 100+ pieces of feedback) behind a clearly-labelled demo payment
+gateway.
 
-Sign in with any seeded account, e.g. `priya@example.com` / `password123`, or
-create a new one — both work in demo mode.
+**Accounts are the exception.** Sign-up and sign-in are Supabase Auth and
+nothing else — there is deliberately no local fallback, because an app that
+quietly signs somebody in against an in-memory list when the database is
+missing is an app that will eventually do that in production. Without a
+Supabase project the sign-in page says so plainly, and browsing still works.
+
+To get accounts working, create a Supabase project, run
+[`supabase/baseline.sql`](supabase/baseline.sql) against it, and set the two
+public keys below — see [`supabase/README.md`](supabase/README.md).
 
 ```bash
 cp .env.example .env.local
@@ -115,15 +121,26 @@ answered and which gateway is wired.
 - The rating shows its **histogram and its most-ticked highlights**, because an
   average of 4.3 hides whether that was six 4s or five 5s and a 1.
 
+### The rest of the site
+
+A meetup marketplace needs more than a board and a checkout to read as a real
+product: `/cities` and `/cities/[slug]` (per-city landing pages with live
+counts), `/stories` and `/stories/[slug]` (editorial posts on the model and
+the data behind it), `/help` (a categorised FAQ beyond the home page's four),
+`/contact`, `/safety`, `/partners` (venues), `/ambassadors` (opening a new
+city or campus), `/careers`, `/press`, and the legal set at `/legal/*` (terms,
+privacy, refunds, cookies). All of it is wired into the footer, the sitemap,
+and — where it makes sense — the header nav.
+
 ### Everywhere
 
-- Two themes and five palettes, chosen before first paint, with no flash.
+- Two themes and nine palettes, chosen before first paint, with no flash.
 - English and Hindi, switched by cookie, with a Devanagari face loaded on
   purpose rather than left to the operating system.
 - An AI assistant grounded in this app's own data, with an honest
   retrieval-only fallback when no key is set.
 - Keyboard-reachable everything, visible focus rings, `prefers-reduced-motion`
-  respected, and AA contrast verified across all ten theme/palette combinations.
+  respected, and AA contrast verified across all eighteen theme/palette sets.
 
 ---
 
@@ -208,8 +225,9 @@ campusclub/
 │   ├── types/                  The domain model
 │   └── proxy.ts                Refreshes the Supabase session cookie (Next 16 renamed middleware → proxy)
 ├── supabase/
-│   ├── migrations/             0001–0006 history · 0007 the meetup model
-│   └── README.md               Project setup, in order
+│   ├── baseline.sql            The whole schema for a fresh campusclub_db
+│   ├── seed.sql                The 24 categories on their own
+│   └── README.md               Project setup, and how sign-up is wired
 ├── tests/                      Vitest + React Testing Library
 ├── docs/claude-code-setup.md   Agent tooling: Playwright MCP, Figma, design skills
 └── playwright.config.ts · vitest.config.ts · tailwind.config.ts · next.config.ts
@@ -219,11 +237,19 @@ campusclub/
 
 ## Database
 
-`supabase/migrations/0007_meetups.sql` is a **forward migration**, not a
-rebuild: it adds `meetups`, `joins`, `payments`, `vouches` and a new `saves`,
-carries existing members' plans across to the new pass tiers, and only then
-drops the directory and supper-club tables. An already-deployed database
-migrates; a fresh one arrives at the same place.
+`supabase/baseline.sql` is the whole schema in one idempotent file — there is
+no numbered migration chain any more. The chain described a product that no
+longer exists (a business directory, two brand renames, a supper club), and
+keeping it around implied a forward path that nobody should now take.
+
+**Authentication is Supabase Auth.** `auth.users` holds credentials;
+`profiles` holds everything else, written by the `on_auth_user_created`
+trigger from the sign-up metadata. That trigger runs inside the same
+transaction as the user insert, so anything it raises rolls the sign-up back
+and surfaces as *"Database error saving new user"* — ours therefore catches
+every exception and lets the account through, because the app already falls
+back to sign-up metadata when a profile row is missing. A cosmetic gap beats a
+product that cannot register anybody.
 
 Three views keep derived data honest. `meetups_with_stats` computes rating and
 vouch count from the vouches themselves, so they cannot drift.
@@ -231,8 +257,12 @@ vouch count from the vouches themselves, so they cannot drift.
 average of the feedback on their meetups. `vouches_with_author` and
 `joins_with_member` resolve the names the UI shows without a second round trip.
 
-Row-level security is on for every table, and two policies carry real weight:
+Row-level security is on for every table, and three policies carry real weight:
 
+- **A profile is readable only by its owner.** A blanket public select was
+  handing `pass` and `credits` — what somebody pays for and how much is left —
+  to any anonymous caller hitting PostgREST. Every public read of a member goes
+  through a view that selects display fields only.
 - **Only attendees leave feedback.** The insert policy on `vouches` requires a
   `confirmed` join on a meetup whose `ends_at` is in the past. The same rule
   lives in the server action and in the page, but this is the copy that cannot

@@ -14,6 +14,7 @@ import { VouchList, VouchSummary } from '@/components/meetups/vouch-list';
 import { SaveButton } from '@/components/meetups/save-button';
 import { MeetupCard } from '@/components/meetups/meetup-card';
 import { CategoryIcon } from '@/components/ui/category-icon';
+import { MeetupCover } from '@/components/ui/meetup-cover';
 import { Badge } from '@/components/ui/badge';
 import { AUDIENCES, categoryBySlug, LEVELS, SITE } from '@/lib/constants';
 import { durationLabel, formatDateTime, formatTime } from '@/lib/utils';
@@ -69,7 +70,20 @@ export default async function MeetupPage({ params }: { params: Promise<{ slug: s
         </Link>
       </nav>
 
-      <div className="mt-6 grid gap-10 lg:grid-cols-[1.6fr_1fr] lg:items-start">
+      {/* A banner before anything else, the way a listing page anywhere else
+          opens. It is the only element on the page wide enough to set a mood
+          before the facts start. */}
+      <MeetupCover
+        categorySlug={meetup.categorySlug}
+        slug={meetup.slug}
+        coverImage={meetup.coverImage}
+        alt={meetup.title}
+        priority
+        sizes="(max-width: 1240px) 100vw, 1240px"
+        className="mt-5 h-44 w-full rounded-3xl sm:h-56 lg:h-64"
+      />
+
+      <div className="mt-8 grid gap-10 lg:grid-cols-[1.6fr_1fr] lg:items-start">
         <div className="min-w-0 space-y-10">
           <header className="space-y-5">
             <div className="flex flex-wrap items-center gap-2">
@@ -194,7 +208,12 @@ export default async function MeetupPage({ params }: { params: Promise<{ slug: s
           </section>
         </div>
 
-        <JoinPanel meetup={meetup} user={user} existingStatus={join?.status ?? null} />
+        {/* Sticky from `lg` up: the reviews run far longer than the panel, and
+            a visitor who has just read six of them is exactly the person who
+            wants the fee and the button still in front of them. */}
+        <div className="lg:sticky lg:top-24">
+          <JoinPanel meetup={meetup} user={user} existingStatus={join?.status ?? null} />
+        </div>
       </div>
 
       {others.length > 0 && (

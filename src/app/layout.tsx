@@ -4,6 +4,7 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { ChatWidget } from '@/components/chat/chat-widget';
+import { PageTracker } from '@/components/admin/page-tracker';
 import { Providers } from './providers';
 import { SITE } from '@/lib/constants';
 import { THEME_INIT_SCRIPT } from '@/lib/theme';
@@ -105,6 +106,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Footer />
           <Toaster />
           <ChatWidget />
+          <PageTracker />
           </LocaleProvider>
         </Providers>
       </body>

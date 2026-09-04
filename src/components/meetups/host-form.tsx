@@ -18,6 +18,7 @@ import {
   LEVELS,
 } from '@/lib/constants';
 import { cn, formatMoney } from '@/lib/utils';
+import { projectedTake } from '@/lib/economics';
 import type { ActionResult } from '@/types';
 
 /** A sensible default: seven days out, at seven in the evening. */
@@ -35,6 +36,9 @@ export function HostForm({ defaultCity }: { defaultCity?: string }) {
 
   const [category, setCategory] = useState(CATEGORIES[0].slug);
   const [fee, setFee] = useState(FEE_PRESETS[1]);
+  // Controlled so the earnings line below can do its arithmetic live — this is
+  // the moment a host is deciding whether hosting is worth their evening.
+  const [spots, setSpots] = useState(8);
   const [bring, setBring] = useState<string[]>(['Just yourself']);
   const [agenda, setAgenda] = useState<string[]>(['', '', '']);
 
@@ -242,7 +246,16 @@ export function HostForm({ defaultCity }: { defaultCity?: string }) {
             hint="Including you? No — count only the people joining."
             error={state?.fieldErrors?.spotsTotal}
           >
-            <Input id="spotsTotal" name="spotsTotal" type="number" min={2} max={60} defaultValue={8} required />
+            <Input
+              id="spotsTotal"
+              name="spotsTotal"
+              type="number"
+              min={2}
+              max={60}
+              value={spots}
+              onChange={(e) => setSpots(Number(e.target.value))}
+              required
+            />
           </Field>
 
           <Field label="How demanding" htmlFor="level">
@@ -309,6 +322,8 @@ export function HostForm({ defaultCity }: { defaultCity?: string }) {
               {state.fieldErrors.joinFeeCents}
             </p>
           )}
+
+          <TakeSummary fee={fee} spots={spots} />
         </fieldset>
       </section>
 
@@ -321,6 +336,42 @@ export function HostForm({ defaultCity }: { defaultCity?: string }) {
         </p>
       </div>
     </form>
+  );
+}
+
+/**
+ * What this meetup is worth to the host, recomputed as they move the two
+ * controls above it.
+ *
+ * The platform takes no commission, so the sum is genuinely `fee × spots` —
+ * and saying that out loud, next to a real number, is worth more than any
+ * amount of copy about keeping what you earn.
+ */
+function TakeSummary({ fee, spots }: { fee: number; spots: number }) {
+  const safeSpots = Number.isFinite(spots) ? Math.max(0, spots) : 0;
+  const take = projectedTake(fee, safeSpots);
+
+  if (fee === 0) {
+    return (
+      <p className="mt-4 rounded-2xl border border-content/12 bg-canvas-700 p-4 text-sm leading-relaxed text-content/70">
+        A free meetup collects nothing, which is the right call when you have no costs to cover. It also fills
+        fastest — and no-shows are highest, because nobody has committed anything.
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-4 flex flex-wrap items-baseline gap-x-6 gap-y-2 rounded-2xl border border-brand/25 bg-brand/8 p-4">
+      <p className="text-sm text-content/70">
+        If all {safeSpots} spots fill you collect{' '}
+        <span className="font-display text-xl font-semibold tabular-nums text-content">
+          {formatMoney(take.ifItFills)}
+        </span>
+      </p>
+      <p className="text-sm text-content/60">
+        {formatMoney(fee)} × {safeSpots} · CampusClub takes no commission, so all of it is yours
+      </p>
+    </div>
   );
 }
 

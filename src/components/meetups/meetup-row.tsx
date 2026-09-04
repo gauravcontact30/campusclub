@@ -11,7 +11,7 @@ import {
   formatTime,
   spotsState,
 } from '@/lib/utils';
-import { CategoryIcon } from '@/components/ui/category-icon';
+import { MeetupCover } from '@/components/ui/meetup-cover';
 import { RatingBlocks } from '@/components/ui/rating-blocks';
 import { ButtonLink } from '@/components/ui/button';
 import { SaveButton } from './save-button';
@@ -42,16 +42,26 @@ export function MeetupRow({
 
   return (
     <article className="relative flex gap-4 py-6 sm:gap-5">
-      {/* A generated tile rather than a photo: it follows the theme, and this
-          app ships no images at all. */}
+      {/* The cover carries the row. Big enough to be scanned as an image
+          rather than an icon, which is what makes a long board browsable. */}
       <div className="flex shrink-0 flex-col items-center gap-2">
         <span className="text-sm font-bold tabular-nums text-content/40">{rank}</span>
-        <span
-          className="flex h-16 w-16 items-center justify-center rounded-xl bg-brand/10 text-brand sm:h-20 sm:w-20"
+        <Link
+          href={`/meetups/${meetup.slug}`}
+          className="group/cover block focus-visible:outline-none"
+          tabIndex={-1}
           aria-hidden
         >
-          <CategoryIcon slug={meetup.categorySlug} size={26} />
-        </span>
+          <MeetupCover
+            categorySlug={meetup.categorySlug}
+            slug={meetup.slug}
+            coverImage={meetup.coverImage}
+            alt=""
+            glyph="sm"
+            sizes="112px"
+            className="h-20 w-20 rounded-xl transition-transform duration-300 group-hover/cover:scale-[1.04] sm:h-28 sm:w-28"
+          />
+        </Link>
       </div>
 
       <div className="min-w-0 flex-1">
