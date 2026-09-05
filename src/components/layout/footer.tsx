@@ -70,7 +70,7 @@ export function Footer() {
       <div className="container-page py-16">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_2.5fr]">
           <div className="space-y-5">
-            <Logo />
+            <Logo id="footer" />
             <p className="max-w-xs text-sm leading-relaxed text-content/60">{SITE.description}</p>
             <div className="flex gap-3">
               {[Instagram, Twitter, Linkedin].map((Icon, i) => (

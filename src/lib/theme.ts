@@ -1,5 +1,14 @@
 export type Theme = 'light' | 'dark';
-export type PaletteId = 'parrot' | 'purple' | 'yellow' | 'orange' | 'blue' | 'coffee';
+export type PaletteId =
+  | 'parrot'
+  | 'purple'
+  | 'yellow'
+  | 'orange'
+  | 'blue'
+  | 'coffee'
+  | 'rose'
+  | 'navy'
+  | 'forest';
 
 export const THEME_STORAGE_KEY = 'campusclub-theme';
 export const PALETTE_STORAGE_KEY = 'campusclub-palette';
@@ -11,7 +20,7 @@ export const PALETTE_STORAGE_KEY = 'campusclub-palette';
 export const DEFAULT_PALETTE: PaletteId = 'blue';
 
 /**
- * The six selectable palettes.
+ * The nine selectable palettes.
  *
  * Every one is a working brand colour rather than a decoration: each carries
  * its own canvas, ink and signal ramps in globals.css, so picking one repaints
@@ -29,6 +38,9 @@ export const PALETTES: { id: PaletteId; name: string; blurb: string; swatch: [st
   { id: 'orange', name: 'Dark orange', blurb: 'Burnt orange and amber', swatch: ['#C2410C', '#8A5A0C'] },
   { id: 'blue', name: 'Blue', blurb: 'Corporate blue and amber', swatch: ['#1D4ED8', '#A16207'] },
   { id: 'coffee', name: 'Light coffee brown', blurb: 'Milk coffee and olive', swatch: ['#8B5E3C', '#6F6425'] },
+  { id: 'rose', name: 'Rose', blurb: 'Deep rose and jewel teal', swatch: ['#BE123C', '#0D746E'] },
+  { id: 'navy', name: 'Navy', blurb: 'Muted slate-navy and bronze', swatch: ['#1E293B', '#926F3D'] },
+  { id: 'forest', name: 'Forest', blurb: 'Deep pine green and warm stone', swatch: ['#154733', '#856C58'] },
 ];
 
 const IDS = PALETTES.map((p) => p.id);
