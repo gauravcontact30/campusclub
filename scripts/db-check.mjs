@@ -41,12 +41,18 @@ function loadEnvFile(name) {
   return out;
 }
 
-const fileEnv = { ...loadEnvFile('.env.local'), ...loadEnvFile('.env') };
+// .env.local must win, matching how Next.js itself resolves the two files.
+const fileEnv = { ...loadEnvFile('.env'), ...loadEnvFile('.env.local') };
 const env = (key) => process.env[key] || fileEnv[key] || '';
 
 const URL = env('NEXT_PUBLIC_SUPABASE_URL');
 const ANON = env('NEXT_PUBLIC_SUPABASE_ANON_KEY');
 const SERVICE = env('SUPABASE_SERVICE_ROLE_KEY');
+
+// What a Supabase project's REST/GoTrue layer says back when a key is
+// well-formed but not one it recognises — as opposed to a network failure,
+// a missing table, or an RLS-blocked row.
+const REJECTED_KEY = /unregistered api key|invalid api key|invalid jwt/i;
 
 /* ------------------------------------------------------------------ */
 /* Reporting                                                           */

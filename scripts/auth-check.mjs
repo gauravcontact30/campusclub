@@ -49,7 +49,7 @@ function loadEnv() {
     } catch {
       continue;
     }
-    for (const line of raw.split('\n')) {
+    for (const line of raw.split(/\r?\n/)) {
       const match = /^\s*([A-Z0-9_]+)\s*=\s*(.*)$/.exec(line);
       if (!match) continue;
       const value = match[2].trim().replace(/^["']|["']$/g, '');
