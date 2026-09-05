@@ -13,7 +13,6 @@ export const hi: Dictionary = {
     howItWorks: 'यह कैसे काम करता है',
   },
   header: {
-    search: 'मीटअप खोजें',
     signIn: 'साइन इन',
     join: 'CampusClub जॉइन करें',
     openMenu: 'मेन्यू खोलें',
@@ -24,6 +23,17 @@ export const hi: Dictionary = {
     paletteHeading: 'रंग',
     languageLabel: 'भाषा बदलें',
     languageHeading: 'भाषा',
+    appearanceHeading: 'दिखावट',
+    preferencesLabel: 'भाषा, थीम और रंग',
+  },
+  menu: {
+    myMeetups: 'आपके मीटअप',
+    saved: 'सेव किए मीटअप',
+    host: 'मीटअप होस्ट करें',
+    pass: 'आपका पास',
+    profile: 'प्रोफ़ाइल और सेटिंग्स',
+    superAdmin: 'सुपर एडमिन',
+    signOut: 'साइन आउट',
   },
   drawer: {
     signedInAs: 'साइन इन:',

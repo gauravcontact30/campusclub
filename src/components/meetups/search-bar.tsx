@@ -3,15 +3,14 @@
 import { useRouter } from 'next/navigation';
 import { useId, useState, type FormEvent } from 'react';
 import { Search } from 'lucide-react';
-import { CITIES } from '@/lib/constants';
+import { CitySelect } from './city-select';
 import { cn } from '@/lib/utils';
 
 /**
  * One control that answers "what" and "where" together, welded into a single
  * pill with a hairline between the fields and the submit riding inside the
- * right edge. It is the densest, most familiar way to start a local search, and
- * putting it in the header means the board is one keystroke away from anywhere
- * on the site.
+ * right edge. It is the densest, most familiar way to start a local search: the
+ * hero opens with it, and the board keeps one above the results.
  *
  * It submits as a real form, so Enter works from either field and the result is
  * a normal navigation to a URL somebody could have typed.
@@ -63,26 +62,7 @@ export function SearchBar({
 
       <span className="searchbar-divide" aria-hidden />
 
-      <label className="sr-only" htmlFor={whereId}>
-        Which city?
-      </label>
-      <select
-        id={whereId}
-        name="city"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        className={cn(
-          'searchbar-field max-w-[9.5rem] cursor-pointer appearance-none font-medium',
-          big && 'py-4 text-base',
-        )}
-      >
-        <option value="">Any city</option>
-        {CITIES.map((c) => (
-          <option key={c.slug} value={c.slug}>
-            {c.name}
-          </option>
-        ))}
-      </select>
+      <CitySelect id={whereId} value={city} onChange={setCity} size={size} />
 
       <button
         type="submit"

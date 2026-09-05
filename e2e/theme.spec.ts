@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openPreferences } from './helpers';
 
 const themeOf = (page: import('@playwright/test').Page) =>
   page.evaluate(() => document.documentElement.dataset.theme);
@@ -6,9 +7,13 @@ const themeOf = (page: import('@playwright/test').Page) =>
 // The starting theme follows the OS, so every test pins it rather than relying
 // on whatever the runner happens to emulate.
 
+// Language, light/dark and the palette all live in one header dropdown now, so
+// every test that touches them opens it first — see ./helpers.
+
 test('the toggle switches themes and the choice sticks across a reload', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
+  await openPreferences(page);
   await expect(page.getByRole('button', { name: 'Switch to light theme' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Switch to light theme' }).click();
@@ -19,6 +24,7 @@ test('the toggle switches themes and the choice sticks across a reload', async (
 
   await page.reload();
   expect(await themeOf(page)).toBe('light');
+  await openPreferences(page);
   await expect(page.getByRole('button', { name: 'Switch to dark theme' })).toBeVisible();
 });
 
@@ -27,6 +33,7 @@ test('a stored choice beats the system preference', async ({ page }) => {
   await page.goto('/');
   expect(await themeOf(page)).toBe('light');
 
+  await openPreferences(page);
   await page.getByRole('button', { name: 'Switch to dark theme' }).click();
   await page.reload();
   expect(await themeOf(page), 'an explicit choice must survive an opposing OS setting').toBe('dark');
@@ -56,6 +63,7 @@ test('body colours actually change with the theme', async ({ page }) => {
   await page.goto('/');
   const dark = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 
+  await openPreferences(page);
   await page.getByRole('button', { name: 'Switch to light theme' }).click();
   const light = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 
@@ -78,8 +86,11 @@ test('the drawer carries its own toggle, labelled', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Switch to dark theme' }).last()).toBeVisible();
 });
 
+// Every palette carries its own attribute now — none of the six is the
+// stylesheet's implicit state — so a missing one means the init script did not
+// run, not "the default".
 const paletteOf = (page: import('@playwright/test').Page) =>
-  page.evaluate(() => document.documentElement.dataset.palette ?? 'paper');
+  page.evaluate(() => document.documentElement.dataset.palette);
 
 const brandOf = (page: import('@playwright/test').Page) =>
   page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--brand').trim());
@@ -88,21 +99,21 @@ test('each swatch repaints the site and the choice survives a reload', async ({ 
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
-  expect(await paletteOf(page)).toBe('paper');
+  expect(await paletteOf(page)).toBe('blue');
 
-  await page.getByRole('button', { name: 'Choose a colour theme' }).click();
+  await openPreferences(page);
 
   const seen = new Set<string>([await brandOf(page)]);
-  for (const name of ['Court', 'Turf', 'Dusk', 'Ember']) {
+  for (const name of ['Parrot green', 'Dark purple', 'Yellow', 'Light coffee brown']) {
     await page.getByRole('menuitemradio', { name: new RegExp(name) }).click();
     const brand = await brandOf(page);
     expect(seen.has(brand), `${name} reused another palette's brand colour`).toBe(false);
     seen.add(brand);
   }
 
-  expect(await paletteOf(page)).toBe('ember');
+  expect(await paletteOf(page)).toBe('coffee');
   await page.reload();
-  expect(await paletteOf(page)).toBe('ember');
+  expect(await paletteOf(page)).toBe('coffee');
 });
 
 test('a palette keeps its own light values, not the dark ones', async ({ page }) => {
@@ -110,18 +121,19 @@ test('a palette keeps its own light values, not the dark ones', async ({ page })
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/');
 
-  await page.getByRole('button', { name: 'Choose a colour theme' }).click();
-  await page.getByRole('menuitemradio', { name: /Dusk/ }).click();
+  await openPreferences(page);
+  await page.getByRole('menuitemradio', { name: 'Dark purple' }).click();
   const dark = await brandOf(page);
 
   // A palette block and the base light block have equal specificity, so without
-  // the theme qualifier the dark values would win in light mode too.
+  // the theme qualifier the dark values would win in light mode too. The menu
+  // stays open across a choice, so the theme row is still one click away.
   await page.getByRole('button', { name: 'Switch to light theme' }).click();
   const light = await brandOf(page);
   expect(light, 'the dark palette leaked into light mode').not.toBe(dark);
 
   const canvas = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  expect(canvas).toBe('rgb(252, 248, 252)');
+  expect(canvas).toBe('rgb(249, 247, 251)');
 });
 
 test('the drawer offers the same swatches', async ({ page }) => {
@@ -130,7 +142,25 @@ test('the drawer offers the same swatches', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Open menu' }).click();
 
-  await page.getByRole('radio', { name: 'Court' }).click();
-  expect(await paletteOf(page)).toBe('court');
-  await expect(page.getByRole('radio', { name: 'Court' })).toHaveAttribute('aria-checked', 'true');
+  await page.getByRole('radio', { name: 'Parrot green' }).click();
+  expect(await paletteOf(page)).toBe('parrot');
+  await expect(page.getByRole('radio', { name: 'Parrot green' })).toHaveAttribute('aria-checked', 'true');
+});
+
+test('the header dropdown carries all three preferences, and no search', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+
+  // The header used to spend a whole column on a search bar past `xl`; the
+  // board owns search now, and the header owns preferences.
+  await expect(page.locator('header').getByRole('search')).toHaveCount(0);
+
+  const menu = await openPreferences(page);
+  await expect(menu.getByRole('menuitemradio', { name: 'English' })).toHaveAttribute('aria-checked', 'true');
+  await expect(menu.getByRole('button', { name: 'Switch to light theme' })).toBeVisible();
+  await expect(menu.getByRole('menuitemradio', { name: 'Blue' })).toBeVisible();
+
+  await menu.getByRole('menuitemradio', { name: 'हिन्दी' }).click();
+  await expect(page.getByRole('link', { name: 'मीटअप खोजें' }).first()).toBeVisible();
 });

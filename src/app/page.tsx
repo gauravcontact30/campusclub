@@ -2,6 +2,7 @@ import { Hero } from '@/components/home/hero';
 import { HowItWorks } from '@/components/home/how-it-works';
 import { Upcoming } from '@/components/home/upcoming';
 import { Proof } from '@/components/home/proof';
+import { Professionals } from '@/components/home/professionals';
 import { CityStrip } from '@/components/home/city-strip';
 import { Faq } from '@/components/home/faq';
 import { CtaBand } from '@/components/home/cta-band';
@@ -42,6 +43,7 @@ export default async function HomePage() {
         }
       />
       <HowItWorks />
+      <Professionals />
       <Proof />
       <CityStrip counts={counts} />
       <Faq compact />

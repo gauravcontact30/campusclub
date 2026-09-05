@@ -53,14 +53,43 @@ const people: [name: string, email: string, city: string, bio: string, interests
   ['Gaurav', 'garvcontact30@gmail.com', 'Bengaluru', 'Runs CampusClub.', ['group-study', 'gym']],
 ];
 
+
+/**
+ * Member portraits.
+ *
+ * Real photographs, from Unsplash under its licence, positioned index-for-index
+ * against `people` above — so this array must stay exactly as long as that one.
+ * The crop is asked of the CDN rather than of CSS (`fit=crop&crop=faces`), which
+ * is what keeps a face centred at 28px in the hero's stack and at 96px on a host
+ * profile from the same URL.
+ *
+ * These replace the flat token-coloured initials the seed used to ship. Initials
+ * are still the fallback — `Avatar` renders them whenever a member has no photo,
+ * and `ImageWithFallback` drops back to a themed gradient if a URL ever stops
+ * resolving — so nothing here is load-bearing. Run `npm run media:check` after
+ * touching this list.
+ */
+const PORTRAITS = [
+  'photo-1604177091072-b7b677a077f6', // Aarav Mehta
+  'photo-1679138118375-47f78db3761d', // Priya Nair
+  'photo-1667655699558-8f1b362a67a8', // Kabir Shah
+  'photo-1706943262459-3ef6ce03305c', // Ananya Rao
+  'photo-1771165553611-fbe2655c3a91', // Rohan Kapoor
+  'photo-1674278882093-3870ef98e826', // Meera Iyer
+  'photo-1632507273499-df468b359d7d', // Vikram Sethi
+  'photo-1646979200272-b76a262249b8', // Sara Qureshi
+  'photo-1757744705465-ea08b0ddc38a', // Aditya Menon
+  'photo-1646979201225-00e36437d09e', // Nisha Gupta
+  'photo-1533128361669-69c065857a13', // Tanvi Deshmukh
+  'photo-1609943878157-c6b5694231a7', // Arjun Reddy
+  'photo-1778692258270-bc0e80e975c0', // Gaurav
+].map((id) => `https://images.unsplash.com/${id}?w=400&h=400&fit=crop&crop=faces&q=80`);
+
 export const SEED_USERS: UserProfile[] = people.map((p, i) => ({
   id: `u${String(i + 1).padStart(3, '0')}`,
   email: p[1],
   fullName: p[0],
-  // Null on purpose: the Avatar falls back to token-coloured initials, which
-  // follow the theme. A shipped PNG would be the one thing on the page that
-  // does not.
-  avatarUrl: null,
+  avatarUrl: PORTRAITS[i] ?? null,
   city: p[2],
   bio: p[3],
   pass: (i === 0 ? 'regular' : i === 1 ? 'starter' : 'payg') as UserProfile['pass'],

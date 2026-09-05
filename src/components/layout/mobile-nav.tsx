@@ -37,7 +37,7 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
         onClick={toggle}
         aria-label={open ? t.header.closeMenu : t.header.openMenu}
         aria-expanded={open}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-content/20 text-content md:hidden"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-content/15 text-content transition-colors hover:border-content/40 hover:bg-content/5 lg:hidden"
       >
         {open ? <X size={18} /> : <Menu size={18} />}
       </button>
@@ -45,11 +45,11 @@ export function MobileNav({ user }: { user: UserProfile | null }) {
       {/* Portalled to <body> on purpose. The header sets `backdrop-blur`, and a
           backdrop-filter makes an element the containing block for its fixed
           descendants — so rendered in place, this panel resolved `bottom-0`
-          against the 68px header and collapsed to a sliver with the page
+          against the 72px header and collapsed to a sliver with the page
           showing through. */}
       {open &&
         createPortal(
-          <div className="fixed inset-x-0 bottom-0 top-[68px] z-50 animate-fade-in overflow-y-auto bg-canvas px-5 pb-10 pt-6 md:hidden">
+          <div className="fixed inset-x-0 bottom-0 top-[72px] z-50 animate-fade-in overflow-y-auto bg-canvas px-5 pb-10 pt-6 lg:hidden">
             <nav className="flex flex-col gap-1">
               {NAV_LINKS.map((link) => (
                 <Link

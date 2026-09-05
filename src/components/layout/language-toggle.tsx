@@ -1,38 +1,26 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useTransition } from 'react';
 import { Check, Languages } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { LOCALES, LOCALE_COOKIE, LOCALE_LABELS, type Locale } from '@/lib/i18n/config';
-import { useLocale } from '@/lib/i18n/client';
-
-const ONE_YEAR = 60 * 60 * 24 * 365;
+import { LOCALES, LOCALE_LABELS, type Locale } from '@/lib/i18n/config';
+import { useLocale, useSetLocale } from '@/lib/i18n/client';
 
 /**
- * Two languages, so this is a direct toggle rather than a menu — one tap gets
- * you to the other one, and the button shows the language you are *in*.
- *
- * The locale is read by server components, so switching it means writing the
- * cookie and asking the router to re-render the tree. `useTransition` keeps the
- * current page interactive while that round trip happens instead of blanking it.
+ * The drawer's language control. Two languages, so this is a direct toggle
+ * rather than a menu — one tap gets you to the other one, and the button shows
+ * the language you are *in*. The header's version is the segmented pair inside
+ * the preferences panel, where both fit side by side.
  */
 export function LanguageToggle({ className, showLabel = false }: { className?: string; showLabel?: boolean }) {
   const { locale, t } = useLocale();
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { setLocale, pending } = useSetLocale();
 
   const next: Locale = LOCALES[(LOCALES.indexOf(locale) + 1) % LOCALES.length];
-
-  const switchTo = (target: Locale) => {
-    document.cookie = `${LOCALE_COOKIE}=${target}; path=/; max-age=${ONE_YEAR}; samesite=lax`;
-    startTransition(() => router.refresh());
-  };
 
   return (
     <button
       type="button"
-      onClick={() => switchTo(next)}
+      onClick={() => setLocale(next)}
       aria-label={`${t.header.languageLabel} — ${LOCALE_LABELS[next].name}`}
       data-pending={pending ? '' : undefined}
       className={cn(
