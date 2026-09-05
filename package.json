@@ -13,6 +13,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "db:check": "node scripts/db-check.mjs",
+    "auth:check": "node scripts/auth-check.mjs",
     "media:check": "node scripts/media-check.mjs"
   },
   "dependencies": {
