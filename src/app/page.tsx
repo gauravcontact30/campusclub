@@ -1,3 +1,4 @@
+import { LandingSlider } from '@/components/home/landing-slider';
 import { Hero } from '@/components/home/hero';
 import { HowItWorks } from '@/components/home/how-it-works';
 import { Upcoming } from '@/components/home/upcoming';
@@ -31,6 +32,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <LandingSlider />
       <Hero meetupCount={all.total} cityCount={CITIES.length} hosts={heroHosts} />
       <Upcoming
         meetups={upcoming}

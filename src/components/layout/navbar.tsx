@@ -19,33 +19,33 @@ export async function Navbar() {
           two calls to action do not fit a tablet, and a squeezed track that
           runs off the right edge is worse than a menu button. */}
       <div className="container-page flex h-[72px] items-center justify-between gap-4 lg:grid lg:grid-cols-[1fr_auto_1fr]">
-        <Logo className="justify-self-start" />
+        <Logo id="header" className="justify-self-start" />
 
         <DesktopNav className="hidden lg:flex" />
 
         <div className="flex items-center justify-end gap-2">
-          {/* Language, light/dark and the palette used to be three icon buttons
-              sitting in a row here. They are one dropdown now: the account menu
-              for anyone signed in, this popover for everyone else. */}
+          {/* Language, light/dark and the palette get their own popover — the
+              same one whether a visitor is signed in or not — kept apart from
+              both the sign-in buttons and the account menu, since neither of
+              those is where someone looks for "change the language". */}
+          <PreferencesMenu />
+
           {user ? (
             <AccountMenu user={user} />
           ) : (
-            <>
-              <PreferencesMenu />
-              <div className="hidden items-center gap-1.5 sm:flex">
-                <ButtonLink
-                  href="/login"
-                  variant="ghost"
-                  size="sm"
-                  className="whitespace-nowrap text-content hover:bg-content/10"
-                >
-                  {t.header.signIn}
-                </ButtonLink>
-                <ButtonLink href="/signup" size="sm" className="whitespace-nowrap">
-                  {t.header.join}
-                </ButtonLink>
-              </div>
-            </>
+            <div className="hidden items-center gap-1.5 sm:flex">
+              <ButtonLink
+                href="/login"
+                variant="ghost"
+                size="sm"
+                className="whitespace-nowrap text-content hover:bg-content/10"
+              >
+                {t.header.signIn}
+              </ButtonLink>
+              <ButtonLink href="/signup" size="sm" className="whitespace-nowrap">
+                {t.header.join}
+              </ButtonLink>
+            </div>
           )}
 
           <MobileNav user={user} />

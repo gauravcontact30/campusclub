@@ -10,7 +10,6 @@ import { useLocale } from '@/lib/i18n/client';
 import { useDismissable } from '@/hooks/use-dismissable';
 import type { Dictionary } from '@/lib/i18n/dictionaries/en';
 import type { UserProfile } from '@/types';
-import { PreferencesPanel } from './preferences-menu';
 
 /**
  * The label is a dictionary key rather than a string, so the menu speaks the
@@ -53,9 +52,6 @@ export function AccountMenu({ user }: { user: UserProfile }) {
             <p className="truncate text-xs text-content/55">{user.email}</p>
           </div>
 
-          {/* Six swatches and two language buttons make this menu tall, so the
-              destinations stay above the preferences: the thing you opened the
-              menu for is the thing you land on. */}
           <div className="py-1">
             {/* Only rendered for the owner. The gate is the /admin layout, not
                 this link — hiding it is convenience, not security. */}
@@ -81,10 +77,6 @@ export function AccountMenu({ user }: { user: UserProfile }) {
                 {t.menu[key]}
               </Link>
             ))}
-          </div>
-
-          <div className="max-h-[min(24rem,55vh)] overflow-y-auto border-t border-content/10">
-            <PreferencesPanel />
           </div>
 
           <form action={signOutAction} className="border-t border-content/10">

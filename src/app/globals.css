@@ -601,6 +601,229 @@
     --shadow-glow: 0 0 0 1px rgba(217, 168, 124, 0.28), 0 12px 40px -16px rgba(217, 168, 124, 0.5);
   }
 
+  /* Rose — Deep rose with a jewel teal signal. Every other palette pairs its
+     brand hue with a warm olive/amber/brass signal; this is the one cool
+     counter-pairing in the set, which is what makes it read as a genuinely
+     different option in the swatch row rather than a seventh shade of the
+     same six ideas. */
+  :root[data-palette='rose']:not([data-theme='dark']) {
+    color-scheme: light;
+
+    --canvas: 251 247 249;
+    --canvas-900: 240 233 236;
+    --canvas-800: 251 247 249;
+    --canvas-700: 255 255 255;
+    --canvas-600: 248 244 246;
+    --canvas-500: 236 228 230;
+
+    --content: 31 21 27;
+    --content-100: 17 11 15;
+    --content-200: 97 68 84;
+    --content-300: 148 100 129;
+
+    --on-brand: 255 255 255;
+    --brand: 190 18 60;
+    --brand-600: 162 15 51;
+    --brand-700: 129 12 41;
+    --brand-200: 253 222 232;
+
+    --signal: 13 116 110;
+    --signal-600: 11 96 91;
+
+    --glint: 20 158 148;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(190, 18, 60, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(13, 116, 110, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(31, 21, 27, 0.05), 0 12px 28px -16px rgba(31, 21, 27, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(129, 12, 41, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(190, 18, 60, 0.2), 0 12px 40px -16px rgba(190, 18, 60, 0.26);
+  }
+
+  :root[data-palette='rose'][data-theme='dark'] {
+    color-scheme: dark;
+
+    --canvas: 19 12 15;
+    --canvas-900: 11 7 9;
+    --canvas-800: 19 12 15;
+    --canvas-700: 33 21 26;
+    --canvas-600: 49 31 39;
+    --canvas-500: 76 48 60;
+
+    --content: 245 237 241;
+    --content-100: 252 247 250;
+    --content-200: 214 207 210;
+    --content-300: 166 161 164;
+
+    --on-brand: 19 12 15;
+    --brand: 251 113 133;
+    --brand-600: 252 143 163;
+    --brand-700: 253 168 188;
+    --brand-200: 107 26 46;
+
+    --signal: 45 212 191;
+    --signal-600: 94 224 209;
+
+    --glint: 145 232 220;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(251, 113, 133, 0.17), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(45, 212, 191, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
+    --shadow-lift: 0 22px 56px -28px rgba(251, 113, 133, 0.5);
+    --shadow-glow: 0 0 0 1px rgba(251, 113, 133, 0.28), 0 12px 40px -16px rgba(251, 113, 133, 0.5);
+  }
+
+  /* Navy — Muted slate-navy with a warm bronze signal. Desaturated on
+     purpose: next to six working-colour palettes and one jewel-tone pair,
+     this is the "turn the saturation down" option for a visitor who wants
+     the product to look like enterprise software, not a poster. */
+  :root[data-palette='navy']:not([data-theme='dark']) {
+    color-scheme: light;
+
+    --canvas: 248 249 250;
+    --canvas-900: 234 236 238;
+    --canvas-800: 248 249 250;
+    --canvas-700: 255 255 255;
+    --canvas-600: 245 246 247;
+    --canvas-500: 229 231 233;
+
+    --content: 20 23 27;
+    --content-100: 10 12 15;
+    --content-200: 72 79 88;
+    --content-300: 112 120 132;
+
+    --on-brand: 255 255 255;
+    --brand: 30 41 59;
+    --brand-600: 26 35 50;
+    --brand-700: 21 29 41;
+    --brand-200: 222 225 230;
+
+    --signal: 146 111 61;
+    --signal-600: 124 94 52;
+
+    --glint: 168 128 71;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(30, 41, 59, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(146, 111, 61, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(20, 23, 27, 0.05), 0 12px 28px -16px rgba(20, 23, 27, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(21, 29, 41, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(30, 41, 59, 0.2), 0 12px 40px -16px rgba(30, 41, 59, 0.26);
+  }
+
+  :root[data-palette='navy'][data-theme='dark'] {
+    color-scheme: dark;
+
+    --canvas: 14 16 19;
+    --canvas-900: 8 9 11;
+    --canvas-800: 14 16 19;
+    --canvas-700: 24 27 33;
+    --canvas-600: 36 42 49;
+    --canvas-500: 56 64 76;
+
+    --content: 240 242 245;
+    --content-100: 250 251 252;
+    --content-200: 209 211 214;
+    --content-300: 163 164 166;
+
+    --on-brand: 14 16 19;
+    --brand: 150 165 190;
+    --brand-600: 180 192 212;
+    --brand-700: 206 214 228;
+    --brand-200: 40 48 64;
+
+    --signal: 196 155 94;
+    --signal-600: 211 177 128;
+
+    --glint: 222 195 152;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(150, 165, 190, 0.17), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(196, 155, 94, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
+    --shadow-lift: 0 22px 56px -28px rgba(150, 165, 190, 0.5);
+    --shadow-glow: 0 0 0 1px rgba(150, 165, 190, 0.28), 0 12px 40px -16px rgba(150, 165, 190, 0.5);
+  }
+
+  /* Forest — Deep pine green with a warm stone signal. The other muted,
+     professional option: cooler and quieter than Parrot's bright working
+     green, closer to the green a law firm or an outdoor-gear brand would
+     actually use. */
+  :root[data-palette='forest']:not([data-theme='dark']) {
+    color-scheme: light;
+
+    --canvas: 247 249 247;
+    --canvas-900: 233 238 234;
+    --canvas-800: 247 249 247;
+    --canvas-700: 255 255 255;
+    --canvas-600: 244 246 244;
+    --canvas-500: 227 234 228;
+
+    --content: 20 28 22;
+    --content-100: 10 15 11;
+    --content-200: 63 88 69;
+    --content-300: 95 133 105;
+
+    --on-brand: 255 255 255;
+    --brand: 21 71 52;
+    --brand-600: 18 60 44;
+    --brand-700: 14 48 35;
+    --brand-200: 222 238 229;
+
+    --signal: 133 112 88;
+    --signal-600: 113 95 75;
+
+    --glint: 150 128 102;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(21, 71, 52, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(133, 112, 88, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(20, 28, 22, 0.05), 0 12px 28px -16px rgba(20, 28, 22, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(14, 48, 35, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(21, 71, 52, 0.2), 0 12px 40px -16px rgba(21, 71, 52, 0.26);
+  }
+
+  :root[data-palette='forest'][data-theme='dark'] {
+    color-scheme: dark;
+
+    --canvas: 12 17 13;
+    --canvas-900: 7 10 8;
+    --canvas-800: 12 17 13;
+    --canvas-700: 21 29 22;
+    --canvas-600: 31 44 34;
+    --canvas-500: 48 68 52;
+
+    --content: 238 245 240;
+    --content-100: 249 252 250;
+    --content-200: 208 214 209;
+    --content-300: 162 166 163;
+
+    --on-brand: 12 17 13;
+    --brand: 76 214 140;
+    --brand-600: 120 224 168;
+    --brand-700: 162 232 194;
+    --brand-200: 20 74 50;
+
+    --signal: 196 172 140;
+    --signal-600: 213 194 168;
+
+    --glint: 224 208 186;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(76, 214, 140, 0.17), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(196, 172, 140, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
+    --shadow-lift: 0 22px 56px -28px rgba(76, 214, 140, 0.5);
+    --shadow-glow: 0 0 0 1px rgba(76, 214, 140, 0.28), 0 12px 40px -16px rgba(76, 214, 140, 0.5);
+  }
+
   html {
     scroll-behavior: smooth;
   }

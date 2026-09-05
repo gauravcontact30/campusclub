@@ -53,6 +53,37 @@ export const en = {
     statJoinsSuffix: 'paid for since we started.',
     categoriesHeading: 'Or just pick what you’re into.',
   },
+  landingSlider: {
+    prev: 'Previous slide',
+    next: 'Next slide',
+    goTo: 'Go to slide {number}',
+    slides: {
+      groupStudy: {
+        eyebrow: 'Group study',
+        headline: 'Cram less alone.',
+        body: 'Find people grinding through the same syllabus, this week.',
+        cta: 'Browse study meetups',
+      },
+      dinner: {
+        eyebrow: 'Dinner',
+        headline: 'Nobody eats alone.',
+        body: 'Split a table with people from your city, tonight.',
+        cta: 'Browse dinners',
+      },
+      weekendTrips: {
+        eyebrow: 'Weekend trips',
+        headline: 'Go further, together.',
+        body: 'Hikes and getaways with a group that is already going.',
+        cta: 'Browse weekend trips',
+      },
+      networking: {
+        eyebrow: 'Professionals',
+        headline: 'Build your network in person.',
+        body: 'Coffee chats and mixers with people building careers near you.',
+        cta: 'Browse networking',
+      },
+    },
+  },
   heroSearch: {
     title: 'What do you want to do this week?',
     subtitle: 'Search {count} upcoming meetups, or start with a category.',

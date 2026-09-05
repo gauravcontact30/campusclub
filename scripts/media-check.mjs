@@ -27,6 +27,7 @@ const SOURCES = [
   { file: 'src/lib/media/covers.ts', declaration: 'export const PHOTO_COVERS', end: '\n};' },
   { file: 'src/lib/media/portraits.ts', declaration: 'export const PORTRAIT_IDS', end: '\n];' },
   { file: 'src/lib/media/portraits.ts', declaration: 'export const PROFESSIONAL_PORTRAIT_IDS', end: '\n];' },
+  { file: 'src/lib/media/slides.ts', declaration: 'export const LANDING_SLIDES', end: '\n];' },
 ];
 
 /** Every image URL inside those blocks. */
