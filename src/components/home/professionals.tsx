@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowUpRight, Coffee, Handshake, Laptop, Mountain, Presentation, UserRoundCheck } from 'lucide-react';
 import { ButtonLink } from '@/components/ui/button';
 import { ImageWithFallback } from '@/components/ui/image-with-fallback';
+import { PROFESSIONAL_PORTRAIT_IDS, portraitUrl } from '@/lib/media/portraits';
 
 /**
  * The working half of the board.
@@ -20,22 +21,13 @@ import { ImageWithFallback } from '@/components/ui/image-with-fallback';
  * makes a long landing page feel assembled rather than designed.
  */
 
-/** Verified Unsplash ids — `npm run media:check` reads this list by name. */
-const FACES = [
-  'photo-1778692258270-bc0e80e975c0',
-  'photo-1628726987013-db899232027c',
-  'photo-1625241152315-4a698f74ceb7',
-  'photo-1547212371-eb5e6a4b590c',
-  'photo-1757744705465-ea08b0ddc38a',
-];
-
 const MEMBERS = [
   { name: 'Rahul', role: 'Backend engineer', city: 'Bengaluru' },
   { name: 'Sneha', role: 'Product manager', city: 'Pune' },
   { name: 'Imran', role: 'Data scientist', city: 'Hyderabad' },
   { name: 'Divya', role: 'UX designer', city: 'Mumbai' },
   { name: 'Karthik', role: 'DevOps lead', city: 'Chennai' },
-].map((m, i) => ({ ...m, src: `https://images.unsplash.com/${FACES[i]}?w=200&h=200&fit=crop&crop=faces&q=80` }));
+].map((m, i) => ({ ...m, src: portraitUrl(PROFESSIONAL_PORTRAIT_IDS[i], 200) }));
 
 /**
  * Each track is a real filter on the board, not a brochure tile — the link goes

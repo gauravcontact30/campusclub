@@ -1,21 +1,38 @@
 import { ButtonLink } from '@/components/ui/button';
-import { Avatar } from '@/components/ui/avatar';
+import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 import { SearchBar } from '@/components/meetups/search-bar';
 import { CategoryRail } from '@/components/meetups/category-rail';
 import { getDictionary } from '@/lib/i18n/server';
 import { fill } from '@/lib/i18n/format';
-import { cn, formatCount } from '@/lib/utils';
+import { FEATURED_PORTRAIT_IDS, portraitUrl } from '@/lib/media/portraits';
+import { formatCount } from '@/lib/utils';
 import type { HostSummary } from '@/types';
 
+const STACK_SIZE = 5;
+
 /**
- * Solid colour, not initials: at 28px with a third of each circle clipped by
- * its neighbour, two-letter initials just produce unreadable fragments of
- * text. A flat tint reads instantly as "a person" without asking to be read.
- * `content-200` rather than `content` itself, because these sit directly on
- * the page canvas rather than inside a brand-coloured shape — the full-ink
- * value is built to be text, not a floating dot.
+ * Five faces, always.
+ *
+ * The stack used to be built purely from the hosts of whatever meetups were
+ * upcoming, which made it hostage to the query: hosts with no photo rendered as
+ * flat colour discs, and an empty database rendered nothing at all. Since the
+ * whole point of the row is "these are people", it leads with real hosts when
+ * they have pictures and tops up from a fixed, mixed set — students and working
+ * professionals, women and men — rather than degrading to abstract dots.
  */
-const AVATAR_TINTS = ['bg-brand', 'bg-content-200', 'bg-signal'];
+function stackFaces(hosts: HostSummary[]) {
+  const faces = hosts
+    .filter((h) => h.avatarUrl)
+    .slice(0, STACK_SIZE)
+    .map((h) => ({ key: h.id, src: h.avatarUrl as string, seed: h.name }));
+
+  for (const id of FEATURED_PORTRAIT_IDS) {
+    if (faces.length >= STACK_SIZE) break;
+    faces.push({ key: id, src: portraitUrl(id, 96), seed: id });
+  }
+
+  return faces;
+}
 
 /**
  * One promise, one control, one rail. The editorial half of this design lives
@@ -58,20 +75,22 @@ export async function Hero({
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-content/60">
             <span className="inline-flex items-center gap-2.5">
-              {hosts.length > 0 && (
-                <span className="flex -space-x-2" aria-hidden>
-                  {hosts.map((host, i) =>
-                    host.avatarUrl ? (
-                      <Avatar key={host.id} name={host.name} src={host.avatarUrl} size={28} className="ring-2 ring-canvas" />
-                    ) : (
-                      <span
-                        key={host.id}
-                        className={cn('h-7 w-7 rounded-full ring-2 ring-canvas', AVATAR_TINTS[i % AVATAR_TINTS.length])}
-                      />
-                    ),
-                  )}
-                </span>
-              )}
+              {/* `shrink-0`: a `-space-x-*` stack measures narrower than the
+                  pictures inside it, so as a flex child it gets squeezed and the
+                  last face rides into the sentence beside it. */}
+              <span className="flex shrink-0 -space-x-2" aria-hidden>
+                {stackFaces(hosts).map((face) => (
+                  <ImageWithFallback
+                    key={face.key}
+                    src={face.src}
+                    alt=""
+                    seed={face.seed}
+                    width={28}
+                    height={28}
+                    className="h-7 w-7 rounded-full object-cover ring-2 ring-canvas"
+                  />
+                ))}
+              </span>
               <span>
                 <span className="font-semibold text-content">{t.hero.statJoins}</span> {t.hero.statJoinsSuffix}
               </span>

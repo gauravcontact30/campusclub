@@ -25,8 +25,8 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
  */
 const SOURCES = [
   { file: 'src/lib/media/covers.ts', declaration: 'export const PHOTO_COVERS', end: '\n};' },
-  { file: 'src/lib/data/seed.ts', declaration: 'const PORTRAITS', end: '\n].map(' },
-  { file: 'src/components/home/professionals.tsx', declaration: 'const FACES', end: '\n];' },
+  { file: 'src/lib/media/portraits.ts', declaration: 'export const PORTRAIT_IDS', end: '\n];' },
+  { file: 'src/lib/media/portraits.ts', declaration: 'export const PROFESSIONAL_PORTRAIT_IDS', end: '\n];' },
 ];
 
 /** Every image URL inside those blocks. */
