@@ -61,4 +61,33 @@ export async function signUpFresh(page: Page, city = 'Bengaluru') {
   return email;
 }
 
+/**
+ * Either language's name for the header's preferences dropdown. Switching to
+ * Hindi re-renders the header from the server, so a spec that opens the menu
+ * twice would otherwise be hunting for an English label on a Hindi page.
+ */
+export const PREFERENCES = /Language, theme and colour|भाषा, थीम और रंग/;
+
+/**
+ * Opens that dropdown — language, light/dark and the colour palette all live
+ * behind it, so most preference specs start here.
+ *
+ * The click is retried rather than issued once. The trigger is server-rendered
+ * and present immediately, but its handler only exists once the header has
+ * hydrated; a click landing before that does nothing at all, and Playwright has
+ * no reason to try again. Under a parallel run that is a real race, and it
+ * fails the test rather than the app.
+ */
+export async function openPreferences(page: Page) {
+  const trigger = page.getByRole('button', { name: PREFERENCES });
+  const menu = page.getByRole('menu', { name: PREFERENCES });
+
+  await expect(async () => {
+    if (!(await menu.isVisible())) await trigger.click();
+    await expect(menu).toBeVisible({ timeout: 1_000 });
+  }).toPass({ timeout: 20_000 });
+
+  return menu;
+}
+
 export { expect, test };

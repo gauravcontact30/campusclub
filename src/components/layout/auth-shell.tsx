@@ -11,7 +11,7 @@ export function AuthShell({
   children: ReactNode;
 }) {
   return (
-    <div className="grid min-h-[calc(100dvh-68px)] lg:grid-cols-2">
+    <div className="grid min-h-[calc(100dvh-72px)] lg:grid-cols-2">
       <div className="flex items-center justify-center px-5 py-14 sm:px-10">
         <div className="w-full max-w-md">
           <h1 className="display-lg text-balance text-content">{title}</h1>

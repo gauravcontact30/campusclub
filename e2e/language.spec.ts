@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openPreferences } from './helpers';
 
 const langOf = (page: import('@playwright/test').Page) =>
   page.evaluate(() => document.documentElement.lang);
@@ -8,7 +9,10 @@ test('English is the default and the toggle switches to Hindi', async ({ page })
   expect(await langOf(page)).toBe('en');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Nobody does it');
 
-  await page.getByRole('button', { name: /Change language/i }).click();
+  // Both languages sit side by side in the header's preferences dropdown, so
+  // switching is picking the other one rather than tripping a toggle.
+  const menu = await openPreferences(page);
+  await menu.getByRole('menuitemradio', { name: 'हिन्दी' }).click();
 
   // The whole server-rendered tree re-renders, not just the label.
   await expect(page.getByRole('heading', { level: 1 })).toContainText('अकेले कोई', { timeout: 10_000 });
@@ -21,13 +25,15 @@ test('English is the default and the toggle switches to Hindi', async ({ page })
 
 test('the choice survives a reload and can be switched back', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: /Change language/i }).click();
+  const menu = await openPreferences(page);
+  await menu.getByRole('menuitemradio', { name: 'हिन्दी' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('अकेले कोई', { timeout: 10_000 });
 
   await page.reload();
   expect(await langOf(page)).toBe('hi');
 
-  await page.getByRole('button', { name: /भाषा बदलें/ }).click();
+  const menuAgain = await openPreferences(page);
+  await menuAgain.getByRole('menuitemradio', { name: 'English' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Nobody does it', { timeout: 10_000 });
   expect(await langOf(page)).toBe('en');
 });

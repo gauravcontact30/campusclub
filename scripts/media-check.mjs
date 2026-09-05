@@ -17,17 +17,38 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const SOURCE = resolve(ROOT, 'src/lib/media/covers.ts');
 
-/** Every https URL inside the PHOTO_COVERS block. */
+/**
+ * Where remote imagery is declared. Each entry names the file and the
+ * declaration to read out of it, so a third list costs one line here rather
+ * than a second copy of this script.
+ */
+const SOURCES = [
+  { file: 'src/lib/media/covers.ts', declaration: 'export const PHOTO_COVERS', end: '\n};' },
+  { file: 'src/lib/media/portraits.ts', declaration: 'export const PORTRAIT_IDS', end: '\n];' },
+  { file: 'src/lib/media/portraits.ts', declaration: 'export const PROFESSIONAL_PORTRAIT_IDS', end: '\n];' },
+];
+
+/** Every image URL inside those blocks. */
 function configuredUrls() {
-  const source = readFileSync(SOURCE, 'utf8');
-  const start = source.indexOf('export const PHOTO_COVERS');
-  if (start === -1) return [];
-  // The map ends at the first line that closes it at column 0.
-  const end = source.indexOf('\n};', start);
-  const block = source.slice(start, end === -1 ? undefined : end);
-  return [...block.matchAll(/https:\/\/[^\s'"`]+/g)].map((m) => m[0]);
+  const urls = [];
+
+  for (const { file, declaration, end: terminator } of SOURCES) {
+    const source = readFileSync(resolve(ROOT, file), 'utf8');
+    const start = source.indexOf(declaration);
+    if (start === -1) continue;
+    const end = source.indexOf(terminator, start);
+    const block = source.slice(start, end === -1 ? undefined : end);
+
+    // Portraits are stored as a bare Unsplash id plus a shared transform, so
+    // they have to be expanded before they can be fetched.
+    for (const match of block.matchAll(/'(photo-[^']+)'/g)) {
+      urls.push(`https://images.unsplash.com/${match[1]}?w=400&h=400&fit=crop&crop=faces&q=80`);
+    }
+    for (const match of block.matchAll(/https:\/\/[^\s'"`]+/g)) urls.push(match[0]);
+  }
+
+  return [...new Set(urls)];
 }
 
 const TIMEOUT_MS = 15_000;

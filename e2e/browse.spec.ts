@@ -44,8 +44,8 @@ test('filters live in the URL, so a filtered board is a shareable link', async (
 
 test('searching filters down to matching meetups', async ({ page }) => {
   await page.goto('/meetups');
-  // The board renders its own search bar plus the header carries one too past
-  // `xl` — scope to the first, and submit like a real visitor would (Enter),
+  // The board renders the page's search bar and the hero renders another on
+  // `/` — scope to the first, and submit like a real visitor would (Enter),
   // since the bar is a real form navigation rather than a live filter.
   await page.getByRole('textbox', { name: 'What do you want to do?' }).first().fill('badminton');
   await page.keyboard.press('Enter');

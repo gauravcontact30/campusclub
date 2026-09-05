@@ -1,6 +1,7 @@
 import type { Audience, Cadence, HostSummary, Level, Meetup, Payment, UserProfile, Vouch } from '@/types';
 import { slugify } from '@/lib/utils';
 import { CURRENCY } from '@/lib/constants';
+import { PORTRAIT_IDS, portraitUrl } from '@/lib/media/portraits';
 
 /* ------------------------------------------------------------------ */
 /* Time helpers                                                        */
@@ -53,14 +54,13 @@ const people: [name: string, email: string, city: string, bio: string, interests
   ['Gaurav', 'garvcontact30@gmail.com', 'Bengaluru', 'Runs CampusClub.', ['group-study', 'gym']],
 ];
 
+
 export const SEED_USERS: UserProfile[] = people.map((p, i) => ({
   id: `u${String(i + 1).padStart(3, '0')}`,
   email: p[1],
   fullName: p[0],
-  // Null on purpose: the Avatar falls back to token-coloured initials, which
-  // follow the theme. A shipped PNG would be the one thing on the page that
-  // does not.
-  avatarUrl: null,
+  // Index-for-index with `people` above; see lib/media/portraits.ts.
+  avatarUrl: PORTRAIT_IDS[i] ? portraitUrl(PORTRAIT_IDS[i]) : null,
   city: p[2],
   bio: p[3],
   pass: (i === 0 ? 'regular' : i === 1 ? 'starter' : 'payg') as UserProfile['pass'],

@@ -157,550 +157,448 @@
   }
 
   /* ------------------------------------------------------- palette swatches --
-     Four alternates. The selectors are deliberately over-qualified:
-     `:root[data-palette='x']` and `:root[data-theme='dark']` have identical
-     specificity, so whichever came last in the file would win — meaning a
-     palette's LIGHT values would silently override the base DARK theme.
-     Pinning each block to a theme with `:not([data-theme='dark'])` or
-     `[data-theme='dark']` makes it one step more specific and removes the
-     ordering trap entirely. */
+     Six palettes, every one of them a working brand colour rather than a
+     decoration: each carries its own canvas, ink and signal ramps so the whole
+     page repaints, not just the buttons.
 
-  /* Court — indigo and amber. Evening plans and early mornings. */
-  :root[data-palette='court']:not([data-theme='dark']) {
-    --canvas: 247 247 251;
-    --canvas-900: 231 232 241;
-    --canvas-800: 247 247 251;
+     Unlike the earlier set, none of these is the stylesheet's implicit state.
+     `data-palette` is always present — the blocking script in layout.tsx writes
+     the stored choice or the default before first paint — which is why every
+     block below is qualified by both the palette and the theme. The
+     qualification is not optional: `:root[data-palette='x']` and
+     `:root[data-theme='dark']` have identical specificity, so without it a
+     palette's LIGHT values would silently override the base DARK theme
+     depending on nothing but source order.
+
+     Contrast: every light `--brand` clears 4.5:1 against white, so `--on-brand`
+     can stay white and `text-brand` stays legible on the canvas. Dark themes
+     invert that — the brand is the brighter of the pair, so `--on-brand` is the
+     canvas colour. */
+
+  /* Parrot green — Bright green with an olive signal */
+  :root[data-palette='parrot']:not([data-theme='dark']) {
+    color-scheme: light;
+
+    --canvas: 247 251 248;
+    --canvas-900: 232 240 234;
+    --canvas-800: 247 251 248;
     --canvas-700: 255 255 255;
-    --canvas-600: 241 242 248;
-    --canvas-500: 225 227 238;
+    --canvas-600: 243 248 245;
+    --canvas-500: 226 236 229;
+
+    --content: 21 33 24;
+    --content-100: 11 19 13;
+    --content-200: 70 95 78;
+    --content-300: 109 139 117;
+
+    --on-brand: 255 255 255;
+    --brand: 23 125 52;
+    --brand-600: 19 101 42;
+    --brand-700: 15 80 33;
+    --brand-200: 220 252 229;
+
+    --signal: 122 106 10;
+    --signal-600: 98 86 8;
+
+    --glint: 139 121 8;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(23, 125, 52, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(122, 106, 10, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(21, 33, 24, 0.05), 0 12px 28px -16px rgba(21, 33, 24, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(15, 80, 33, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(23, 125, 52, 0.2), 0 12px 40px -16px rgba(23, 125, 52, 0.26);
+  }
+
+  :root[data-palette='parrot'][data-theme='dark'] {
+    color-scheme: dark;
+
+    --canvas: 12 19 14;
+    --canvas-900: 7 12 8;
+    --canvas-800: 12 19 14;
+    --canvas-700: 21 32 24;
+    --canvas-600: 33 47 37;
+    --canvas-500: 51 70 56;
+
+    --content: 237 245 239;
+    --content-100: 249 252 250;
+    --content-200: 201 221 207;
+    --content-300: 151 180 159;
+
+    --on-brand: 12 19 14;
+    --brand: 79 209 115;
+    --brand-600: 112 214 140;
+    --brand-700: 146 221 167;
+    --brand-200: 27 103 48;
+
+    --signal: 216 222 99;
+    --signal-600: 223 228 139;
+
+    --glint: 227 230 157;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(79, 209, 115, 0.17), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(216, 222, 99, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
+    --shadow-lift: 0 22px 56px -28px rgba(79, 209, 115, 0.5);
+    --shadow-glow: 0 0 0 1px rgba(79, 209, 115, 0.28), 0 12px 40px -16px rgba(79, 209, 115, 0.5);
+  }
+
+  /* Dark purple — Deep violet with warm brass */
+  :root[data-palette='purple']:not([data-theme='dark']) {
+    color-scheme: light;
+
+    --canvas: 249 247 251;
+    --canvas-900: 236 232 240;
+    --canvas-800: 249 247 251;
+    --canvas-700: 255 255 255;
+    --canvas-600: 246 243 248;
+    --canvas-500: 231 226 236;
+
+    --content: 27 21 33;
+    --content-100: 15 11 19;
+    --content-200: 84 70 95;
+    --content-300: 125 109 139;
+
+    --on-brand: 255 255 255;
+    --brand: 107 33 168;
+    --brand-600: 92 28 145;
+    --brand-700: 78 24 123;
+    --brand-200: 237 220 252;
+
+    --signal: 138 90 12;
+    --signal-600: 115 75 10;
+
+    --glint: 156 100 10;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(107, 33, 168, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(138, 90, 12, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(27, 21, 33, 0.05), 0 12px 28px -16px rgba(27, 21, 33, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(78, 24, 123, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(107, 33, 168, 0.2), 0 12px 40px -16px rgba(107, 33, 168, 0.26);
+  }
+
+  :root[data-palette='purple'][data-theme='dark'] {
+    color-scheme: dark;
+
+    --canvas: 16 12 19;
+    --canvas-900: 9 7 12;
+    --canvas-800: 16 12 19;
+    --canvas-700: 27 21 32;
+    --canvas-600: 40 33 47;
+    --canvas-500: 61 51 70;
+
+    --content: 241 237 245;
+    --content-100: 250 249 252;
+    --content-200: 211 201 221;
+    --content-300: 165 151 180;
+
+    --on-brand: 16 12 19;
+    --brand: 192 132 252;
+    --brand-600: 211 171 251;
+    --brand-700: 232 211 252;
+    --brand-200: 65 26 104;
+
+    --signal: 240 188 110;
+    --signal-600: 242 207 154;
+
+    --glint: 243 215 173;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(192, 132, 252, 0.17), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(240, 188, 110, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
+    --shadow-lift: 0 22px 56px -28px rgba(192, 132, 252, 0.5);
+    --shadow-glow: 0 0 0 1px rgba(192, 132, 252, 0.28), 0 12px 40px -16px rgba(192, 132, 252, 0.5);
+  }
+
+  /* Yellow — Deep gold with a brighter highlight */
+  :root[data-palette='yellow']:not([data-theme='dark']) {
+    color-scheme: light;
+
+    --canvas: 251 249 247;
+    --canvas-900: 240 237 232;
+    --canvas-800: 251 249 247;
+    --canvas-700: 255 255 255;
+    --canvas-600: 248 246 243;
+    --canvas-500: 236 232 226;
+
+    --content: 33 28 21;
+    --content-100: 19 15 11;
+    --content-200: 95 85 70;
+    --content-300: 139 126 109;
+
+    --on-brand: 255 255 255;
+    --brand: 161 98 7;
+    --brand-600: 134 82 6;
+    --brand-700: 110 67 5;
+    --brand-200: 252 239 220;
+
+    --signal: 176 125 4;
+    --signal-600: 151 107 3;
+
+    --glint: 195 137 0;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(161, 98, 7, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(176, 125, 4, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(33, 28, 21, 0.05), 0 12px 28px -16px rgba(33, 28, 21, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(110, 67, 5, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(161, 98, 7, 0.2), 0 12px 40px -16px rgba(161, 98, 7, 0.26);
+  }
+
+  :root[data-palette='yellow'][data-theme='dark'] {
+    color-scheme: dark;
+
+    --canvas: 19 18 12;
+    --canvas-900: 12 11 7;
+    --canvas-800: 19 18 12;
+    --canvas-700: 32 30 21;
+    --canvas-600: 47 44 33;
+    --canvas-500: 70 66 51;
+
+    --content: 245 243 237;
+    --content-100: 252 251 249;
+    --content-200: 221 217 201;
+    --content-300: 180 173 151;
+
+    --on-brand: 19 18 12;
+    --brand: 245 197 24;
+    --brand-600: 242 204 65;
+    --brand-700: 241 212 107;
+    --brand-200: 104 87 26;
+
+    --signal: 255 217 122;
+    --signal-600: 253 229 170;
+
+    --glint: 252 235 191;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(245, 197, 24, 0.17), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(255, 217, 122, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
+    --shadow-lift: 0 22px 56px -28px rgba(245, 197, 24, 0.5);
+    --shadow-glow: 0 0 0 1px rgba(245, 197, 24, 0.28), 0 12px 40px -16px rgba(245, 197, 24, 0.5);
+  }
+
+  /* Dark orange — Burnt orange with amber */
+  :root[data-palette='orange']:not([data-theme='dark']) {
+    color-scheme: light;
+
+    --canvas: 251 248 247;
+    --canvas-900: 240 234 232;
+    --canvas-800: 251 248 247;
+    --canvas-700: 255 255 255;
+    --canvas-600: 248 245 243;
+    --canvas-500: 236 229 226;
+
+    --content: 33 24 21;
+    --content-100: 19 13 11;
+    --content-200: 95 78 70;
+    --content-300: 139 117 109;
+
+    --on-brand: 255 255 255;
+    --brand: 194 65 12;
+    --brand-600: 168 56 10;
+    --brand-700: 144 48 9;
+    --brand-200: 252 229 220;
+
+    --signal: 138 90 12;
+    --signal-600: 115 75 10;
+
+    --glint: 156 100 10;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(194, 65, 12, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(138, 90, 12, 0.07), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(33, 24, 21, 0.05), 0 12px 28px -16px rgba(33, 24, 21, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(144, 48, 9, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(194, 65, 12, 0.2), 0 12px 40px -16px rgba(194, 65, 12, 0.26);
+  }
+
+  :root[data-palette='orange'][data-theme='dark'] {
+    color-scheme: dark;
+
+    --canvas: 19 15 12;
+    --canvas-900: 12 9 7;
+    --canvas-800: 19 15 12;
+    --canvas-700: 32 26 21;
+    --canvas-600: 47 39 33;
+    --canvas-500: 70 60 51;
+
+    --content: 245 241 237;
+    --content-100: 252 250 249;
+    --content-200: 221 210 201;
+    --content-300: 180 164 151;
+
+    --on-brand: 19 15 12;
+    --brand: 251 146 60;
+    --brand-600: 248 167 101;
+    --brand-700: 247 190 143;
+    --brand-200: 104 61 26;
+
+    --signal: 251 191 110;
+    --signal-600: 250 210 157;
+
+    --glint: 250 219 178;
+
+    --page-wash:
+      radial-gradient(64rem 44rem at 6% -8%, rgba(251, 146, 60, 0.17), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(251, 191, 110, 0.09), transparent 58%);
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
+    --shadow-lift: 0 22px 56px -28px rgba(251, 146, 60, 0.5);
+    --shadow-glow: 0 0 0 1px rgba(251, 146, 60, 0.28), 0 12px 40px -16px rgba(251, 146, 60, 0.5);
+  }
+
+  /* Blue — Corporate blue with amber */
+  :root[data-palette='blue']:not([data-theme='dark']) {
+    color-scheme: light;
+
+    --canvas: 247 248 251;
+    --canvas-900: 232 234 240;
+    --canvas-800: 247 248 251;
+    --canvas-700: 255 255 255;
+    --canvas-600: 243 244 248;
+    --canvas-500: 226 228 236;
 
     --content: 21 24 33;
     --content-100: 11 13 19;
-    --content-200: 71 77 96;
-    --content-300: 110 117 139;
-
-    --on-brand: 255 255 255;
-    --brand: 82 64 216;
-    --brand-600: 66 50 186;
-    --brand-700: 50 37 146;
-    --brand-200: 232 229 253;
-
-    --signal: 149 95 6;
-    --signal-600: 119 75 4;
-
-    --glint: 162 104 8;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(82, 64, 216, 0.08), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(149, 95, 6, 0.07), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(21, 24, 33, 0.05), 0 12px 28px -16px rgba(21, 24, 33, 0.16);
-    --shadow-lift: 0 22px 56px -28px rgba(50, 37, 146, 0.3);
-    --shadow-glow: 0 0 0 1px rgba(82, 64, 216, 0.2), 0 12px 40px -16px rgba(82, 64, 216, 0.26);
-  }
-
-  :root[data-palette='court'][data-theme='dark'] {
-    --canvas: 12 14 20;
-    --canvas-900: 7 8 12;
-    --canvas-800: 12 14 20;
-    --canvas-700: 21 24 34;
-    --canvas-600: 31 35 49;
-    --canvas-500: 48 54 74;
-
-    --content: 236 239 248;
-    --content-100: 250 251 255;
-    --content-200: 199 205 224;
-    --content-300: 150 158 182;
-
-    --on-brand: 12 14 20;
-    --brand: 138 124 255;
-    --brand-600: 166 156 255;
-    --brand-700: 205 199 255;
-    --brand-200: 44 36 96;
-
-    --signal: 245 182 66;
-    --signal-600: 250 206 128;
-
-    --glint: 255 214 143;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(138, 124, 255, 0.18), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(245, 182, 66, 0.09), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
-    --shadow-lift: 0 22px 56px -28px rgba(138, 124, 255, 0.5);
-    --shadow-glow: 0 0 0 1px rgba(138, 124, 255, 0.28), 0 12px 40px -16px rgba(138, 124, 255, 0.5);
-  }
-  /* Turf — pitch green and lime. The sport and outdoors half of the board. */
-  :root[data-palette='turf']:not([data-theme='dark']) {
-    --canvas: 247 250 247;
-    --canvas-900: 229 238 231;
-    --canvas-800: 247 250 247;
-    --canvas-700: 255 255 255;
-    --canvas-600: 240 246 241;
-    --canvas-500: 223 234 226;
-
-    --content: 17 28 21;
-    --content-100: 9 16 12;
-    --content-200: 66 84 72;
-    --content-300: 101 122 108;
-
-    --on-brand: 255 255 255;
-    --brand: 20 122 71;
-    --brand-600: 15 98 57;
-    --brand-700: 11 76 44;
-    --brand-200: 221 242 230;
-
-    --signal: 92 106 12;
-    --signal-600: 72 83 8;
-
-    --glint: 104 118 16;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(20, 122, 71, 0.08), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(92, 106, 12, 0.07), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(17, 28, 21, 0.05), 0 12px 28px -16px rgba(17, 28, 21, 0.16);
-    --shadow-lift: 0 22px 56px -28px rgba(11, 76, 44, 0.3);
-    --shadow-glow: 0 0 0 1px rgba(20, 122, 71, 0.2), 0 12px 40px -16px rgba(20, 122, 71, 0.26);
-  }
-
-  :root[data-palette='turf'][data-theme='dark'] {
-    --canvas: 10 16 13;
-    --canvas-900: 6 10 8;
-    --canvas-800: 10 16 13;
-    --canvas-700: 18 27 22;
-    --canvas-600: 27 40 32;
-    --canvas-500: 43 62 50;
-
-    --content: 236 245 239;
-    --content-100: 249 253 250;
-    --content-200: 198 216 205;
-    --content-300: 148 170 156;
-
-    --on-brand: 10 16 13;
-    --brand: 88 214 141;
-    --brand-600: 128 231 172;
-    --brand-700: 182 243 208;
-    --brand-200: 20 62 39;
-
-    --signal: 214 232 90;
-    --signal-600: 231 243 148;
-
-    --glint: 238 246 168;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(88, 214, 141, 0.16), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(214, 232, 90, 0.09), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
-    --shadow-lift: 0 22px 56px -28px rgba(88, 214, 141, 0.5);
-    --shadow-glow: 0 0 0 1px rgba(88, 214, 141, 0.28), 0 12px 40px -16px rgba(88, 214, 141, 0.5);
-  }
-  /* Dusk — plum and rose. The things that happen after dark. */
-  :root[data-palette='dusk']:not([data-theme='dark']) {
-    --canvas: 252 248 252;
-    --canvas-900: 240 231 240;
-    --canvas-800: 252 248 252;
-    --canvas-700: 255 255 255;
-    --canvas-600: 248 242 248;
-    --canvas-500: 235 225 236;
-
-    --content: 32 20 36;
-    --content-100: 20 12 23;
-    --content-200: 88 68 94;
-    --content-300: 132 112 138;
-
-    --on-brand: 255 255 255;
-    --brand: 168 44 132;
-    --brand-600: 140 34 110;
-    --brand-700: 110 26 86;
-    --brand-200: 250 228 244;
-
-    --signal: 178 68 40;
-    --signal-600: 144 54 32;
-
-    --glint: 160 62 36;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(168, 44, 132, 0.08), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(178, 68, 40, 0.07), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(32, 20, 36, 0.05), 0 12px 28px -16px rgba(32, 20, 36, 0.16);
-    --shadow-lift: 0 22px 56px -28px rgba(110, 26, 86, 0.3);
-    --shadow-glow: 0 0 0 1px rgba(168, 44, 132, 0.2), 0 12px 40px -16px rgba(168, 44, 132, 0.26);
-  }
-
-  :root[data-palette='dusk'][data-theme='dark'] {
-    --canvas: 19 12 22;
-    --canvas-900: 12 7 14;
-    --canvas-800: 19 12 22;
-    --canvas-700: 30 20 35;
-    --canvas-600: 44 30 50;
-    --canvas-500: 66 46 74;
-
-    --content: 245 238 248;
-    --content-100: 253 250 255;
-    --content-200: 216 202 222;
-    --content-300: 170 154 178;
-
-    --on-brand: 19 12 22;
-    --brand: 224 122 200;
-    --brand-600: 236 158 217;
-    --brand-700: 246 200 234;
-    --brand-200: 74 28 62;
-
-    --signal: 250 160 130;
-    --signal-600: 253 196 176;
-
-    --glint: 252 205 186;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(224, 122, 200, 0.16), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(250, 160, 130, 0.09), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
-    --shadow-lift: 0 22px 56px -28px rgba(224, 122, 200, 0.5);
-    --shadow-glow: 0 0 0 1px rgba(224, 122, 200, 0.28), 0 12px 40px -16px rgba(224, 122, 200, 0.5);
-  }
-  /* Ember — terracotta and gold, carried over from an earlier identity. */
-  :root[data-palette='ember']:not([data-theme='dark']) {
-    --canvas: 253 249 245;
-    --canvas-900: 243 232 222;
-    --canvas-800: 253 249 245;
-    --canvas-700: 255 255 255;
-    --canvas-600: 248 238 229;
-    --canvas-500: 236 221 207;
-
-    --content: 40 24 16;
-    --content-100: 25 14 9;
-    --content-200: 92 66 50;
-    --content-300: 138 111 93;
-
-    --on-brand: 255 255 255;
-    --brand: 196 76 30;
-    --brand-600: 166 62 24;
-    --brand-700: 133 49 18;
-    --brand-200: 253 231 219;
-
-    --signal: 164 99 8;
-    --signal-600: 138 85 12;
-
-    --glint: 164 104 16;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(196, 76, 30, 0.08), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(176, 111, 20, 0.07), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(40, 24, 16, 0.05), 0 12px 28px -16px rgba(40, 24, 16, 0.16);
-    --shadow-lift: 0 22px 56px -28px rgba(133, 49, 18, 0.3);
-    --shadow-glow: 0 0 0 1px rgba(196, 76, 30, 0.2), 0 12px 40px -16px rgba(196, 76, 30, 0.26);
-  }
-
-  :root[data-palette='ember'][data-theme='dark'] {
-    --canvas: 15 10 8;
-    --canvas-900: 8 5 4;
-    --canvas-800: 15 10 8;
-    --canvas-700: 26 17 13;
-    --canvas-600: 39 25 19;
-    --canvas-500: 58 38 28;
-
-    --content: 250 243 237;
-    --content-100: 255 251 247;
-    --content-200: 234 218 205;
-    --content-300: 190 168 152;
-
-    --on-brand: 15 10 8;
-    --brand: 234 108 58;
-    --brand-600: 247 138 92;
-    --brand-700: 253 197 165;
-    --brand-200: 72 30 14;
-
-    --signal: 245 179 66;
-    --signal-600: 250 208 133;
-
-    --glint: 255 214 143;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(234, 108, 58, 0.18), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(245, 179, 66, 0.09), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
-    --shadow-lift: 0 22px 56px -28px rgba(234, 108, 58, 0.5);
-    --shadow-glow: 0 0 0 1px rgba(234, 108, 58, 0.28), 0 12px 40px -16px rgba(234, 108, 58, 0.5);
-  }
-
-  /* Slate — corporate blue on cool grey. The most conventional of the set,
-     and the one an employer or a partner is least likely to have an opinion about. */
-  :root[data-palette='slate']:not([data-theme='dark']) {
-    --canvas: 248 250 252;
-    --canvas-900: 226 232 240;
-    --canvas-800: 248 250 252;
-    --canvas-700: 255 255 255;
-    --canvas-600: 241 245 249;
-    --canvas-500: 219 226 235;
-
-    --content: 15 23 42;
-    --content-100: 8 13 25;
-    --content-200: 62 74 96;
-    --content-300: 106 118 140;
+    --content-200: 70 77 95;
+    --content-300: 109 117 139;
 
     --on-brand: 255 255 255;
     --brand: 29 78 216;
-    --brand-600: 24 62 175;
-    --brand-700: 19 48 138;
-    --brand-200: 224 232 254;
+    --brand-600: 26 69 191;
+    --brand-700: 23 61 169;
+    --brand-200: 220 228 252;
 
     --signal: 161 98 7;
-    --signal-600: 128 78 5;
+    --signal-600: 137 83 6;
 
-    --glint: 150 92 6;
+    --glint: 180 108 3;
 
     --page-wash:
       radial-gradient(64rem 44rem at 6% -8%, rgba(29, 78, 216, 0.08), transparent 62%),
       radial-gradient(48rem 34rem at 98% 0%, rgba(161, 98, 7, 0.07), transparent 58%);
 
-    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 28px -16px rgba(15, 23, 42, 0.16);
-    --shadow-lift: 0 22px 56px -28px rgba(19, 48, 138, 0.3);
+    --shadow-card: 0 1px 2px rgba(21, 24, 33, 0.05), 0 12px 28px -16px rgba(21, 24, 33, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(23, 61, 169, 0.3);
     --shadow-glow: 0 0 0 1px rgba(29, 78, 216, 0.2), 0 12px 40px -16px rgba(29, 78, 216, 0.26);
   }
 
-  :root[data-palette='slate'][data-theme='dark'] {
-    --canvas: 13 18 28;
-    --canvas-900: 8 11 18;
-    --canvas-800: 13 18 28;
-    --canvas-700: 22 29 43;
-    --canvas-600: 33 43 61;
-    --canvas-500: 51 65 88;
+  :root[data-palette='blue'][data-theme='dark'] {
+    color-scheme: dark;
 
-    --content: 237 242 249;
-    --content-100: 250 252 255;
-    --content-200: 201 211 226;
-    --content-300: 152 165 186;
+    --canvas: 12 15 19;
+    --canvas-900: 7 9 12;
+    --canvas-800: 12 15 19;
+    --canvas-700: 21 25 32;
+    --canvas-600: 33 37 47;
+    --canvas-500: 51 57 70;
 
-    --on-brand: 13 18 28;
+    --content: 237 240 245;
+    --content-100: 249 250 252;
+    --content-200: 201 208 221;
+    --content-300: 151 160 180;
+
+    --on-brand: 12 15 19;
     --brand: 118 162 255;
-    --brand-600: 156 189 255;
-    --brand-700: 201 219 255;
-    --brand-200: 24 44 92;
+    --brand-600: 159 189 253;
+    --brand-700: 200 217 252;
+    --brand-200: 26 51 104;
 
-    --signal: 245 185 74;
-    --signal-600: 250 208 134;
+    --signal: 240 200 106;
+    --signal-600: 242 214 150;
 
-    --glint: 252 214 150;
+    --glint: 243 221 169;
 
     --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(118, 162, 255, 0.16), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(245, 185, 74, 0.09), transparent 58%);
+      radial-gradient(64rem 44rem at 6% -8%, rgba(118, 162, 255, 0.17), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(240, 200, 106, 0.09), transparent 58%);
 
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
-    --shadow-lift: 0 22px 56px -28px rgba(118, 162, 255, 0.45);
-    --shadow-glow: 0 0 0 1px rgba(118, 162, 255, 0.28), 0 12px 40px -16px rgba(118, 162, 255, 0.45);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
+    --shadow-lift: 0 22px 56px -28px rgba(118, 162, 255, 0.5);
+    --shadow-glow: 0 0 0 1px rgba(118, 162, 255, 0.28), 0 12px 40px -16px rgba(118, 162, 255, 0.5);
   }
 
-  /* Harbour — deep teal. Reads as trust rather than energy, which suits the
-     pages where somebody is deciding whether to hand over money. */
-  :root[data-palette='harbour']:not([data-theme='dark']) {
-    --canvas: 247 251 251;
-    --canvas-900: 223 236 236;
-    --canvas-800: 247 251 251;
-    --canvas-700: 255 255 255;
-    --canvas-600: 238 247 247;
-    --canvas-500: 214 231 231;
+  /* Light coffee brown — Milk coffee with olive */
+  :root[data-palette='coffee']:not([data-theme='dark']) {
+    color-scheme: light;
 
-    --content: 12 30 32;
-    --content-100: 6 18 20;
-    --content-200: 58 84 87;
-    --content-300: 96 122 125;
+    --canvas: 251 249 247;
+    --canvas-900: 240 235 232;
+    --canvas-800: 251 249 247;
+    --canvas-700: 255 255 255;
+    --canvas-600: 248 245 243;
+    --canvas-500: 236 230 226;
+
+    --content: 33 26 21;
+    --content-100: 19 14 11;
+    --content-200: 95 81 70;
+    --content-300: 139 122 109;
 
     --on-brand: 255 255 255;
-    --brand: 13 110 106;
-    --brand-600: 10 88 85;
-    --brand-700: 8 68 66;
-    --brand-200: 214 240 238;
+    --brand: 139 94 60;
+    --brand-600: 119 81 52;
+    --brand-700: 102 69 44;
+    --brand-200: 248 234 224;
 
-    --signal: 166 94 12;
-    --signal-600: 132 74 8;
+    --signal: 111 100 37;
+    --signal-600: 92 83 31;
 
-    --glint: 154 88 10;
+    --glint: 125 112 39;
 
     --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(13, 110, 106, 0.08), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(166, 94, 12, 0.07), transparent 58%);
+      radial-gradient(64rem 44rem at 6% -8%, rgba(139, 94, 60, 0.08), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(111, 100, 37, 0.07), transparent 58%);
 
-    --shadow-card: 0 1px 2px rgba(12, 30, 32, 0.05), 0 12px 28px -16px rgba(12, 30, 32, 0.16);
-    --shadow-lift: 0 22px 56px -28px rgba(8, 68, 66, 0.3);
-    --shadow-glow: 0 0 0 1px rgba(13, 110, 106, 0.2), 0 12px 40px -16px rgba(13, 110, 106, 0.26);
+    --shadow-card: 0 1px 2px rgba(33, 26, 21, 0.05), 0 12px 28px -16px rgba(33, 26, 21, 0.16);
+    --shadow-lift: 0 22px 56px -28px rgba(102, 69, 44, 0.3);
+    --shadow-glow: 0 0 0 1px rgba(139, 94, 60, 0.2), 0 12px 40px -16px rgba(139, 94, 60, 0.26);
   }
 
-  :root[data-palette='harbour'][data-theme='dark'] {
-    --canvas: 9 20 22;
-    --canvas-900: 5 13 14;
-    --canvas-800: 9 20 22;
-    --canvas-700: 16 32 35;
-    --canvas-600: 25 47 51;
-    --canvas-500: 40 71 76;
+  :root[data-palette='coffee'][data-theme='dark'] {
+    color-scheme: dark;
 
-    --content: 232 244 244;
-    --content-100: 247 253 253;
-    --content-200: 194 216 217;
-    --content-300: 146 172 175;
+    --canvas: 19 16 12;
+    --canvas-900: 12 9 7;
+    --canvas-800: 19 16 12;
+    --canvas-700: 32 26 21;
+    --canvas-600: 47 40 33;
+    --canvas-500: 70 60 51;
 
-    --on-brand: 9 20 22;
-    --brand: 58 200 190;
-    --brand-600: 114 222 214;
-    --brand-700: 176 240 235;
-    --brand-200: 10 62 60;
+    --content: 245 241 237;
+    --content-100: 252 250 249;
+    --content-200: 221 211 201;
+    --content-300: 180 164 151;
 
-    --signal: 242 176 88;
-    --signal-600: 248 202 142;
+    --on-brand: 19 16 12;
+    --brand: 217 168 124;
+    --brand-600: 224 188 155;
+    --brand-700: 232 209 188;
+    --brand-200: 101 63 29;
 
-    --glint: 250 210 156;
+    --signal: 224 203 140;
+    --signal-600: 232 219 178;
 
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(58, 200, 190, 0.16), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(242, 176, 88, 0.09), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
-    --shadow-lift: 0 22px 56px -28px rgba(58, 200, 190, 0.45);
-    --shadow-glow: 0 0 0 1px rgba(58, 200, 190, 0.28), 0 12px 40px -16px rgba(58, 200, 190, 0.45);
-  }
-
-  /* Graphite — monochrome, with the brand doing its work through weight rather
-     than hue. The most restrained option, for anyone who wants the interface to
-     disappear behind the content. */
-  :root[data-palette='graphite']:not([data-theme='dark']) {
-    --canvas: 250 250 250;
-    --canvas-900: 230 230 231;
-    --canvas-800: 250 250 250;
-    --canvas-700: 255 255 255;
-    --canvas-600: 244 244 245;
-    --canvas-500: 222 222 224;
-
-    --content: 18 18 20;
-    --content-100: 9 9 11;
-    --content-200: 66 66 71;
-    --content-300: 112 112 118;
-
-    --on-brand: 255 255 255;
-    --brand: 34 36 44;
-    --brand-600: 22 24 30;
-    --brand-700: 14 15 20;
-    --brand-200: 228 229 233;
-
-    --signal: 140 92 10;
-    --signal-600: 112 73 6;
-
-    --glint: 132 86 8;
+    --glint: 236 226 194;
 
     --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(34, 36, 44, 0.08), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(140, 92, 10, 0.07), transparent 58%);
+      radial-gradient(64rem 44rem at 6% -8%, rgba(217, 168, 124, 0.17), transparent 62%),
+      radial-gradient(48rem 34rem at 98% 0%, rgba(224, 203, 140, 0.09), transparent 58%);
 
-    --shadow-card: 0 1px 2px rgba(18, 18, 20, 0.05), 0 12px 28px -16px rgba(18, 18, 20, 0.16);
-    --shadow-lift: 0 22px 56px -28px rgba(14, 15, 20, 0.3);
-    --shadow-glow: 0 0 0 1px rgba(34, 36, 44, 0.2), 0 12px 40px -16px rgba(34, 36, 44, 0.26);
-  }
-
-  :root[data-palette='graphite'][data-theme='dark'] {
-    --canvas: 12 12 14;
-    --canvas-900: 7 7 8;
-    --canvas-800: 12 12 14;
-    --canvas-700: 22 22 25;
-    --canvas-600: 34 34 38;
-    --canvas-500: 54 54 60;
-
-    --content: 240 240 243;
-    --content-100: 252 252 253;
-    --content-200: 203 203 210;
-    --content-300: 153 153 162;
-
-    --on-brand: 12 12 14;
-    --brand: 226 228 236;
-    --brand-600: 240 241 246;
-    --brand-700: 250 250 252;
-    --brand-200: 42 43 50;
-
-    --signal: 240 184 92;
-    --signal-600: 246 206 146;
-
-    --glint: 248 212 158;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(226, 228, 236, 0.16), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(240, 184, 92, 0.09), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
-    --shadow-lift: 0 22px 56px -28px rgba(226, 228, 236, 0.45);
-    --shadow-glow: 0 0 0 1px rgba(226, 228, 236, 0.28), 0 12px 40px -16px rgba(226, 228, 236, 0.45);
-  }
-
-  /* Claret — wine and brass. The same family as Paper but taken darker and
-     quieter, for a more formal register. */
-  :root[data-palette='claret']:not([data-theme='dark']) {
-    --canvas: 252 249 250;
-    --canvas-900: 238 227 231;
-    --canvas-800: 252 249 250;
-    --canvas-700: 255 255 255;
-    --canvas-600: 249 242 244;
-    --canvas-500: 232 217 222;
-
-    --content: 30 16 21;
-    --content-100: 19 9 13;
-    --content-200: 86 62 70;
-    --content-300: 130 106 114;
-
-    --on-brand: 255 255 255;
-    --brand: 150 26 62;
-    --brand-600: 124 20 51;
-    --brand-700: 98 15 40;
-    --brand-200: 250 226 233;
-
-    --signal: 146 100 14;
-    --signal-600: 116 79 10;
-
-    --glint: 138 94 12;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(150, 26, 62, 0.08), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(146, 100, 14, 0.07), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(30, 16, 21, 0.05), 0 12px 28px -16px rgba(30, 16, 21, 0.16);
-    --shadow-lift: 0 22px 56px -28px rgba(98, 15, 40, 0.3);
-    --shadow-glow: 0 0 0 1px rgba(150, 26, 62, 0.2), 0 12px 40px -16px rgba(150, 26, 62, 0.26);
-  }
-
-  :root[data-palette='claret'][data-theme='dark'] {
-    --canvas: 22 12 16;
-    --canvas-900: 14 7 10;
-    --canvas-800: 22 12 16;
-    --canvas-700: 33 19 25;
-    --canvas-600: 48 28 36;
-    --canvas-500: 71 43 54;
-
-    --content: 246 236 240;
-    --content-100: 253 248 250;
-    --content-200: 216 197 205;
-    --content-300: 168 148 157;
-
-    --on-brand: 22 12 16;
-    --brand: 240 122 158;
-    --brand-600: 246 158 186;
-    --brand-700: 250 198 214;
-    --brand-200: 78 22 44;
-
-    --signal: 236 178 96;
-    --signal-600: 244 204 148;
-
-    --glint: 246 210 160;
-
-    --page-wash:
-      radial-gradient(64rem 44rem at 6% -8%, rgba(240, 122, 158, 0.16), transparent 62%),
-      radial-gradient(48rem 34rem at 98% 0%, rgba(236, 178, 96, 0.09), transparent 58%);
-
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
-    --shadow-lift: 0 22px 56px -28px rgba(240, 122, 158, 0.45);
-    --shadow-glow: 0 0 0 1px rgba(240, 122, 158, 0.28), 0 12px 40px -16px rgba(240, 122, 158, 0.45);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.6), 0 12px 28px -16px rgba(0, 0, 0, 0.85);
+    --shadow-lift: 0 22px 56px -28px rgba(217, 168, 124, 0.5);
+    --shadow-glow: 0 0 0 1px rgba(217, 168, 124, 0.28), 0 12px 40px -16px rgba(217, 168, 124, 0.5);
   }
 
   html {

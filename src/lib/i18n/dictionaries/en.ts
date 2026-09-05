@@ -12,7 +12,6 @@ export const en = {
     howItWorks: 'How it works',
   },
   header: {
-    search: 'Search meetups',
     signIn: 'Sign in',
     join: 'Join CampusClub',
     openMenu: 'Open menu',
@@ -23,6 +22,17 @@ export const en = {
     paletteHeading: 'Colour',
     languageLabel: 'Change language',
     languageHeading: 'Language',
+    appearanceHeading: 'Appearance',
+    preferencesLabel: 'Language, theme and colour',
+  },
+  menu: {
+    myMeetups: 'Your meetups',
+    saved: 'Saved meetups',
+    host: 'Host a meetup',
+    pass: 'Your pass',
+    profile: 'Profile & settings',
+    superAdmin: 'Super Admin',
+    signOut: 'Sign out',
   },
   drawer: {
     signedInAs: 'Signed in as',

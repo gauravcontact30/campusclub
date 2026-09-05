@@ -1,23 +1,21 @@
 export type Theme = 'light' | 'dark';
-export type PaletteId =
-  | 'paper'
-  | 'slate'
-  | 'graphite'
-  | 'harbour'
-  | 'court'
-  | 'claret'
-  | 'ember'
-  | 'turf'
-  | 'dusk';
+export type PaletteId = 'parrot' | 'purple' | 'yellow' | 'orange' | 'blue' | 'coffee';
 
 export const THEME_STORAGE_KEY = 'campusclub-theme';
 export const PALETTE_STORAGE_KEY = 'campusclub-palette';
 
 /**
- * The nine selectable palettes, ordered from most restrained to most
- * expressive rather than alphabetically — somebody opening this menu is
- * usually deciding how loud they want the product to be, so that is the axis
- * the list should read along.
+ * The palette a visitor gets before they choose one. Blue is the most neutral
+ * of the six and the least likely to fight a screenshot, a logo or a slide.
+ */
+export const DEFAULT_PALETTE: PaletteId = 'blue';
+
+/**
+ * The six selectable palettes.
+ *
+ * Every one is a working brand colour rather than a decoration: each carries
+ * its own canvas, ink and signal ramps in globals.css, so picking one repaints
+ * the whole page and not just the buttons.
  *
  * `swatch` is the pair shown in the picker — the brand colour and its
  * supporting signal — taken from each palette's LIGHT values, because light is
@@ -25,15 +23,12 @@ export const PALETTE_STORAGE_KEY = 'campusclub-palette';
  * actually looking at.
  */
 export const PALETTES: { id: PaletteId; name: string; blurb: string; swatch: [string, string] }[] = [
-  { id: 'paper', name: 'Paper', blurb: 'Cream and signal red', swatch: ['#C22E17', '#A06204'] },
-  { id: 'slate', name: 'Slate', blurb: 'Corporate blue on cool grey', swatch: ['#1D4ED8', '#A16207'] },
-  { id: 'graphite', name: 'Graphite', blurb: 'Monochrome, weight over hue', swatch: ['#22242C', '#8C5C0A'] },
-  { id: 'harbour', name: 'Harbour', blurb: 'Deep teal and amber', swatch: ['#0D6E6A', '#A65E0C'] },
-  { id: 'court', name: 'Court', blurb: 'Indigo and amber', swatch: ['#5240D8', '#955F06'] },
-  { id: 'claret', name: 'Claret', blurb: 'Wine and brass', swatch: ['#961A3E', '#92640E'] },
-  { id: 'ember', name: 'Ember', blurb: 'Terracotta and gold', swatch: ['#C44C1E', '#A46308'] },
-  { id: 'turf', name: 'Turf', blurb: 'Pitch green and lime', swatch: ['#147A47', '#5C6A0C'] },
-  { id: 'dusk', name: 'Dusk', blurb: 'Plum and rose', swatch: ['#A82C84', '#B24428'] },
+  { id: 'parrot', name: 'Parrot green', blurb: 'Bright green, olive signal', swatch: ['#177D34', '#7A6A0A'] },
+  { id: 'purple', name: 'Dark purple', blurb: 'Deep violet and warm brass', swatch: ['#6B21A8', '#8A5A0C'] },
+  { id: 'yellow', name: 'Yellow', blurb: 'Deep gold, brighter highlight', swatch: ['#A16207', '#B07D04'] },
+  { id: 'orange', name: 'Dark orange', blurb: 'Burnt orange and amber', swatch: ['#C2410C', '#8A5A0C'] },
+  { id: 'blue', name: 'Blue', blurb: 'Corporate blue and amber', swatch: ['#1D4ED8', '#A16207'] },
+  { id: 'coffee', name: 'Light coffee brown', blurb: 'Milk coffee and olive', swatch: ['#8B5E3C', '#6F6425'] },
 ];
 
 const IDS = PALETTES.map((p) => p.id);
@@ -44,15 +39,16 @@ const IDS = PALETTES.map((p) => p.id);
  * execute ahead of React — and deliberately kept tiny, since it blocks parsing.
  *
  * Theme authority: an explicit choice, then the operating system, then light.
- * Palette authority: an explicit choice, then Paper, which is the default
- * already baked into the stylesheet and so needs no attribute.
+ * Palette authority: an explicit choice, then the default. Unlike the previous
+ * set, no palette is the stylesheet's implicit state, so the attribute is
+ * always written — every palette block in globals.css is qualified by it.
  */
 export const THEME_INIT_SCRIPT = `(function(){try{
 var d=document.documentElement,s=localStorage.getItem('${THEME_STORAGE_KEY}');
 d.dataset.theme=s==='light'||s==='dark'?s:(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
 var p=localStorage.getItem('${PALETTE_STORAGE_KEY}');
-if(p&&${JSON.stringify(IDS)}.indexOf(p)>-1&&p!=='paper')d.dataset.palette=p;
-}catch(e){document.documentElement.dataset.theme='light';}})();`;
+d.dataset.palette=${JSON.stringify(IDS)}.indexOf(p)>-1?p:'${DEFAULT_PALETTE}';
+}catch(e){document.documentElement.dataset.theme='light';document.documentElement.dataset.palette='${DEFAULT_PALETTE}';}})();`;
 
 export function currentTheme(): Theme {
   return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
@@ -65,7 +61,7 @@ export function applyTheme(theme: Theme) {
 
 export function currentPalette(): PaletteId {
   const value = document.documentElement.dataset.palette;
-  return IDS.includes(value as PaletteId) ? (value as PaletteId) : 'paper';
+  return IDS.includes(value as PaletteId) ? (value as PaletteId) : DEFAULT_PALETTE;
 }
 
 /**
@@ -81,10 +77,7 @@ export function subscribePalette(onChange: () => void) {
 }
 
 export function applyPalette(palette: PaletteId) {
-  // Paper is the stylesheet's default, so it is expressed as the absence of the
-  // attribute rather than as a fifth block that repeats what is already there.
-  if (palette === 'paper') delete document.documentElement.dataset.palette;
-  else document.documentElement.dataset.palette = palette;
+  document.documentElement.dataset.palette = palette;
   remember(PALETTE_STORAGE_KEY, palette);
   window.dispatchEvent(new Event(PALETTE_EVENT));
 }
