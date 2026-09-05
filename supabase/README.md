@@ -77,6 +77,34 @@ RPC the app calls exists, the 24 categories are loaded, and that row-level
 security really is on — an anonymous client must not be able to read
 `payments`. It exits non-zero on any failure, so it can gate a deploy.
 
+## 2c. Check sign-up and sign-in specifically
+
+```bash
+npm run auth:check
+```
+
+`db:check` proves the schema is there; this proves a person can actually get an
+account. It creates one throwaway address, then reports which of the usual
+causes is in the way:
+
+| What it reports | What to do |
+| --- | --- |
+| Supabase is not configured | The env vars are under the wrong names. They need the `NEXT_PUBLIC_` prefix — see `.env.example` |
+| Anon key rejected | Recopy it from *Project Settings → API* |
+| Service-role key rejected | Same, but note this one also blocks `/api/admin/seed` and anything else that bypasses RLS |
+| No categories | `baseline.sql` was never run |
+| Email confirmation is ON | Expected in production with SMTP configured. In development it is the usual culprit: the built-in mailer allows only a couple of sends an hour, so sign-ups start returning `over_email_send_rate_limit` almost immediately. Turn it off at *Authentication → Sign In / Providers → Email → Confirm email* |
+| No profile row was created | The `on_auth_user_created` trigger is missing. Re-run `baseline.sql`; it is idempotent |
+
+With a service-role key present it deletes the throwaway account afterwards.
+Without one it says so and leaves it for you to remove.
+
+One thing it cannot see from outside: the **redirect allowlist**. If you keep
+email confirmation on, every origin you sign up from — `http://localhost:3000`,
+`http://localhost:3001`, each preview domain — must be listed under
+*Authentication → URL Configuration → Redirect URLs*, or the confirmation link
+lands on the Site URL with no session and looks like a silent failure.
+
 ## 3. Load the demo content
 
 The meetups live in `src/lib/data/seed.ts` so both backends share one source of

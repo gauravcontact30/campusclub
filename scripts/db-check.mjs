@@ -131,8 +131,6 @@ async function main() {
       'SUPABASE_SERVICE_ROLE_KEY',
       'Missing. The app still runs, but /api/admin/seed, the payment webhook and the\n      Super Admin dashboard need it — without it /admin can only read what the\n      signed-in admin owns, so revenue and the event log come back near-empty.',
     );
-  } else {
-    ok('SUPABASE_SERVICE_ROLE_KEY', 'set');
   }
 
   if (!URL || !ANON) {
@@ -142,8 +140,38 @@ async function main() {
 
   // Prefer the service-role key so a missing table is reported as missing
   // rather than being masked by row-level security.
-  const key = SERVICE || ANON;
+  //
+  // But prove the key works before trusting a single answer it gives. A key the
+  // project rejects used to be invisible here: every probe below came back
+  // "Unregistered API key", each one fell into the generic `warn` branch, and
+  // warnings do not set the exit code — so this script printed
+  // "campusclub_db is ready" having verified precisely nothing.
+  let key = SERVICE || ANON;
+
+  if (SERVICE) {
+    const { error } = await createClient(URL, SERVICE, { auth: { persistSession: false } })
+      .from('categories')
+      .select('slug')
+      .limit(1);
+
+    if (error && REJECTED_KEY.test(error.message)) {
+      bad(
+        'SUPABASE_SERVICE_ROLE_KEY',
+        `Rejected by the project: "${error.message}". Recopy it from Project Settings → API.\n      /api/admin/seed, the payment webhook and the Super Admin dashboard all need it.\n      Falling back to the anon key, so anything row-level security hides is unchecked below.`,
+      );
+      key = ANON;
+    } else {
+      ok('SUPABASE_SERVICE_ROLE_KEY', 'set and accepted');
+    }
+  }
+
   const supabase = createClient(URL, key, { auth: { persistSession: false } });
+
+  const { error: anonError } = await supabase.from('categories').select('slug').limit(1);
+  if (anonError && REJECTED_KEY.test(anonError.message)) {
+    bad('NEXT_PUBLIC_SUPABASE_ANON_KEY', `Rejected by the project: "${anonError.message}".`);
+    report();
+  }
 
   /* 2. reachable -------------------------------------------------- */
   const { error: reachError } = await supabase.from('categories').select('slug').limit(1);
