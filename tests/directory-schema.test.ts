@@ -159,4 +159,38 @@ describe('0009_directory.sql — business_categories seed', () => {
       expect(sql, `no "drop policy if exists" found for "${name}"`).toContain(`drop policy if exists "${name}"`);
     }
   });
+
+  // Fix round 1 findings: a row-level UPDATE policy cannot be scoped to a
+  // single column, so a business-owner reply policy would also let the owner
+  // rewrite a review's rating/body/user_id — the exact thing a review system
+  // exists to prevent. Owner replies must go exclusively through the
+  // security-definer function below, with the reviewer's own update access
+  // narrowed to the three columns they actually own via a column grant.
+  it('never grants business owners a row-level UPDATE policy on reviews', () => {
+    expect(sql).not.toContain('owners reply to reviews on a claimed business');
+  });
+
+  it('defines reply_to_business_review as a security definer function', () => {
+    const fnMatch = sql.match(/create or replace function public\.reply_to_business_review\s*\(([\s\S]*?)\$\$;/);
+    expect(fnMatch, 'reply_to_business_review function not found').toBeTruthy();
+    const body = fnMatch![0];
+    expect(body).toMatch(/security definer/);
+    expect(body).toMatch(/language plpgsql/);
+    expect(body).toMatch(/set search_path = public/);
+    expect(body).toMatch(/returns boolean/);
+    expect(body).toMatch(/return found;/);
+  });
+
+  it('revokes column-unrestricted update and grants only rating/body/photos to authenticated', () => {
+    expect(sql).toContain('revoke update on public.business_reviews from authenticated;');
+    expect(sql).toContain('grant update (rating, body, photos) on public.business_reviews to authenticated;');
+  });
+
+  it('recomputes both the old and new business on refresh_business_rating', () => {
+    const fnMatch = sql.match(/create or replace function public\.refresh_business_rating\s*\(\)[\s\S]*?\$\$;/);
+    expect(fnMatch, 'refresh_business_rating function not found').toBeTruthy();
+    const body = fnMatch![0];
+    expect(body).toMatch(/old\.business_id/);
+    expect(body).toMatch(/new\.business_id/);
+  });
 });

@@ -137,17 +137,29 @@ create table if not exists public.business_reviews (
 
 create index if not exists business_reviews_business_idx on public.business_reviews (business_id, created_at desc);
 
--- The single writer that keeps businesses.rating honest.
+-- The single writer that keeps businesses.rating honest. Recomputes BOTH the
+-- old and new business_id on an UPDATE — if a review's business_id ever
+-- moved, the business it left behind must lose that review's count too, not
+-- just have the business it joined gain one. Column grants make business_id
+-- unreachable through the API today (see below), but a trigger that is only
+-- correct because of a grant defined elsewhere is a trap for whoever next
+-- edits that grant, so this is correct on its own terms regardless.
 create or replace function public.refresh_business_rating() returns trigger
 language plpgsql security definer set search_path = public as $$
 declare target uuid;
 begin
-  target := coalesce(new.business_id, old.business_id);
-  update public.businesses b
-     set rating       = coalesce((select round(avg(r.rating)::numeric, 1) from public.business_reviews r where r.business_id = target), 0),
-         review_count = (select count(*) from public.business_reviews r where r.business_id = target),
-         updated_at   = now()
-   where b.id = target;
+  for target in
+    select distinct id from (
+      values (old.business_id), (new.business_id)
+    ) as ids (id)
+    where id is not null
+  loop
+    update public.businesses b
+       set rating       = coalesce((select round(avg(r.rating)::numeric, 1) from public.business_reviews r where r.business_id = target), 0),
+           review_count = (select count(*) from public.business_reviews r where r.business_id = target),
+           updated_at   = now()
+     where b.id = target;
+  end loop;
   return null;
 end;
 $$;
@@ -193,10 +205,33 @@ drop policy if exists "authors edit their own business reviews" on public.busine
 create policy "authors edit their own business reviews" on public.business_reviews
   for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
--- Written now, inert until the claims milestone: nothing sets claimed_by yet.
-drop policy if exists "owners reply to reviews on a claimed business" on public.business_reviews;
-create policy "owners reply to reviews on a claimed business" on public.business_reviews
-  for update using (
-    exists (select 1 from public.businesses b
-             where b.id = business_reviews.business_id and b.claimed_by = auth.uid())
-  );
+-- RLS is row-level, not column-level: the policy above only proves the caller
+-- owns the row, so on its own it would let a reviewer overwrite owner_reply
+-- (forging a reply from the business) or repoint business_id. Column grants
+-- close that: an authenticated caller may only ever write the three columns
+-- a reviewer actually owns. The security definer function below runs as the
+-- function owner, not as `authenticated`, so it is unaffected by this grant.
+revoke update on public.business_reviews from authenticated;
+grant update (rating, body, photos) on public.business_reviews to authenticated;
+
+-- Owner replies go exclusively through this function — there is deliberately
+-- no RLS policy granting business owners row-level update access, because
+-- Postgres RLS cannot be scoped to a single column: a `for update using
+-- (claimed_by = auth.uid())` policy would let an owner rewrite a review's
+-- rating, body and user_id, not just add a reply. `reply_to_vouch` in
+-- baseline.sql has the same shape for the same reason — vouches carries no
+-- owner-update RLS policy either.
+create or replace function public.reply_to_business_review(
+  p_review_id uuid, p_owner_id uuid, p_body text
+) returns boolean
+language plpgsql security definer set search_path = public as $$
+begin
+  update public.business_reviews r
+     set owner_reply = p_body, owner_reply_at = now()
+    from public.businesses b
+   where r.id = p_review_id
+     and b.id = r.business_id
+     and b.claimed_by = p_owner_id;
+  return found;
+end;
+$$;
