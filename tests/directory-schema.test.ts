@@ -190,7 +190,14 @@ describe('0009_directory.sql — business_categories seed', () => {
     const fnMatch = sql.match(/create or replace function public\.refresh_business_rating\s*\(\)[\s\S]*?\$\$;/);
     expect(fnMatch, 'refresh_business_rating function not found').toBeTruthy();
     const body = fnMatch![0];
-    expect(body).toMatch(/old\.business_id/);
-    expect(body).toMatch(/new\.business_id/);
+    // A bare substring check on `old.business_id` / `new.business_id` would
+    // stay green even for the original, buggy
+    // `target := coalesce(new.business_id, old.business_id);` line — that
+    // line contains both substrings too, it just only ever recomputes one
+    // side. Require the actual both-ids loop construct instead, so this
+    // test fails if someone reverts to the single-target coalesce form.
+    expect(body).not.toMatch(/coalesce\(\s*new\.business_id\s*,\s*old\.business_id\s*\)/);
+    expect(body).toMatch(/for target in/);
+    expect(body).toMatch(/values\s*\(old\.business_id\),\s*\(new\.business_id\)/);
   });
 });
