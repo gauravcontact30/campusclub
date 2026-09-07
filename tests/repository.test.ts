@@ -4,6 +4,8 @@ import { cancelJoin, commitJoin, getJoin, getUpcomingJoins, isRefundable, passCo
 import { getVouches, ratingBreakdown, topHighlights } from '@/lib/data/vouches';
 import { getSavedMeetupIds, toggleSave } from '@/lib/data/saves';
 import { db, resetDb } from '@/lib/data/store';
+import { DIRECTORY_PER_PAGE, getBusiness, listBusinesses, topBusinesses } from '@/lib/data/businesses';
+import { parseBusinessQuery } from '@/lib/directory/query';
 
 // No Supabase env in tests, so every call exercises the demo adapter.
 beforeEach(() => {
@@ -304,5 +306,69 @@ describe('aggregates', () => {
     const hosted = await getMeetupsHostedBy('u003');
     expect(hosted.length).toBeGreaterThan(0);
     for (const meetup of hosted) expect(meetup.hostId).toBe('u003');
+  });
+});
+
+describe('business repository (demo mode)', () => {
+  it('lists every seeded business by default', async () => {
+    const page = await listBusinesses(parseBusinessQuery({}));
+    expect(page.items.length).toBeGreaterThan(0);
+    expect(page.total).toBe(page.items.length <= DIRECTORY_PER_PAGE ? page.items.length : page.total);
+    expect(page.page).toBe(1);
+    expect(page.perPage).toBe(DIRECTORY_PER_PAGE);
+  });
+
+  it('filters by city', async () => {
+    const page = await listBusinesses(parseBusinessQuery({ city: 'pune' }));
+    expect(page.items.length).toBeGreaterThan(0);
+    expect(page.items.every((b) => b.citySlug === 'pune')).toBe(true);
+  });
+
+  it('filters by category', async () => {
+    const page = await listBusinesses(parseBusinessQuery({ cat: 'cafes' }));
+    expect(page.items.every((b) => b.categorySlug === 'cafes')).toBe(true);
+  });
+
+  it('matches a term against the name case-insensitively', async () => {
+    const page = await listBusinesses(parseBusinessQuery({ q: 'vaishali' }));
+    expect(page.items.map((b) => b.slug)).toContain('vaishali-fergusson-road-pune');
+  });
+
+  it('resolves a term that names a category rather than a business', async () => {
+    const page = await listBusinesses(parseBusinessQuery({ q: 'cafe' }));
+    expect(page.items.length).toBeGreaterThan(0);
+    expect(page.items.some((b) => b.categorySlug === 'cafes')).toBe(true);
+  });
+
+  it('returns an empty page rather than throwing for a term nothing matches', async () => {
+    const page = await listBusinesses(parseBusinessQuery({ q: 'zzzznotathing' }));
+    expect(page.items).toEqual([]);
+    expect(page.total).toBe(0);
+    expect(page.pages).toBe(0);
+  });
+
+  it('defaults to the Recommended order — best-documented first', async () => {
+    const page = await listBusinesses(parseBusinessQuery({}));
+    const scores = page.items.map((b) => b.completeness);
+    expect([...scores]).toEqual([...scores].sort((a, b) => b - a));
+  });
+
+  it('paginates', async () => {
+    const all = await listBusinesses(parseBusinessQuery({}));
+    const second = await listBusinesses({ ...parseBusinessQuery({}), perPage: 2, page: 2 });
+    expect(second.page).toBe(2);
+    expect(second.perPage).toBe(2);
+    expect(second.items[0]?.id).not.toBe(all.items[0]?.id);
+  });
+
+  it('finds a business by slug and returns null for one that does not exist', async () => {
+    expect((await getBusiness('vaishali-fergusson-road-pune'))?.name).toBe('Vaishali');
+    expect(await getBusiness('no-such-place')).toBeNull();
+  });
+
+  it('returns the strongest listings for a city', async () => {
+    const top = await topBusinesses('pune', 3);
+    expect(top.length).toBeLessThanOrEqual(3);
+    expect(top.every((b) => b.citySlug === 'pune')).toBe(true);
   });
 });
