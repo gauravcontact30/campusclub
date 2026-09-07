@@ -52,6 +52,18 @@ const people: [name: string, email: string, city: string, bio: string, interests
   // database. In Supabase mode this row is irrelevant — sign up with the same
   // address there and the allowlist in lib/admin/config.ts recognises it.
   ['Gaurav', 'garvcontact30@gmail.com', 'Bengaluru', 'Runs CampusClub.', ['group-study', 'gym']],
+  // The Tier-2 hosts. They exist because a catalogue that lists thirty-eight
+  // cities and seeds meetups in six of them is a demo that argues against its
+  // own coverage claim on the one page — /cities — where the claim is made.
+  // They have no portrait yet, which is why `PORTRAIT_IDS` is now shorter than
+  // this list: an initialled avatar is a supported state, and inventing six
+  // more stock faces to avoid it would be the wrong fix.
+  ['Ishita Sharma', 'ishita@example.com', 'Jaipur', 'Architecture student. Walks up to Nahargarh more mornings than she admits.', ['outdoors', 'exam-prep']],
+  ['Abhinav Tripathi', 'abhinav@example.com', 'Lucknow', 'UPSC, two attempts in. Runs the answer-writing table he could not find.', ['exam-prep', 'dinner']],
+  ['Neha Bhatt', 'neha@example.com', 'Indore', 'Food writer. Has opinions about which Sarafa stall to start at.', ['dinner', 'group-study']],
+  ['Karthik Subramanian', 'karthik@example.com', 'Coimbatore', 'Textile-mill engineer. Rides out to the foothills before work.', ['cycling', 'board-games']],
+  ['Gurpreet Kaur', 'gurpreet@example.com', 'Chandigarh', 'Physiotherapist. Sets the slow pace group and enforces it.', ['outdoors', 'breakfast-lunch']],
+  ['Bhaskar Das', 'bhaskar@example.com', 'Guwahati', 'Sound engineer. Hosts an open mic where nobody is auditioning.', ['open-mic', 'outdoors']],
 ];
 
 
@@ -87,6 +99,16 @@ const hostStats: [hosted: number, rating: number, verified: boolean][] = [
   // as long as `people` — a missing row here is a crash in SEED_HOSTS, not a
   // missing badge.
   [3, 4.8, true],
+  // The Tier-2 hosts. Lower hosted counts than the metro regulars on purpose:
+  // these are boards that opened recently, and a brand-new city whose hosts
+  // have all run forty meetups is the one detail that gives a seeded dataset
+  // away.
+  [8, 4.9, true],
+  [11, 4.8, true],
+  [6, 4.7, false],
+  [14, 4.9, true],
+  [5, 4.6, false],
+  [9, 4.8, true],
 ];
 
 export const SEED_HOSTS: HostSummary[] = SEED_USERS.map((u, i) => ({
@@ -466,6 +488,150 @@ const rows: Row[] = [
       'The session everybody moves to tomorrow. Six people, three racks, one written plan. Day pass included in the fee.',
     agenda: ['07:00 — warm-up, together', '07:15 — squats in pairs', '07:50 — hinge and accessories', '08:15 — done, protein, work'],
     bring: ['Water bottle', 'A towel'],
+  },
+  /* ------------------------------- Tier-2 --------------------------------- */
+  {
+    title: 'Nahargarh at sunrise, kachori on the way down',
+    category: 'outdoors', host: 13, city: 'Jaipur', state: 'Rajasthan', area: 'Brahmpuri',
+    venue: 'Nahargarh Fort — lower gate', address: 'Nahargarh Road', lat: 26.9374, lng: 75.8153,
+    day: 2, hour: 5, minute: 45, mins: 165, spots: 12, taken: 8, fee: 9900, level: 'any', cadence: 'weekly',
+    tags: ['Sunrise', 'Moderate climb', 'Breakfast after'],
+    description:
+      'Up the old road rather than the car road, which takes about fifty minutes at a pace anybody can hold. We are at the top for the light, back down by half seven, and at the kachori stall by eight.',
+    agenda: ['05:45 — meet at the lower gate', '06:00 — walk up, one group, nobody dropped', '06:45 — sunrise from the ramparts', '07:30 — down, then breakfast'],
+    bring: ['Sports shoes', 'Water bottle'],
+  },
+  {
+    title: 'CAT mocks, then two hours of arguing about them',
+    category: 'exam-prep', host: 13, city: 'Jaipur', state: 'Rajasthan', area: 'Malviya Nagar',
+    venue: 'Study room above Gaurav Tower', address: 'Malviya Nagar', lat: 26.8535, lng: 75.8055,
+    day: 4, hour: 10, mins: 300, spots: 10, taken: 6, fee: 19900, level: 'serious', cadence: 'weekly',
+    tags: ['Full mock', 'Timed', 'Analysis session'],
+    description:
+      'A full timed mock under exam conditions, then the part everybody skips when they study alone: two hours going through it question by question with people who got different answers.',
+    agenda: ['10:00 — mock begins, phones away', '13:00 — break, food is on you', '13:45 — sectional analysis together', '15:00 — everyone writes down three things to fix'],
+    bring: ['Question bank', 'Notebook & pen'],
+  },
+  {
+    title: 'Answer writing — UPSC mains, three hours',
+    category: 'exam-prep', host: 14, city: 'Lucknow', state: 'Uttar Pradesh', area: 'Aliganj',
+    venue: 'Reading room, Sector H', address: 'Aliganj', lat: 26.8918, lng: 80.9403,
+    day: 1, hour: 6, minute: 30, mins: 180, spots: 8, taken: 7, fee: 14900, level: 'serious', cadence: 'daily',
+    tags: ['Daily', 'Peer review', 'GS papers'],
+    description:
+      'Six-thirty, six questions, twenty minutes each. Then you swap papers with the person beside you and mark theirs against the actual rubric, which is how you learn what an examiner is looking at.',
+    agenda: ['06:30 — questions on the board', '07:15 — write, timed, no notes', '08:30 — swap and mark', '09:15 — the three commonest mistakes, read out'],
+    bring: ['Notebook & pen', 'Question bank'],
+  },
+  {
+    title: 'Awadhi dinner, six strangers, one long table',
+    category: 'dinner', host: 14, city: 'Lucknow', state: 'Uttar Pradesh', area: 'Hazratganj',
+    venue: 'Address revealed 24 hours before', address: 'Hazratganj', lat: 26.8489, lng: 80.9462,
+    day: 5, hour: 20, minute: 30, mins: 150, spots: 6, taken: 4, fee: 49900, level: 'any', cadence: 'weekly',
+    tags: ['Six strangers', 'Set menu', 'Phones away'],
+    description:
+      'Six people who have not met, a set Awadhi menu ordered in advance, and the rule that nobody asks what anybody does for a living in the first hour. Food is in the fee.',
+    agenda: ['20:30 — arrive, one sentence each', '20:45 — food, no phones on the table', '22:30 — whoever is still talking keeps talking'],
+    bring: ['Just yourself'],
+  },
+  {
+    title: 'Badminton at seven — two courts, mixed levels',
+    category: 'sports', host: 14, city: 'Lucknow', state: 'Uttar Pradesh', area: 'Gomti Nagar',
+    venue: 'Gomti Nagar indoor courts', address: 'Vibhuti Khand', lat: 26.8619, lng: 81.0064,
+    day: 2, hour: 19, mins: 90, spots: 12, taken: 9, fee: 14900, level: 'any', cadence: 'weekly',
+    tags: ['Two courts', 'Rotating pairs', 'Shuttles included'],
+    description:
+      'Two booked courts, twelve people, pairs rotating every two games so you are not stuck with or against the same person all evening. Shuttles are in the fee; bring your own racket if you have one.',
+    agenda: ['19:00 — knock-up', '19:15 — rotating doubles', '20:25 — last game, then chai'],
+    bring: ['Racket (spares available)', 'Sports shoes'],
+  },
+  {
+    title: 'Sarafa after dark — nine stops, one street',
+    category: 'dinner', host: 15, city: 'Indore', state: 'Madhya Pradesh', area: 'Sarafa Bazaar',
+    venue: 'Sarafa Bazaar — Rajwada end', address: 'Sarafa Bazaar', lat: 22.7178, lng: 75.8545,
+    day: 3, hour: 21, minute: 30, mins: 150, spots: 8, taken: 8, fee: 29900, level: 'any', cadence: 'weekly',
+    tags: ['Food walk', 'Nine stops', 'Veg friendly'],
+    description:
+      'The street does not open properly until ten and does not stop until two. We start at the Rajwada end and work down, one thing at each stop, in an order that means you can still walk at the end of it. Food is in the fee.',
+    agenda: ['21:30 — meet by the clock', '21:45 — first four stops, savoury', '22:45 — the sweet half', '23:45 — end at the jalebi stall'],
+    bring: ['Just yourself'],
+  },
+  {
+    title: 'Deep work table at Chhappan — 3 hours',
+    category: 'group-study', host: 15, city: 'Indore', state: 'Madhya Pradesh', area: '56 Dukan',
+    venue: 'Quiet room above 56 Dukan', address: 'New Palasia', lat: 22.7244, lng: 75.8839,
+    day: 1, hour: 9, minute: 30, mins: 180, spots: 8, taken: 3, fee: 9900, level: 'serious',
+    tags: ['Silent', 'Wi-Fi', 'Pomodoro'],
+    description:
+      'Four blocks of forty-five minutes with strict ten-minute breaks. Phones in the box at the start. The street outside is the loudest in Indore after ten at night and completely silent at half nine in the morning, which is the entire reason for the hour.',
+    agenda: ['09:30 — set your one goal on the board', '09:45 — two blocks, silent', '11:20 — coffee, talk as much as you like', '11:40 — final two blocks'],
+    bring: ['Laptop', 'Notebook & pen'],
+  },
+  {
+    title: 'Sunrise ride to the foothills — 40K, two groups',
+    category: 'cycling', host: 16, city: 'Coimbatore', state: 'Tamil Nadu', area: 'Vadavalli',
+    venue: 'Vadavalli junction', address: 'Marudhamalai Road', lat: 11.0296, lng: 76.9012,
+    day: 2, hour: 5, minute: 30, mins: 180, spots: 14, taken: 10, fee: 4900, level: 'intermediate', cadence: 'weekly',
+    tags: ['40K', 'Two pace groups', 'Filter coffee after'],
+    description:
+      'Out towards the Marudhamalai foothills and back before the traffic wakes up. Two groups — roughly 22kmph and roughly 28kmph — with a regroup at the turn, so nobody rides the last ten kilometres alone.',
+    agenda: ['05:30 — lights and tyre check', '05:45 — roll out, two groups', '06:45 — regroup at the turn', '08:00 — back, filter coffee'],
+    bring: ['Water bottle', 'Helmet and lights'],
+  },
+  {
+    title: 'Board game night — Catan, Codenames, no scorekeeping',
+    category: 'board-games', host: 16, city: 'Coimbatore', state: 'Tamil Nadu', area: 'RS Puram',
+    venue: 'Games room, RS Puram', address: 'DB Road', lat: 11.0069, lng: 76.9497,
+    day: 6, hour: 18, minute: 30, mins: 210, spots: 12, taken: 5, fee: 9900, level: 'any', cadence: 'weekly',
+    tags: ['Beginner friendly', 'Games provided', 'Snacks included'],
+    description:
+      'Two tables running at once, games explained properly rather than rushed, and a hard rule that whoever has not played before gets first pick. Nobody keeps a running score across the night.',
+    agenda: ['18:30 — pick a table', '18:45 — first game, rules taught', '20:15 — swap tables', '21:45 — last game or last round, whichever comes first'],
+    bring: ['Just yourself'],
+  },
+  {
+    title: 'Sukhna loop at six — two pace groups',
+    category: 'outdoors', host: 17, city: 'Chandigarh', state: 'Chandigarh', area: 'Sector 1',
+    venue: 'Sukhna Lake — regatta end', address: 'Sector 1', lat: 30.7421, lng: 76.8188,
+    day: 1, hour: 6, mins: 60, spots: 16, taken: 11, fee: 4900, level: 'any', cadence: 'daily',
+    tags: ['5K', 'Beginner pace group', 'Chai after'],
+    description:
+      'Two pace groups — roughly 7:00/km and roughly 5:30/km — round the lake and back. The slow group is set by whoever is slowest that morning, and that is enforced rather than said.',
+    agenda: ['06:00 — warm-up at the regatta end', '06:10 — split into two groups', '06:50 — stretch and chai'],
+    bring: ['Sports shoes', 'Water bottle'],
+  },
+  {
+    title: 'Sunday brunch table, Sector 9',
+    category: 'breakfast-lunch', host: 17, city: 'Chandigarh', state: 'Chandigarh', area: 'Sector 9',
+    venue: 'Corner table, Sector 9 market', address: 'Sector 9', lat: 30.7466, lng: 76.7856,
+    day: 6, hour: 10, minute: 30, mins: 120, spots: 8, taken: 4, fee: 19900, level: 'any', cadence: 'weekly',
+    tags: ['Long table', 'Newcomers welcome', 'Food included'],
+    description:
+      'A long table on a Sunday morning for people who have moved here and not met anybody yet. Two hours, no agenda, and the host has done this often enough to make sure nobody is left out of the conversation.',
+    agenda: ['10:30 — arrive, one sentence each', '10:45 — food', '12:30 — walk to the rose garden, if anybody wants'],
+    bring: ['Just yourself'],
+  },
+  {
+    title: 'Riverside run along the Brahmaputra — 6K',
+    category: 'outdoors', host: 18, city: 'Guwahati', state: 'Assam', area: 'Uzan Bazar',
+    venue: 'Uzan Bazar ghat', address: 'MG Road', lat: 26.1897, lng: 91.7514,
+    day: 3, hour: 6, mins: 75, spots: 14, taken: 6, fee: 4900, level: 'any', cadence: 'weekly',
+    tags: ['6K', 'Flat', 'Tea after'],
+    description:
+      'Flat, along the water, out to the ferry point and back. Two pace groups and a walk group, which is a real group and not a polite fiction — three or four people walk it every week.',
+    agenda: ['06:00 — warm-up at the ghat', '06:10 — run or walk, three groups', '07:00 — tea by the river'],
+    bring: ['Sports shoes', 'Water bottle'],
+  },
+  {
+    title: 'Open mic — five minutes each, nobody is auditioning',
+    category: 'open-mic', host: 18, city: 'Guwahati', state: 'Assam', area: 'GS Road',
+    venue: 'Basement room, GS Road', address: 'Christian Basti', lat: 26.1445, lng: 91.7898,
+    day: 5, hour: 19, mins: 150, spots: 20, taken: 12, fee: 9900, level: 'any', cadence: 'weekly',
+    tags: ['Five minutes each', 'First-timers first', 'Listeners welcome'],
+    description:
+      'Poetry, stand-up, a song, a thing you wrote on the bus. First-timers go first, on purpose — waiting three hours to go on is how people talk themselves out of it. Coming only to listen is a completely normal thing to do here.',
+    agenda: ['19:00 — sign-up sheet', '19:15 — first-timers', '20:15 — everyone else', '21:20 — the host closes, badly'],
+    bring: ['Just yourself'],
   },
   {
     title: 'Thursday dinner, six strangers, one rule',

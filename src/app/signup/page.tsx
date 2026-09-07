@@ -3,22 +3,21 @@ import { redirect } from 'next/navigation';
 import { AuthShell } from '@/components/layout/auth-shell';
 import { AuthForm } from '@/components/layout/auth-form';
 import { getCurrentUser } from '@/lib/auth/session';
+import { AUTH_IMAGE_IDS } from '@/lib/media/auth';
 
 export const metadata: Metadata = { title: 'Create an account' };
 
-export default async function SignupPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ next?: string }>;
-}) {
+export default async function SignupPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const user = await getCurrentUser();
   if (user) redirect('/meetups');
   const { next } = await searchParams;
 
   return (
     <AuthShell
-      title="Two minutes, then pick something."
-      subtitle="Free to create. You only ever pay the join fee for the meetups you actually go to."
+      title="Create your account."
+      subtitle="It takes about a minute, and it is free."
+      imageId={AUTH_IMAGE_IDS.signup}
+      next={next ?? '/profile/interests'}
     >
       <AuthForm mode="signup" next={next ?? '/profile/interests'} />
     </AuthShell>

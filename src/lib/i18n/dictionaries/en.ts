@@ -43,6 +43,8 @@ export const en = {
   },
   hero: {
     badge: '{count} meetups happening across {cities} cities',
+    /** Shown instead of `badge` when the board is empty — never open with a zero. */
+    badgeCities: 'Running in {cities} cities across India',
     titleTop: 'Nobody does it',
     titleBottom: 'alone.',
     lede:
@@ -51,7 +53,9 @@ export const en = {
     secondaryCta: 'Host your own',
     statJoins: '41,200 joins',
     statJoinsSuffix: 'paid for since we started.',
-    categoriesHeading: 'Or just pick what you’re into.',
+    categoriesHeading: 'Pick what you’re into.',
+    categoriesLede: 'Everything people meet up to do here, from silent study rooms to Sunday treks.',
+    categoriesLink: 'See everything',
   },
   landingSlider: {
     prev: 'Previous slide',
@@ -119,8 +123,8 @@ export const en = {
     cancelFree: 'Free cancellation until {hours} hours before.',
   },
   cta: {
-    title: 'The hardest part is going the first time.',
-    body: 'Pick one thing this week. Pay for that one thing. If it is not for you, you are out ₹149 and an evening — and if it is, you have found your people.',
+    title: 'Go the first time.',
+    body: 'The hardest part is the first one. Pick one thing this week and pay for that one thing — if it is not for you, you are out ₹149 and an evening, and if it is, you have found your people.',
     primary: 'Create your account',
     secondary: 'Look at what’s on first',
   },

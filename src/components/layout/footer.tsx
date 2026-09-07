@@ -66,7 +66,7 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="mt-24 border-t border-content/10 bg-canvas-900 text-content">
+    <footer className="border-t border-content/10 bg-canvas-900 text-content">
       <div className="container-page py-16">
         <div className="grid gap-12 lg:grid-cols-[1.2fr_2.5fr]">
           <div className="space-y-5">

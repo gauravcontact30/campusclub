@@ -144,7 +144,11 @@ export default async function CityPage({ params }: { params: Promise<{ slug: str
 
       <NextUp
         links={[
-          { href: '/cities', label: 'Other cities', blurb: 'Six and counting. Yours may already be one of them.' },
+          {
+            href: '/cities',
+            label: 'Other cities',
+            blurb: `${CITIES.length} and counting — mostly Tier-2. Yours may already be one of them.`,
+          },
           { href: '/passes', label: 'Join fees & passes', blurb: 'What a meetup costs, and when a pass is worth it.' },
           { href: '/safety', label: 'Trust & safety', blurb: 'What we check before somebody can host.' },
         ]}

@@ -21,8 +21,14 @@ export function portraitUrl(id: string, size = 400) {
 
 /**
  * Ordered to match `people` in src/lib/data/seed.ts, index for index — a member
- * and their face are paired by position, so the two lists must stay the same
- * length and the same order.
+ * and their face are paired by position, so the order of the two lists is
+ * load-bearing.
+ *
+ * This list is allowed to be *shorter* than `people`, and currently is: the six
+ * Tier-2 hosts added at the end of it have no portrait, and `SEED_USERS` reads
+ * `PORTRAIT_IDS[i] ?? null` so they render as initials. That is a supported
+ * state, and a better one than six invented stock faces. It must never be
+ * longer, and it must never be reordered.
  */
 export const PORTRAIT_IDS = [
   'photo-1604177091072-b7b677a077f6', // Aarav Mehta

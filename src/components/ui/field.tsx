@@ -8,20 +8,26 @@ export function Field({
   label,
   hint,
   error,
+  action,
   children,
   htmlFor,
 }: {
   label: string;
   hint?: string;
   error?: string;
+  /** A link or control belonging to this field, set on the label's own line. */
+  action?: ReactNode;
   children: ReactNode;
   htmlFor?: string;
 }) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={htmlFor} className="block text-sm font-semibold text-content">
-        {label}
-      </label>
+      <div className="flex items-baseline justify-between gap-3">
+        <label htmlFor={htmlFor} className="block text-sm font-semibold text-content">
+          {label}
+        </label>
+        {action}
+      </div>
       {hint && <p className="text-xs text-content/55">{hint}</p>}
       {children}
       {error && (

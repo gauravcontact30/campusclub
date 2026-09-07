@@ -30,7 +30,7 @@ export function BoardHeader({
   if (!category) {
     return (
       <header className="max-w-2xl">
-        <h1 className="display-md text-content">{city ? `What’s on in ${city.name}` : 'What’s on'}</h1>
+        <h1 className="display-lg text-content">{city ? `What’s on in ${city.name}` : 'What’s on'}</h1>
         <p className="mt-2 text-sm text-content/65">{count}</p>
       </header>
     );
@@ -65,7 +65,7 @@ export function BoardHeader({
         </span>
 
         <div className="min-w-0">
-          <h1 className="display-md text-content">
+          <h1 className="display-lg text-content">
             {category.name}
             {city ? ` in ${city.name}` : ''}
           </h1>

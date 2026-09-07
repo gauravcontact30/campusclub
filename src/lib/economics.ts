@@ -1,4 +1,4 @@
-import type { JoinWithMeetup, Pass, PassId } from '@/types';
+import type { Cadence, JoinWithMeetup, Pass, PassId } from '@/types';
 import { PASSES } from '@/lib/constants';
 
 /**
@@ -85,6 +85,64 @@ export function projectedTake(joinFeeCents: number, spotsTotal: number, spotsTak
     ifItFills: joinFeeCents * spotsTotal,
     soFar: joinFeeCents * spotsTaken,
     remaining: joinFeeCents * Math.max(0, spotsTotal - spotsTaken),
+  };
+}
+
+/**
+ * How many times a meetup on this cadence runs in a month.
+ *
+ * Four for weekly rather than 4.33, and twenty for a weekday daily: a host
+ * working out whether a Saturday is worth it is doing rough arithmetic, and a
+ * figure carrying a fractional week reads as a projection rather than a
+ * count. Rounding down is also the safer direction to be wrong in.
+ */
+export function runsPerMonth(cadence: Cadence): number {
+  if (cadence === 'daily') return 20;
+  if (cadence === 'weekly') return 4;
+  return 1;
+}
+
+export interface HostProjection {
+  /** Every spot taken, every time it runs. */
+  ifItFillsCents: number;
+  /** At `fillRate` of the spots — the number a host should actually plan on. */
+  realisticCents: number;
+  /** Spots filled per run at that rate, rounded to whole people. */
+  filledPerRun: number;
+  runs: number;
+  perRunCents: number;
+}
+
+/**
+ * What a host would collect in a month at a given fee, size and cadence.
+ *
+ * Two figures rather than one, and the second is the point. "Eight spots at
+ * ₹199 every week is ₹6,368 a month" is true and almost never happens; a board
+ * this young fills perhaps two-thirds of a new host's spots, and a host who
+ * planned on the full number and got that would reasonably feel misled. So the
+ * ceiling and the realistic number are computed together and shown together.
+ *
+ * There is no commission term anywhere in here because there is no commission:
+ * the host's take is the whole fee, which is why this is multiplication and
+ * not a settlement calculation.
+ */
+export function hostProjection(
+  joinFeeCents: number,
+  spotsTotal: number,
+  cadence: Cadence,
+  fillRate = 2 / 3,
+): HostProjection {
+  const spots = Math.max(0, spotsTotal);
+  const runs = runsPerMonth(cadence);
+  const perRunCents = joinFeeCents * spots;
+  const filledPerRun = Math.round(spots * fillRate);
+
+  return {
+    ifItFillsCents: perRunCents * runs,
+    realisticCents: joinFeeCents * filledPerRun * runs,
+    filledPerRun,
+    runs,
+    perRunCents,
   };
 }
 

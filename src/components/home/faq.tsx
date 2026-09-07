@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowUpRight, MessageCircle, Plus } from 'lucide-react';
 
 const FAQS = [
   {
@@ -29,58 +30,55 @@ const FAQS = [
 
 /**
  * `compact` shows the four questions people actually ask before their first
- * join and links out to the help centre; /how-it-works renders all six. The
- * same array feeds both, so an answer is never edited in one place and stale
- * in the other.
+ * join and links out to the help centre. /how-it-works renders all six, but
+ * imports `FAQS` and lays them out itself rather than mounting this component —
+ * it folds them into a section it already has, and this one brings a `<section>`
+ * of its own. The array is still the single source, so an answer is never
+ * edited in one place and stale in the other.
  *
- * Laid out as a heading rail beside the answers rather than a question column
- * beside an answer column. The old two-column grid sized the question side to
- * the longest question, so every short one — "Can I get my money back?" — left
- * a third of the row empty, and the section read as two lists that had drifted
- * apart. Putting each answer under its own question closes that gap and gives
- * the prose a proper measure, and the heading moves into the space it was
- * already leaving blank.
- *
- * Deliberately not an accordion. The answers are four short paragraphs and the
- * section is called Straight answers — hiding them behind a click to save a
- * screen of scroll would contradict the only promise it makes.
+ * These used to be six open paragraphs, on the argument that a section called
+ * Straight answers should not hide anything behind a click. The promise is
+ * about the answers, though, not about scroll depth — and six unfolded
+ * paragraphs put a wall of small print between somebody and the sign-up block
+ * that follows, which is its own way of not being read. Native `<details>`
+ * keeps every answer one keystroke away, costs no JavaScript, stays open to
+ * find-in-page and to print, and the first one starts open so the pattern is
+ * obvious without a caption explaining it.
  */
 export function Faq({ compact = false }: { compact?: boolean }) {
   const shown = compact ? FAQS.slice(0, 4) : FAQS;
 
   return (
-    <section className="container-page py-20" aria-labelledby="faq-heading">
-      <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-        {/* The rail. Sticky from `lg`, so the heading stays with the answers
-            somebody is reading rather than scrolling away at the first one. */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
+    <section className="border-y border-content/10 bg-canvas-900/40 py-14 sm:py-20" aria-labelledby="faq-heading">
+      <div className="container-page grid items-start gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+        <div>
           <p className="eyebrow">Straight answers</p>
-          <h2 id="faq-heading" className="display-lg mt-3 text-balance text-content">
-            The things people ask before joining.
-          </h2>
-          <p className="lede mt-4 max-w-sm">
-            No small print anywhere else on this site, and none here either.
-          </p>
-
-          {compact && (
-            <Link href="/help" className="link-underline mt-6 inline-block font-semibold text-content">
-              Everything else, on one page →
-            </Link>
-          )}
+          <h2 id="faq-heading" className="section-title mt-3 scroll-mt-28 text-content">Before you join.</h2>
+          <p className="mt-4 max-w-sm text-base leading-relaxed text-content/65">A little clarity before your first hello. Here is what to know about fees, plans and changing your mind.</p>
+          <Link href="/help" className="group mt-7 flex max-w-sm items-center gap-4 rounded-2xl border border-content/10 bg-canvas-700 p-5 transition-colors hover:border-brand/40">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand"><MessageCircle size={19} aria-hidden /></span>
+            <span className="flex-1">
+              <span className="block text-sm font-semibold text-content">Still have a question?</span>
+              <span className="mt-1 block text-xs text-content/60">Explore the help centre</span>
+            </span>
+            <ArrowUpRight size={17} aria-hidden className="text-content/50 group-hover:text-brand" />
+          </Link>
         </div>
 
-        {/* No icon on the questions. Every one of them ends in a question mark
-            already, so a question glyph beside each would be the same fact
-            twice — decoration where the section's whole promise is plainness.
-            The hierarchy is carried by weight and colour instead. */}
-        <dl className="surface-card divide-y divide-content/10 px-6 sm:px-9">
-          {shown.map((faq) => (
-            <div key={faq.q} className="py-7 first:pt-9 last:pb-9">
-              <dt className="font-display text-lg font-semibold leading-snug text-content">{faq.q}</dt>
-              <dd className="mt-2.5 max-w-prose text-[0.95rem] leading-relaxed text-content/70">{faq.a}</dd>
-            </div>
+        <div className="min-w-0 space-y-3">
+          {shown.map((faq, i) => (
+            <details key={faq.q} open={i === 0} className="group overflow-hidden rounded-2xl border border-content/10 bg-canvas-700 open:border-brand/30">
+              <summary className="flex min-h-20 cursor-pointer list-none items-center gap-4 px-5 py-5 transition-colors hover:bg-brand/5 focus-visible:ring-inset sm:px-6 [&::-webkit-details-marker]:hidden">
+                <span aria-hidden className="text-xs font-semibold tabular-nums text-content/40 group-open:text-brand">0{i + 1}</span>
+                <h3 className="flex-1 font-sans text-sm font-semibold leading-relaxed tracking-normal text-content sm:text-base">{faq.q}</h3>
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-content/15 text-content/60 group-open:border-brand/20 group-open:bg-brand/10 group-open:text-brand">
+                  <Plus size={15} aria-hidden className="transition-transform duration-200 group-open:rotate-45" />
+                </span>
+              </summary>
+              <p className="px-5 pb-6 text-sm leading-7 text-content/70 sm:pl-14 sm:pr-16">{faq.a}</p>
+            </details>
           ))}
-        </dl>
+        </div>
       </div>
     </section>
   );

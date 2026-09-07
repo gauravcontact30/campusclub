@@ -7,7 +7,7 @@ import { Professionals } from '@/components/home/professionals';
 import { CityStrip } from '@/components/home/city-strip';
 import { Faq } from '@/components/home/faq';
 import { CtaBand } from '@/components/home/cta-band';
-import { countMeetupsByCity, getUpcomingMeetups, searchMeetups } from '@/lib/data/meetups';
+import { countMeetupsByCategory, countMeetupsByCity, getUpcomingMeetups, searchMeetups } from '@/lib/data/meetups';
 import { getCurrentUser } from '@/lib/auth/session';
 import { getSavedMeetupIds } from '@/lib/data/saves';
 import { CITIES } from '@/lib/constants';
@@ -17,9 +17,10 @@ export default async function HomePage() {
 
   // A signed-in member's home page leads with their own city — everything else
   // on the board is one click away, but the first thing they see is reachable.
-  const [all, counts, savedIds] = await Promise.all([
+  const [all, counts, categoryCounts, savedIds] = await Promise.all([
     searchMeetups({ perPage: 1 }),
     countMeetupsByCity(),
+    countMeetupsByCategory(),
     user ? getSavedMeetupIds(user.id) : Promise.resolve<string[]>([]),
   ]);
 
@@ -33,7 +34,7 @@ export default async function HomePage() {
   return (
     <>
       <LandingSlider />
-      <Hero meetupCount={all.total} cityCount={CITIES.length} hosts={heroHosts} />
+      <Hero meetupCount={all.total} cityCount={CITIES.length} hosts={heroHosts} categoryCounts={categoryCounts} />
       <Upcoming
         meetups={upcoming}
         savedIds={savedIds}

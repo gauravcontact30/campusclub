@@ -20,7 +20,34 @@ export interface Category {
   blurb: string;
   /** Short verb used in copy: "Study together", "Eat together"… */
   verb: string;
+  /**
+   * The actual things people do under this heading — "Badminton", "Box
+   * cricket", "GATE".
+   *
+   * A category is a shelf label, and a shelf label is not what anybody is
+   * looking for: nobody wants "Sports", they want the badminton court on
+   * Tuesday. Listing them is what lets somebody recognise their own hobby on a
+   * card instead of guessing whether it is filed under Sports or Fitness.
+   */
+  interests: string[];
 }
+
+/**
+ * How big a place is, in the only sense this product cares about: how much of
+ * a board already exists before we turn up.
+ *
+ * 1 — a metro. Enough people are already going to things that a stranger's
+ *     meetup fills on the day it is posted.
+ * 2 — a Tier-2 city. A real city with a student belt, a coaching quarter or an
+ *     IT park, where the demand is there but nobody has aggregated it. This is
+ *     where the product has to actually work rather than ride density.
+ * 3 — a district town. Small enough that a board there has to earn every join.
+ *
+ * It is a claim about the board, not a census bracket — which is why it lives
+ * beside the coordinates rather than being derived from a population number
+ * the app does not hold.
+ */
+export type CityTier = 1 | 2 | 3;
 
 export interface City {
   slug: string;
@@ -29,6 +56,47 @@ export interface City {
   blurb: string;
   lat: number;
   lng: number;
+  tier: CityTier;
+}
+
+/**
+ * A real photograph of a real place in a city, and the credit it is owed.
+ *
+ * Every one of these is freely licensed, and almost every one of those licences
+ * requires attribution — so `artist` and `licence` are not decoration, they are
+ * the terms on which the picture may be shown at all. See
+ * `lib/media/city-photos.ts`.
+ */
+export interface CityPhoto {
+  /** Path under `public` — the file is ours, not a hotlink. */
+  src: string;
+  /** The Wikipedia article it is the lead image of. */
+  article: string;
+  artist: string | null;
+  licence: string | null;
+  licenceUrl: string | null;
+  /** The Wikimedia thumbnail the local file was made from. */
+  source: string;
+}
+
+/**
+ * What a place is actually like, for the city directory card.
+ *
+ * Every field is optional and every one is a list of real, checkable things —
+ * a named institution, a market, a stadium that exists. A city we cannot say
+ * something true about shows fewer lines rather than plausible-sounding ones:
+ * a directory that invents a restaurant is worse than a directory that admits
+ * it has not got to that town yet.
+ */
+export interface CityGuide {
+  /** Famous places — what the city is known for. */
+  places?: string[];
+  /** Where people eat: institutions, food streets, markets. */
+  eat?: string[];
+  /** Where people stay: named hotels, or the district they cluster in. */
+  stay?: string[];
+  /** Sports complexes, stadiums and the grounds people actually use. */
+  play?: string[];
 }
 
 /* ------------------------------------------------------------------ */
