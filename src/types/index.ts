@@ -273,6 +273,93 @@ export interface Vouch {
 }
 
 /* ------------------------------------------------------------------ */
+/* Directory                                                           */
+/* ------------------------------------------------------------------ */
+
+/** Roughly what a visit costs: ₹ through ₹₹₹₹. */
+export type PriceBand = 1 | 2 | 3 | 4;
+
+export type DayKey = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
+
+/**
+ * Opening times as minutes from local midnight.
+ *
+ * `close` may exceed 1440 to express a shift running past midnight — a bar
+ * open 18:00–02:00 is `{ open: 1080, close: 1560 }` on the day it starts,
+ * not two rows. Keeping the interval whole is what lets "open now" be a
+ * comparison instead of a special case.
+ */
+export type OpeningHours = Partial<Record<DayKey, { open: number; close: number }[]>>;
+
+/**
+ * A business type — "Restaurants", "Beauty & Spas". Deliberately a different
+ * tree from `Category`, which is what people *do* together rather than what a
+ * place *is*.
+ */
+export interface BusinessCategory {
+  slug: string;
+  name: string;
+  /** lucide-react icon name, resolved in category-icon.tsx */
+  icon: string;
+  /** null for the top-level categories that make up the tile grid. */
+  parentSlug: string | null;
+  blurb: string;
+}
+
+export interface Business {
+  id: string;
+  slug: string;
+  name: string;
+  citySlug: string;
+  categorySlug: string;
+  address: string;
+  locality: string;
+  lat: number;
+  lng: number;
+  phone: string | null;
+  website: string | null;
+  hours: OpeningHours;
+  priceBand: PriceBand | null;
+  /** The licence credit this row is shown under. Never empty. */
+  attribution: string;
+  rating: number;
+  reviewCount: number;
+  /** 0–5: how many of hours, phone, website, address, locality are present. */
+  completeness: number;
+  claimedBy: string | null;
+  createdAt: string;
+}
+
+export interface BusinessReview {
+  id: string;
+  businessId: string;
+  userId: string;
+  authorName: string;
+  authorAvatar: string | null;
+  rating: number;
+  body: string;
+  photos: string[];
+  createdAt: string;
+  ownerReply: string | null;
+  ownerReplyAt: string | null;
+}
+
+export type BusinessSort = 'recommended' | 'rating' | 'reviewed' | 'nearest' | 'name';
+
+export interface BusinessQuery {
+  term?: string;
+  city?: string;
+  category?: string;
+  priceBand?: PriceBand;
+  /** Post-filter on the fetched page, not an indexed predicate. */
+  openNow?: boolean;
+  sort?: BusinessSort;
+  page?: number;
+  perPage?: number;
+  near?: { lat: number; lng: number };
+}
+
+/* ------------------------------------------------------------------ */
 /* Queries                                                             */
 /* ------------------------------------------------------------------ */
 

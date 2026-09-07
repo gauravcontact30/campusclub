@@ -1,4 +1,4 @@
-import type { Category, City, CityTier, Level, Pass } from '@/types';
+import type { Category, City, CityTier, Level, Pass, BusinessCategory, BusinessSort } from '@/types';
 import type { Tint } from '@/lib/tints';
 
 /**
@@ -594,3 +594,96 @@ export const SORT_OPTIONS = [
 
 /** How long before a meetup starts a member can still cancel for a refund. */
 export const FREE_CANCELLATION_HOURS = 6;
+
+/* ------------------------------------------------------------------ */
+/* The directory taxonomy                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * What a place *is*, as opposed to `CATEGORIES`, which is what people do
+ * together. Two trees on purpose: "Restaurants" is not an activity and
+ * "Exam prep" is not a business type, and collapsing them would make the
+ * directory unbrowsable and the board incoherent.
+ *
+ * The eight parentless entries are the tile grid on `/places`. Children exist
+ * to be mapped onto from OSM tags — see `scripts/lib/osm-categories.mjs`.
+ */
+export const BUSINESS_CATEGORIES: BusinessCategory[] = [
+  /* ------------------------------- top level ------------------------------ */
+  { slug: 'food-drink',    name: 'Food & drink',   icon: 'UtensilsCrossed', parentSlug: null, blurb: 'Restaurants, cafes, bakeries and the chai stall on the corner.' },
+  { slug: 'active-life',   name: 'Active life',    icon: 'Dumbbell',        parentSlug: null, blurb: 'Gyms, courts, pools and parks.' },
+  { slug: 'study-work',    name: 'Study & work',   icon: 'BookOpen',        parentSlug: null, blurb: 'Libraries, reading rooms, coaching centres, coworking desks.' },
+  { slug: 'beauty-spas',   name: 'Beauty & spas',  icon: 'Scissors',        parentSlug: null, blurb: 'Salons, barbers, spas.' },
+  { slug: 'shopping',      name: 'Shopping',       icon: 'ShoppingBag',     parentSlug: null, blurb: 'Books, clothes, electronics, groceries.' },
+  { slug: 'nightlife',     name: 'Nightlife',      icon: 'Martini',         parentSlug: null, blurb: 'Bars, pubs and places open late.' },
+  { slug: 'home-services', name: 'Home services',  icon: 'Wrench',          parentSlug: null, blurb: 'Repairs, laundry, movers.' },
+  { slug: 'health',        name: 'Health',         icon: 'Stethoscope',     parentSlug: null, blurb: 'Clinics, pharmacies, dentists.' },
+
+  /* --------------------------------- food -------------------------------- */
+  { slug: 'restaurants', name: 'Restaurants', icon: 'UtensilsCrossed', parentSlug: 'food-drink', blurb: 'Sit-down meals.' },
+  { slug: 'cafes',       name: 'Cafes',       icon: 'Coffee',          parentSlug: 'food-drink', blurb: 'Coffee, and a table you can sit at for three hours.' },
+  { slug: 'bakeries',    name: 'Bakeries',    icon: 'Croissant',       parentSlug: 'food-drink', blurb: 'Bread, cake, puffs.' },
+  { slug: 'fast-food',   name: 'Fast food',   icon: 'Sandwich',        parentSlug: 'food-drink', blurb: 'Quick, cheap, standing room.' },
+  { slug: 'ice-cream',   name: 'Ice cream',   icon: 'IceCreamCone',    parentSlug: 'food-drink', blurb: 'Cones and kulfi.' },
+
+  /* ------------------------------- active -------------------------------- */
+  { slug: 'gyms',          name: 'Gyms',          icon: 'Dumbbell',   parentSlug: 'active-life', blurb: 'Weights and machines.' },
+  { slug: 'sports-venues', name: 'Sports venues', icon: 'Volleyball', parentSlug: 'active-life', blurb: 'Courts, turf and grounds.' },
+  { slug: 'swimming',      name: 'Swimming',      icon: 'Waves',      parentSlug: 'active-life', blurb: 'Pools.' },
+  { slug: 'parks',         name: 'Parks',         icon: 'Trees',      parentSlug: 'active-life', blurb: 'Green space to run or sit in.' },
+  { slug: 'yoga-studios',  name: 'Yoga studios',  icon: 'Flower2',    parentSlug: 'active-life', blurb: 'Mats and morning classes.' },
+
+  /* ----------------------------- study & work ---------------------------- */
+  { slug: 'libraries',        name: 'Libraries',        icon: 'Library',    parentSlug: 'study-work', blurb: 'Quiet, free, and usually full by nine.' },
+  { slug: 'coaching-centres', name: 'Coaching centres', icon: 'GraduationCap', parentSlug: 'study-work', blurb: 'CAT, GATE, UPSC, NEET.' },
+  { slug: 'coworking',        name: 'Coworking',        icon: 'Briefcase',  parentSlug: 'study-work', blurb: 'A desk by the day.' },
+  { slug: 'colleges',         name: 'Colleges',         icon: 'School',     parentSlug: 'study-work', blurb: 'Campuses and institutes.' },
+
+  /* ------------------------------- beauty -------------------------------- */
+  { slug: 'salons',  name: 'Salons',  icon: 'Scissors',  parentSlug: 'beauty-spas', blurb: 'Hair and grooming.' },
+  { slug: 'spas',    name: 'Spas',    icon: 'Flower',    parentSlug: 'beauty-spas', blurb: 'Massage and treatments.' },
+  { slug: 'barbers', name: 'Barbers', icon: 'Scissors',  parentSlug: 'beauty-spas', blurb: 'A chair and a cut.' },
+
+  /* ------------------------------ shopping ------------------------------- */
+  { slug: 'bookshops',   name: 'Bookshops',   icon: 'BookMarked',  parentSlug: 'shopping', blurb: 'New, second-hand and exam guides.' },
+  { slug: 'clothing',    name: 'Clothing',    icon: 'Shirt',       parentSlug: 'shopping', blurb: 'Clothes and shoes.' },
+  { slug: 'electronics', name: 'Electronics', icon: 'Smartphone',  parentSlug: 'shopping', blurb: 'Phones, laptops, repairs.' },
+  { slug: 'groceries',   name: 'Groceries',   icon: 'ShoppingCart',parentSlug: 'shopping', blurb: 'Supermarkets and kirana.' },
+  { slug: 'stationery',  name: 'Stationery',  icon: 'PenLine',     parentSlug: 'shopping', blurb: 'Notebooks, printing, photocopies.' },
+
+  /* ------------------------------ nightlife ------------------------------ */
+  { slug: 'bars',  name: 'Bars',  icon: 'Martini',    parentSlug: 'nightlife', blurb: 'Drinks and a late close.' },
+  { slug: 'pubs',  name: 'Pubs',  icon: 'Beer',       parentSlug: 'nightlife', blurb: 'Beer and a television.' },
+  { slug: 'clubs', name: 'Clubs', icon: 'Disc3',      parentSlug: 'nightlife', blurb: 'Music, and a cover charge.' },
+
+  /* --------------------------- home services ----------------------------- */
+  { slug: 'laundry',    name: 'Laundry',    icon: 'WashingMachine', parentSlug: 'home-services', blurb: 'Wash, iron, dry-clean.' },
+  { slug: 'repairs',    name: 'Repairs',    icon: 'Wrench',         parentSlug: 'home-services', blurb: 'Electricians, plumbers, hardware.' },
+  { slug: 'car-repair', name: 'Car repair', icon: 'Car',            parentSlug: 'home-services', blurb: 'Garages and service centres.' },
+
+  /* -------------------------------- health ------------------------------- */
+  { slug: 'clinics',    name: 'Clinics',    icon: 'Stethoscope', parentSlug: 'health', blurb: 'Doctors and small hospitals.' },
+  { slug: 'pharmacies', name: 'Pharmacies', icon: 'Pill',        parentSlug: 'health', blurb: 'Chemists.' },
+  { slug: 'dentists',   name: 'Dentists',   icon: 'Smile',       parentSlug: 'health', blurb: 'Teeth.' },
+];
+
+export const BUSINESS_CATEGORY_SLUGS = BUSINESS_CATEGORIES.map((c) => c.slug);
+
+export const TOP_BUSINESS_CATEGORIES = BUSINESS_CATEGORIES.filter((c) => c.parentSlug === null);
+
+export function businessCategoryBySlug(slug: string): BusinessCategory | undefined {
+  return BUSINESS_CATEGORIES.find((c) => c.slug === slug);
+}
+
+/**
+ * Sort options for the directory. "Recommended" leads because on a board with
+ * no reviews yet it is the only ordering that is not arbitrary — see
+ * `src/lib/directory/ranking.ts`.
+ */
+export const BUSINESS_SORT_OPTIONS: { value: BusinessSort; label: string }[] = [
+  { value: 'recommended', label: 'Recommended' },
+  { value: 'rating',      label: 'Highest rated' },
+  { value: 'reviewed',    label: 'Most reviewed' },
+  { value: 'nearest',     label: 'Nearest' },
+  { value: 'name',        label: 'A–Z' },
+];
