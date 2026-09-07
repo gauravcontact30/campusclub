@@ -4,7 +4,7 @@ import { cancelJoin, commitJoin, getJoin, getUpcomingJoins, isRefundable, passCo
 import { getVouches, ratingBreakdown, topHighlights } from '@/lib/data/vouches';
 import { getSavedMeetupIds, toggleSave } from '@/lib/data/saves';
 import { db, resetDb } from '@/lib/data/store';
-import { DIRECTORY_PER_PAGE, getBusiness, listBusinesses, topBusinesses } from '@/lib/data/businesses';
+import { DIRECTORY_PER_PAGE, escapePostgrestFilter, getBusiness, listBusinesses, topBusinesses } from '@/lib/data/businesses';
 import { parseBusinessQuery } from '@/lib/directory/query';
 
 // No Supabase env in tests, so every call exercises the demo adapter.
@@ -340,6 +340,19 @@ describe('business repository (demo mode)', () => {
     expect(page.items.some((b) => b.categorySlug === 'cafes')).toBe(true);
   });
 
+  it('resolves a term that only appears in a category blurb, not any name or slug', async () => {
+    // The cafes category's blurb is "Coffee, and a table you can sit at for
+    // three hours." A query for "coffee" alone would pass even without blurb
+    // matching, because the seeded cafe is literally named "Third Wave
+    // Coffee" — that would be a false-positive regression test. "sit at"
+    // appears only in the blurb: not in the cafes name or slug, and not in
+    // any seeded business name, so this only passes if blurb text is part of
+    // the match surface.
+    const page = await listBusinesses(parseBusinessQuery({ q: 'sit at' }));
+    expect(page.items.length).toBeGreaterThan(0);
+    expect(page.items.every((b) => b.categorySlug === 'cafes')).toBe(true);
+  });
+
   it('returns an empty page rather than throwing for a term nothing matches', async () => {
     const page = await listBusinesses(parseBusinessQuery({ q: 'zzzznotathing' }));
     expect(page.items).toEqual([]);
@@ -370,5 +383,26 @@ describe('business repository (demo mode)', () => {
     const top = await topBusinesses('pune', 3);
     expect(top.length).toBeLessThanOrEqual(3);
     expect(top.every((b) => b.citySlug === 'pune')).toBe(true);
+  });
+
+  it('does not throw on a term containing PostgREST filter metacharacters', async () => {
+    // Demo mode doesn't build a PostgREST filter string, so it can't exercise
+    // the escaping path itself — but a search box has to survive whatever a
+    // person types regardless of backend, so this guards that baseline.
+    const page = await listBusinesses(parseBusinessQuery({ q: 'cafe, tea (best)' }));
+    expect(Array.isArray(page.items)).toBe(true);
+  });
+
+  describe('escapePostgrestFilter', () => {
+    it('escapes the characters PostgREST treats as filter syntax', () => {
+      // `,` separates `.or()` branches, `()` groups/marks `in.()`, and `%`/`*`
+      // are ilike/like wildcards — each has to be escaped or a term like
+      // "cafe, tea" breaks out of the ilike clause it's meant to sit inside.
+      expect(escapePostgrestFilter('cafe, tea')).toBe('cafe\\, tea');
+      expect(escapePostgrestFilter('shop (best)')).toBe('shop \\(best\\)');
+      expect(escapePostgrestFilter('50% off')).toBe('50\\% off');
+      expect(escapePostgrestFilter('a*b')).toBe('a\\*b');
+      expect(escapePostgrestFilter('vaishali')).toBe('vaishali');
+    });
   });
 });

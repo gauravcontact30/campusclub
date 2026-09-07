@@ -48,17 +48,36 @@ function fromRow(row: Row): Business {
  * term is resolved against the catalogue first and the resulting slugs widen
  * the match. Without this the commonest possible query returns almost nothing,
  * which is the sort of failure people do not report — they just leave.
+ *
+ * The match surface is name, slug, and blurb: "coffee" doesn't appear in the
+ * name "Cafes" or the slug "cafes", but it does appear in that category's
+ * blurb ("Coffee, and a table you can sit at for three hours."), which is
+ * exactly the case this function exists to catch.
  */
 function categorySlugsMatching(term: string): string[] {
   const needle = term.trim().toLowerCase();
   if (!needle) return [];
   return BUSINESS_CATEGORIES
-    .filter((c) => c.name.toLowerCase().includes(needle) || c.slug.includes(needle))
+    .filter((c) =>
+      c.name.toLowerCase().includes(needle) ||
+      c.slug.includes(needle) ||
+      c.blurb.toLowerCase().includes(needle),
+    )
     .map((c) => c.slug);
 }
 
 function emptyPage(page: number, perPage: number): Paginated<Business> {
   return { items: [], total: 0, page, perPage, pages: 0 };
+}
+
+/**
+ * PostgREST's filter DSL treats `,`, `(`, `)`, `%` and `*` as syntax, not
+ * search text — an ordinary term like "cafe, tea" would otherwise break out
+ * of the ilike clause it's meant to sit inside. Escaping them here is what
+ * lets a search box accept whatever a person actually types.
+ */
+export function escapePostgrestFilter(value: string): string {
+  return value.replace(/[,()%*]/g, (char) => `\\${char}`);
 }
 
 export async function listBusinesses(query: BusinessQuery): Promise<Paginated<Business>> {
@@ -79,8 +98,11 @@ export async function listBusinesses(query: BusinessQuery): Promise<Paginated<Bu
     if (query.priceBand) builder = builder.eq('price_band', query.priceBand);
     if (term) {
       // Name match OR a category the term names. `or` takes a filter string,
-      // and an empty `in.()` is a syntax error, hence the conditional.
-      const clauses = [`name.ilike.%${term}%`];
+      // and an empty `in.()` is a syntax error, hence the conditional. The
+      // term is escaped because it lands inside that filter string too — an
+      // unescaped comma or paren would break out of the ilike clause.
+      const safeTerm = escapePostgrestFilter(term);
+      const clauses = [`name.ilike.%${safeTerm}%`];
       if (categoryHits.length) clauses.push(`category_slug.in.(${categoryHits.join(',')})`);
       builder = builder.or(clauses.join(','));
     }
