@@ -75,9 +75,18 @@ function emptyPage(page: number, perPage: number): Paginated<Business> {
  * search text — an ordinary term like "cafe, tea" would otherwise break out
  * of the ilike clause it's meant to sit inside. Escaping them here is what
  * lets a search box accept whatever a person actually types.
+ *
+ * The backslash pass runs first, and separately, because it is itself the
+ * escape character: escaping `,()%*` inserts new backslashes, and if a term
+ * already contained one before a special character (`a\,b`), running the two
+ * passes in one regex — or the special-character pass before this one —
+ * would leave that original backslash unescaped. PostgREST would then read
+ * the original `\` together with the inserted `\` as one escaped literal
+ * backslash, consuming both and leaving the `,` free to act as a separator
+ * again — reopening the exact injection this function exists to close.
  */
 export function escapePostgrestFilter(value: string): string {
-  return value.replace(/[,()%*]/g, (char) => `\\${char}`);
+  return value.replace(/\\/g, '\\\\').replace(/[,()%*]/g, (char) => `\\${char}`);
 }
 
 export async function listBusinesses(query: BusinessQuery): Promise<Paginated<Business>> {

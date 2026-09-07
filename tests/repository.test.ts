@@ -404,5 +404,21 @@ describe('business repository (demo mode)', () => {
       expect(escapePostgrestFilter('a*b')).toBe('a\\*b');
       expect(escapePostgrestFilter('vaishali')).toBe('vaishali');
     });
+
+    it('escapes a literal backslash before escaping special characters, so a pre-existing backslash cannot neutralise the escape it inserts', () => {
+      // Input is the four characters a \ , b. If the special-character pass
+      // ran first (or in the same pass), the pre-existing `\` would sit next
+      // to the `\` this function inserts before the comma; PostgREST reads
+      // `\\` as one escaped literal backslash, consuming both and leaving
+      // the comma unescaped again — the injection this function exists to
+      // close. Escaping backslashes first means the original `\` becomes
+      // `\\` on its own, and the comma still gets its own separate `\`.
+      const input = 'a\\,b';
+      expect([...input]).toEqual(['a', '\\', ',', 'b']);
+
+      const output = escapePostgrestFilter(input);
+      expect([...output]).toEqual(['a', '\\', '\\', '\\', ',', 'b']);
+      expect(output).toBe('a\\\\\\,b');
+    });
   });
 });
