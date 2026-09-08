@@ -372,6 +372,8 @@ export interface MeetupQuery {
   term?: string;
   city?: string;
   category?: string;
+  /** A `CategoryGroup.id` — filters to every category in that group. Ignored when `category` is also set. */
+  group?: string;
   level?: Level;
   when?: WhenFilter;
   /** Upper bound on the join fee, in paise. */

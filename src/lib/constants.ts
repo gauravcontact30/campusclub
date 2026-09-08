@@ -345,6 +345,11 @@ export function categoriesInGroup(group: CategoryGroup): Category[] {
     .filter((c): c is Category => Boolean(c));
 }
 
+/** One shelf by its id — what a `group` query filter resolves against. */
+export function categoryGroupById(id: string): CategoryGroup | undefined {
+  return CATEGORY_GROUPS.find((g) => g.id === id);
+}
+
 /* ------------------------------------------------------------------ */
 /* Where                                                               */
 /* ------------------------------------------------------------------ */

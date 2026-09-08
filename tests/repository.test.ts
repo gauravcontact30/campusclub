@@ -6,6 +6,7 @@ import { getSavedMeetupIds, toggleSave } from '@/lib/data/saves';
 import { db, resetDb } from '@/lib/data/store';
 import { DIRECTORY_PER_PAGE, escapePostgrestFilter, getBusiness, listBusinesses, topBusinesses } from '@/lib/data/businesses';
 import { parseBusinessQuery } from '@/lib/directory/query';
+import { CATEGORY_GROUPS, categoriesInGroup } from '@/lib/constants';
 
 // No Supabase env in tests, so every call exercises the demo adapter.
 beforeEach(() => {
@@ -57,6 +58,23 @@ describe('searchMeetups', () => {
       expect(item.city).toBe('Bengaluru');
       expect(item.categorySlug).toBe('group-study');
       expect(item.joinFeeCents).toBeLessThanOrEqual(14900);
+    }
+  });
+
+  it('filters by a whole category group when no specific category is set', async () => {
+    const { items } = await searchMeetups({ group: 'study', perPage: 100 });
+    expect(items.length).toBeGreaterThan(0);
+    const studySlugs = categoriesInGroup(CATEGORY_GROUPS.find((g) => g.id === 'study')!).map((c) => c.slug);
+    for (const item of items) {
+      expect(studySlugs).toContain(item.categorySlug);
+    }
+  });
+
+  it('lets a specific category narrow further than its group', async () => {
+    const { items } = await searchMeetups({ group: 'study', category: 'group-study', perPage: 100 });
+    expect(items.length).toBeGreaterThan(0);
+    for (const item of items) {
+      expect(item.categorySlug).toBe('group-study');
     }
   });
 

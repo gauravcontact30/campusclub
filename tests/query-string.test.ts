@@ -45,6 +45,15 @@ describe('parseMeetupQuery', () => {
     expect(parseMeetupQuery({ city: ['pune', 'delhi'] }).city).toBe('pune');
   });
 
+  it('parses a group filter for the flattened category tiles', () => {
+    const query = parseMeetupQuery({ group: 'study' });
+    expect(query.group).toBe('study');
+  });
+
+  it('drops a group id that is not in the catalogue', () => {
+    expect(parseMeetupQuery({ group: 'not-a-group' }).group).toBe('');
+  });
+
   it('ignores coordinates that are missing a half or off the globe', () => {
     expect(parseMeetupQuery({ lat: '12.97' }).near).toBeUndefined();
     expect(parseMeetupQuery({ lat: '99', lng: '77' }).near).toBeUndefined();
@@ -73,6 +82,12 @@ describe('toSearchParams', () => {
     const round = parseMeetupQuery(Object.fromEntries(toSearchParams(original)));
     expect(round).toEqual(original);
   });
+
+  it('round-trips a group filter', () => {
+    const original = parseMeetupQuery({ group: 'fitness' });
+    const round = parseMeetupQuery(Object.fromEntries(toSearchParams(original)));
+    expect(round).toEqual(original);
+  });
 });
 
 describe('activeFilterCount', () => {
@@ -81,5 +96,9 @@ describe('activeFilterCount', () => {
     expect(activeFilterCount(parseMeetupQuery({ city: 'pune', when: 'weekend' }))).toBe(2);
     // "any" is the absence of a filter, not a filter.
     expect(activeFilterCount(parseMeetupQuery({ level: 'any', when: 'any' }))).toBe(0);
+  });
+
+  it('counts a group filter too', () => {
+    expect(activeFilterCount(parseMeetupQuery({ group: 'study' }))).toBe(1);
   });
 });
