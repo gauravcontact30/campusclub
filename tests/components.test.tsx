@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { RatingBlocks, RatingInput } from '@/components/ui/rating-blocks';
 import { Badge } from '@/components/ui/badge';
 import { CategoryIcon } from '@/components/ui/category-icon';
+import { CategoryIndex } from '@/components/meetups/category-index';
 import { MeetupCard } from '@/components/meetups/meetup-card';
 import { VouchSummary } from '@/components/meetups/vouch-list';
 import type { MeetupWithHost, Vouch } from '@/types';
@@ -87,6 +88,24 @@ describe('CategoryIcon', () => {
   it('falls back rather than rendering nothing for an unknown category', () => {
     const { container } = render(<CategoryIcon slug="not-a-category" />);
     expect(container.querySelector('svg')).toBeInTheDocument();
+  });
+});
+
+describe('CategoryIndex', () => {
+  it('renders one tile per main category group, linking to the group filter', () => {
+    render(<CategoryIndex variant="cards" />);
+    const link = screen.getByRole('link', { name: /Study & work/ });
+    expect(link).toHaveAttribute('href', '/meetups?group=study');
+  });
+
+  it('sums counts across every category in a group', () => {
+    render(<CategoryIndex variant="cards" counts={{ 'group-study': 3, 'exam-prep': 2 }} />);
+    expect(screen.getByText('5 on now')).toBeInTheDocument();
+  });
+
+  it('omits the count rather than showing a zero when nothing in the group is on', () => {
+    render(<CategoryIndex variant="cards" counts={{}} />);
+    expect(screen.queryByText(/on now/)).not.toBeInTheDocument();
   });
 });
 
