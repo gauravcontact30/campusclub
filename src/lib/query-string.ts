@@ -1,9 +1,10 @@
 import type { Level, MeetupQuery, MeetupSort, WhenFilter } from '@/types';
-import { CATEGORY_SLUGS, LEVELS, SORT_OPTIONS, WHEN_OPTIONS } from '@/lib/constants';
+import { CATEGORY_GROUPS, CATEGORY_SLUGS, LEVELS, SORT_OPTIONS, WHEN_OPTIONS } from '@/lib/constants';
 
 const LEVEL_VALUES = LEVELS.map((l) => l.value);
 const WHEN_VALUES = WHEN_OPTIONS.map((w) => w.value);
 const SORT_VALUES = SORT_OPTIONS.map((s) => s.value);
+const GROUP_IDS = CATEGORY_GROUPS.map((g) => g.id);
 
 /** URL search params → typed query. Shared by the page (server) and the client filters. */
 export function parseMeetupQuery(params: Record<string, string | string[] | undefined>): MeetupQuery {
@@ -16,6 +17,7 @@ export function parseMeetupQuery(params: Record<string, string | string[] | unde
   const when = get('when');
   const sort = get('sort');
   const category = get('category');
+  const group = get('group');
 
   return {
     term: get('term') ?? '',
@@ -23,6 +25,7 @@ export function parseMeetupQuery(params: Record<string, string | string[] | unde
     // Anything not in the catalogue is dropped rather than passed to the query,
     // so a hand-edited URL cannot produce a confusing empty result page.
     category: category && CATEGORY_SLUGS.includes(category) ? category : '',
+    group: group && GROUP_IDS.includes(group) ? group : '',
     level: level && LEVEL_VALUES.includes(level as Level) ? (level as Level) : 'any',
     when: when && WHEN_VALUES.includes(when as WhenFilter) ? (when as WhenFilter) : 'any',
     maxFeeCents: Number(get('maxFee')) || undefined,
@@ -47,6 +50,7 @@ export function toSearchParams(query: MeetupQuery) {
   if (query.term) params.set('term', query.term);
   if (query.city) params.set('city', query.city);
   if (query.category) params.set('category', query.category);
+  if (query.group) params.set('group', query.group);
   if (query.level && query.level !== 'any') params.set('level', query.level);
   if (query.when && query.when !== 'any') params.set('when', query.when);
   if (query.maxFeeCents) params.set('maxFee', String(query.maxFeeCents));
@@ -65,6 +69,7 @@ export function activeFilterCount(query: MeetupQuery) {
   return [
     query.city,
     query.category,
+    query.group,
     query.level && query.level !== 'any' ? query.level : '',
     query.when && query.when !== 'any' ? query.when : '',
     query.maxFeeCents,

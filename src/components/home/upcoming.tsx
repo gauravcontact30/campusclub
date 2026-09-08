@@ -23,7 +23,7 @@ export function Upcoming({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="eyebrow">Starting soon</p>
-          <h2 id="upcoming-heading" className="display-lg mt-2 text-content">
+          <h2 id="upcoming-heading" className="section-title mt-2 text-content">
             {title}
           </h2>
           <p className="lede mt-2 max-w-xl">{subtitle}</p>

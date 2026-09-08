@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { AuthShell } from '@/components/layout/auth-shell';
 import { AuthForm } from '@/components/layout/auth-form';
 import { getCurrentUser } from '@/lib/auth/session';
+import { AUTH_IMAGE_IDS } from '@/lib/media/auth';
 
 export const metadata: Metadata = { title: 'Sign in' };
 
@@ -16,7 +17,12 @@ export default async function LoginPage({
   const { next, error } = await searchParams;
 
   return (
-    <AuthShell title="Welcome back." subtitle="Sign in to join meetups, manage your pass and see who is coming.">
+    <AuthShell
+      title="Welcome back."
+      subtitle="Sign in to your CampusClub account."
+      imageId={AUTH_IMAGE_IDS.signin}
+      next={next}
+    >
       {/* /auth/callback bounces a rejected or expired email link back here
           with the reason attached — otherwise it lands silently and looks
           like the link simply did nothing. */}

@@ -1,7 +1,9 @@
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { ButtonLink } from '@/components/ui/button';
 import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 import { SearchBar } from '@/components/meetups/search-bar';
-import { CategoryRail } from '@/components/meetups/category-rail';
+import { CategoryIndex } from '@/components/meetups/category-index';
 import { getDictionary } from '@/lib/i18n/server';
 import { fill } from '@/lib/i18n/format';
 import { FEATURED_PORTRAIT_IDS, portraitUrl } from '@/lib/media/portraits';
@@ -35,10 +37,13 @@ function stackFaces(hosts: HostSummary[]) {
 }
 
 /**
- * One promise, one control, one rail. The editorial half of this design lives
- * here — a single sentence in the display serif carrying the whole proposition
- * — and the utilitarian half starts immediately underneath it, because the
- * fastest thing a first-time visitor can do is search.
+ * One promise, one control, one row of faces.
+ *
+ * The editorial half of this design lives here — a single sentence in the
+ * display serif carrying the whole proposition — and the utilitarian half
+ * starts immediately underneath it, because the fastest thing a first-time
+ * visitor can do is search. Centred throughout: the block is being read before
+ * it is being used, and there is nothing beside it to align to.
  *
  * There is deliberately no full-height opener: a 100vh hero pushes the page out
  * of the first frame, which is what a shared link and a thumbnail both get.
@@ -47,23 +52,53 @@ export async function Hero({
   meetupCount,
   cityCount,
   hosts = [],
+  categoryCounts = {},
 }: {
   meetupCount: number;
   cityCount: number;
   hosts?: HostSummary[];
+  /** Live meetups per category slug — drives the numbers in the index. */
+  categoryCounts?: Record<string, number>;
 }) {
   const t = await getDictionary();
 
+  /**
+   * Never open with a zero.
+   *
+   * The badge reads "0 meetups happening across {n} cities" whenever the board
+   * is empty — the first sentence on the site, volunteering that there is
+   * nothing on it. The city count is true either way, so that is what it falls
+   * back to until there is a real number to put there.
+   */
+  const badge =
+    meetupCount > 0
+      ? fill(t.hero.badge, { count: formatCount(meetupCount), cities: cityCount })
+      : fill(t.hero.badgeCities, { cities: cityCount });
+
   return (
     <section className="border-b border-content/10">
-      <div className="container-page py-14 sm:py-20">
+      <div className="container-page relative isolate py-14 sm:py-20">
+        {/* Two soft, theme-aware blobs — the Timeleft register this hero is
+            evolving toward. Fixed to two breakpoints rather than the whole
+            page so they never compete with the centred copy on narrow
+            screens, where there is no side margin to place them in.
+            `-z-10` (inside the wrapper's `isolate` stacking context) keeps
+            them behind any content regardless of copy length or DOM order. */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute right-[6%] top-4 hidden h-14 w-20 -z-10 rotate-[10deg] rounded-[50%_50%_50%_8%] bg-signal/15 sm:block"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute left-[8%] top-28 hidden h-10 w-10 -z-10 -rotate-12 rounded-full bg-brand/12 lg:block"
+        />
         <div className="mx-auto max-w-3xl text-center">
           <p className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/8 px-4 py-1.5 text-sm font-medium text-brand-700">
             <span className="inline-flex h-1.5 w-1.5 rounded-full bg-brand" aria-hidden />
-            {fill(t.hero.badge, { count: formatCount(meetupCount), cities: cityCount })}
+            {badge}
           </p>
 
-          <h1 className="display-xl mt-6 text-balance text-content">
+          <h1 className="section-title mt-6 text-balance text-content">
             {t.hero.titleTop} <span className="text-brand">{t.hero.titleBottom}</span>
           </h1>
 
@@ -85,9 +120,9 @@ export async function Hero({
                     src={face.src}
                     alt=""
                     seed={face.seed}
-                    width={28}
-                    height={28}
-                    className="h-7 w-7 rounded-full object-cover ring-2 ring-canvas"
+                    width={30}
+                    height={30}
+                    className="h-[30px] w-[30px] rounded-full object-cover ring-2 ring-canvas"
                   />
                 ))}
               </span>
@@ -102,10 +137,22 @@ export async function Hero({
           </div>
         </div>
 
-        <div className="mt-14">
-          <p className="text-center text-sm font-semibold text-content/60">{t.hero.categoriesHeading}</p>
-          <CategoryRail variant="mosaic" className="mt-5" />
-        </div>
+        {/* Activity discovery shares the same category and tint tokens as the board. */}
+        <section aria-labelledby="activities-heading" className="mt-14 border-t border-content/10 pt-10 text-left sm:mt-16">
+          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+            <div>
+              <h2 id="activities-heading" className="section-title text-content">{t.hero.categoriesHeading}</h2>
+              <p className="mt-2 max-w-lg text-sm leading-relaxed text-content/60">{t.hero.categoriesLede}</p>
+            </div>
+            <Link
+              href="/meetups"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-content/20 bg-canvas-700 px-5 py-2.5 text-sm font-semibold text-content transition-colors hover:border-brand hover:text-brand"
+            >
+              {t.hero.categoriesLink} <ArrowRight size={15} />
+            </Link>
+          </div>
+          <CategoryIndex counts={categoryCounts} variant="cards" className="mt-7" />
+        </section>
       </div>
     </section>
   );

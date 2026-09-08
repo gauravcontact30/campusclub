@@ -7,6 +7,8 @@ import {
   hostEarnings,
   memberSpend,
   projectedTake,
+  runsPerMonth,
+  hostProjection,
 } from '@/lib/economics';
 import { PASSES } from '@/lib/constants';
 
@@ -105,6 +107,48 @@ describe('projectedTake', () => {
 
   it('never reports negative headroom on an oversold meetup', () => {
     expect(projectedTake(10000, 4, 6).remaining).toBe(0);
+  });
+});
+
+describe('runsPerMonth', () => {
+  it('counts a month the way a host doing rough arithmetic would', () => {
+    expect(runsPerMonth('once')).toBe(1);
+    expect(runsPerMonth('weekly')).toBe(4);
+    expect(runsPerMonth('daily')).toBe(20);
+  });
+});
+
+describe('hostProjection', () => {
+  it('multiplies fee by spots by runs, with no commission taken out', () => {
+    const p = hostProjection(19900, 8, 'weekly');
+    expect(p.runs).toBe(4);
+    expect(p.perRunCents).toBe(159200);
+    expect(p.ifItFillsCents).toBe(636800);
+  });
+
+  it('plans on two-thirds of the spots, not all of them', () => {
+    const p = hostProjection(19900, 9, 'weekly');
+    expect(p.filledPerRun).toBe(6);
+    expect(p.realisticCents).toBe(19900 * 6 * 4);
+    // The honest number is always the smaller one — a host who planned on the
+    // ceiling and got the floor would rightly feel misled.
+    expect(p.realisticCents).toBeLessThan(p.ifItFillsCents);
+  });
+
+  it('takes the fill rate as a parameter, so a full board is expressible', () => {
+    const p = hostProjection(10000, 6, 'once', 1);
+    expect(p.filledPerRun).toBe(6);
+    expect(p.realisticCents).toBe(p.ifItFillsCents);
+  });
+
+  it('collects nothing on a free meetup, however well it fills', () => {
+    const p = hostProjection(0, 20, 'daily');
+    expect(p.ifItFillsCents).toBe(0);
+    expect(p.realisticCents).toBe(0);
+  });
+
+  it('never returns a negative take for a nonsense spot count', () => {
+    expect(hostProjection(9900, -4, 'weekly').ifItFillsCents).toBe(0);
   });
 });
 

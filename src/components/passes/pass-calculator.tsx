@@ -36,15 +36,45 @@ export function PassCalculator({
   const best = rows.find((r) => r.cheapest)!;
   const payg = rows.find((r) => r.pass.id === 'payg')!;
 
+  // When paying at the door already wins, "you save nothing" is not a reading
+  // worth printing. The useful second number is the pass that came closest and
+  // what it would have cost you on top — that is the figure somebody is
+  // actually weighing when they wonder whether to buy one anyway.
+  const nearestPass = rows
+    .filter((r) => r.pass.id !== 'payg')
+    .reduce((a, b) => (b.monthlyCents < a.monthlyCents ? b : a));
+
+  const figures: { label: string; value: string; tone: string }[] =
+    best.pass.id === 'payg'
+      ? [
+          { label: 'At the door', value: formatMoney(payg.monthlyCents), tone: 'text-content' },
+          {
+            label: `${nearestPass.pass.name}, the nearest pass`,
+            value: `+${formatMoney(nearestPass.monthlyCents - payg.monthlyCents)}`,
+            tone: 'text-content/60',
+          },
+        ]
+      : [
+          { label: `On ${best.pass.name}`, value: formatMoney(best.monthlyCents), tone: 'text-content' },
+          { label: 'At the door', value: formatMoney(payg.monthlyCents), tone: 'text-content/60' },
+          { label: 'You save', value: formatMoney(best.savesCents), tone: 'text-signal-600' },
+        ];
+
   return (
     <section className="surface-card overflow-hidden" aria-labelledby="calc-heading">
-      <div className="border-b border-content/10 p-6 sm:p-8">
-        <h2 id="calc-heading" className="display-md text-content">
-          Work out whether a pass is worth it
+      {/* The instrument and its reading are two different things, so they get
+          two different grounds: you set your numbers on the recessed panel,
+          and the answer is drawn on the card itself underneath. */}
+      <div className="border-b border-content/10 bg-canvas-600/45 p-6 sm:p-8">
+        <h2 id="calc-heading" className="display-md text-balance text-content">
+          Find your fit
         </h2>
-        <p className="lede mt-2">Your numbers, not an average. Most people should stay on pay as you go.</p>
+        <p className="lede mt-2 max-w-xl text-pretty">
+          Two numbers of your own, and the table below works out what each option would actually cost you. Most people
+          should stay on pay as you go.
+        </p>
 
-        <div className="mt-7 grid gap-7 sm:grid-cols-2">
+        <div className="mt-8 grid gap-7 divide-content/12 sm:grid-cols-2 sm:gap-10 sm:divide-x">
           <div>
             <label htmlFor="joins-per-month" className="block text-sm font-semibold text-content">
               Meetups a month
@@ -78,7 +108,7 @@ export function PassCalculator({
             </div>
           </div>
 
-          <fieldset>
+          <fieldset className="sm:pl-10">
             <legend className="block text-sm font-semibold text-content">Typical join fee</legend>
             <p className="mt-1 text-xs text-content/55">What the things you go to usually cost.</p>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -103,43 +133,75 @@ export function PassCalculator({
         </div>
       </div>
 
-      {/* The verdict, before the table — the table is the working, not the answer. */}
-      <div className="border-b border-content/10 bg-brand/8 px-6 py-5 sm:px-8">
+      {/* The verdict, before the table — the table is the working, not the answer.
+
+          Set as a reading rather than a sentence: the condition as an eyebrow,
+          the answer in display type, and the numbers it rests on as a small
+          ledger beside it. As prose it was one undifferentiated line in which
+          the winning option, its cost, the door price and the saving all
+          carried equal weight, so the reader had to parse a paragraph to
+          recover the one thing they came for. `aria-live` hands the same
+          answer to anyone changing the inputs without watching this band. */}
+      <div
+        className="border-b border-content/10 bg-brand/8 px-6 py-6 sm:px-8 sm:py-7"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {joins === 0 ? (
           <p className="text-content/75">
             Going nowhere costs nothing. Pay as you go is the only sensible option until that changes.
           </p>
-        ) : best.pass.id === 'payg' ? (
-          <p className="text-[0.98rem] leading-relaxed text-content/85">
-            At <strong className="font-semibold text-content">{pluralize(joins, 'meetup')} a month</strong> you are
-            better off on <strong className="font-semibold text-content">pay as you go</strong> —{' '}
-            {formatMoney(payg.monthlyCents)} a month. Every pass would cost you more than paying at the door.
-          </p>
         ) : (
-          <p className="text-[0.98rem] leading-relaxed text-content/85">
-            At <strong className="font-semibold text-content">{pluralize(joins, 'meetup')} a month</strong>,{' '}
-            <strong className="font-semibold text-content">{best.pass.name}</strong> works out cheapest —{' '}
-            {formatMoney(best.monthlyCents)} against {formatMoney(payg.monthlyCents)} at the door, saving{' '}
-            <strong className="font-semibold text-content">{formatMoney(best.savesCents)}</strong> a month.
-          </p>
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between md:gap-12">
+            <div className="max-w-md">
+              <p className="eyebrow text-brand-700">At {pluralize(joins, 'meetup')} a month</p>
+              <p className="mt-2 font-display text-[1.3rem] font-semibold leading-snug text-content sm:text-2xl">
+                {best.pass.name} works out cheapest
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-content/65">
+                {best.pass.id === 'payg'
+                  ? 'Every pass would cost you more than paying at the door.'
+                  : `That is ${formatMoney(best.perJoinCents ?? 0)} a join, against ${formatMoney(fee)} at the door.`}
+              </p>
+            </div>
+
+            {/* Wrapping rather than a fixed set of columns: the label under a
+                figure is a phrase, not a word, and three of them held to
+                thirds of a phone screen break mid-word. */}
+            <dl className="flex flex-wrap items-end gap-x-8 gap-y-4 sm:gap-x-10">
+              {figures.map((figure) => (
+                <div key={figure.label}>
+                  <dt className="text-xs font-medium text-content/55">{figure.label}</dt>
+                  <dd
+                    className={cn(
+                      'mt-1 font-display text-xl font-semibold tabular-nums sm:text-[1.4rem]',
+                      figure.tone,
+                    )}
+                  >
+                    {figure.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         )}
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
           <thead>
-            <tr className="border-b border-content/12 text-xs font-bold uppercase tracking-[0.12em] text-content/45">
-              <th scope="col" className="px-6 py-3 sm:px-8">
+            <tr className="border-b border-content/12 text-xs font-semibold text-content/50">
+              <th scope="col" className="px-6 py-3.5 sm:px-8">
                 Option
               </th>
-              <th scope="col" className="px-4 py-3 text-right">
+              <th scope="col" className="px-4 py-3.5 text-right">
                 A month
               </th>
-              <th scope="col" className="px-4 py-3 text-right">
+              <th scope="col" className="px-4 py-3.5 text-right">
                 Per join
               </th>
-              <th scope="col" className="px-6 py-3 text-right sm:px-8">
-                vs. at the door
+              <th scope="col" className="px-6 py-3.5 text-right sm:px-8">
+                Against paying at the door
               </th>
             </tr>
           </thead>

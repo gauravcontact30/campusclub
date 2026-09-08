@@ -1,5 +1,6 @@
-import type { AdminEvent, HostSummary, Join, Meetup, Payment, UserProfile, Vouch } from '@/types';
+import type { AdminEvent, Business, BusinessReview, HostSummary, Join, Meetup, Payment, UserProfile, Vouch } from '@/types';
 import { SEED_HOSTS, SEED_MEETUPS, SEED_PAYMENTS, SEED_USERS, SEED_VOUCHES } from './seed';
+import { SEED_BUSINESSES, SEED_BUSINESS_REVIEWS } from './seed-businesses';
 
 /**
  * Demo-mode database.
@@ -25,6 +26,9 @@ export interface DemoDb {
    * memory leak with a dashboard attached.
    */
   events: AdminEvent[];
+  /** Directory listings. In Supabase mode these live in `businesses`. */
+  businesses: Business[];
+  businessReviews: BusinessReview[];
 }
 
 const globalRef = globalThis as unknown as { __campusclubDb?: DemoDb };
@@ -42,6 +46,8 @@ function createDb(): DemoDb {
       { userId: 'u001', meetupId: 'm017' },
     ],
     events: [],
+    businesses: SEED_BUSINESSES.map((b) => ({ ...b })),
+    businessReviews: SEED_BUSINESS_REVIEWS.map((r) => ({ ...r })),
   };
 }
 
@@ -65,4 +71,22 @@ export function withAggregates(meetup: Meetup, vouches: Vouch[] = db().vouches):
 
 export function nextId(prefix: string) {
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+/**
+ * The demo-mode counterpart of the `business_reviews_rating` trigger.
+ *
+ * Supabase keeps `businesses.rating` current with a trigger; in demo mode
+ * nothing does, so this recomputes the two columns for one business after a
+ * write. Same contract, different machinery.
+ */
+export function refreshBusinessRating(businessId: string) {
+  const store = db();
+  const business = store.businesses.find((b) => b.id === businessId);
+  if (!business) return;
+  const mine = store.businessReviews.filter((r) => r.businessId === businessId);
+  business.reviewCount = mine.length;
+  business.rating = mine.length
+    ? Math.round((mine.reduce((sum, r) => sum + r.rating, 0) / mine.length) * 10) / 10
+    : 0;
 }

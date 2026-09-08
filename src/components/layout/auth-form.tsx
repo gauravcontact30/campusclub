@@ -22,14 +22,16 @@ export function AuthForm({ mode, next }: { mode: 'signin' | 'signup'; next: stri
   // after four seconds is the wrong carrier for "go and check your inbox".
   if (state?.ok && state.message) {
     return (
-      <div className="surface-card p-6 text-center" role="status">
+      // Already inside the auth card, so this is a plain block: a card drawn
+      // inside a card reads as a dialog nobody opened.
+      <div role="status">
         <p className="font-display text-lg font-semibold text-content">Almost there.</p>
         <p className="mt-2 text-sm leading-relaxed text-content/70">{state.message}</p>
         <Link
           href={`/login?next=${encodeURIComponent(next)}`}
-          className="link-underline mt-5 inline-block font-semibold text-content"
+          className="link-underline mt-6 inline-block text-sm font-semibold text-content"
         >
-          Go to sign in →
+          Go to sign in
         </Link>
       </div>
     );
@@ -37,6 +39,17 @@ export function AuthForm({ mode, next }: { mode: 'signin' | 'signup'; next: stri
 
   return (
     <form action={formAction} className="space-y-5">
+      {/* The panel heading opposite is a greeting ("Welcome back."), not a
+          label — so the form itself still needs to say which of the two acts
+          it performs. The rule under it is what lets that stay this quiet: a
+          hairline does the separating that extra size and weight would
+          otherwise have to do. */}
+      <div className="border-b border-content/10 pb-4">
+        <h2 className="font-display text-xl font-semibold text-content">
+          {mode === 'signin' ? 'Sign in' : 'Sign up'}
+        </h2>
+      </div>
+
       <input type="hidden" name="next" value={next} />
 
       {mode === 'signup' && (
@@ -68,6 +81,15 @@ export function AuthForm({ mode, next }: { mode: 'signin' | 'signup'; next: stri
         htmlFor="password"
         hint={mode === 'signup' ? 'At least 8 characters.' : undefined}
         error={state?.fieldErrors?.password}
+        /* Beside the label rather than floating under the field: it belongs to
+           the password, and under the field it reads as a step in the form. */
+        action={
+          mode === 'signin' ? (
+            <Link href="/forgot-password" className="text-sm text-content/55 hover:text-brand">
+              Forgotten it?
+            </Link>
+          ) : undefined
+        }
       >
         <Input
           id="password"
@@ -79,19 +101,11 @@ export function AuthForm({ mode, next }: { mode: 'signin' | 'signup'; next: stri
         />
       </Field>
 
-      {mode === 'signin' && (
-        <p className="-mt-1 text-right">
-          <Link href="/forgot-password" className="text-sm font-medium text-content/60 hover:text-brand">
-            Forgotten your password?
-          </Link>
-        </p>
-      )}
-
-      <Button type="submit" size="lg" full disabled={pending}>
+      <Button type="submit" size="lg" full disabled={pending} className="!mt-7">
         {pending ? 'One moment…' : mode === 'signin' ? 'Sign in' : 'Create account'}
       </Button>
 
-      <p className="text-center text-sm text-content/60">
+      <p className="border-t border-content/10 pt-5 text-center text-sm text-content/60">
         {mode === 'signin' ? (
           <>
             New here?{' '}

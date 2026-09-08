@@ -1,12 +1,15 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import * as navigation from 'next/navigation';
 import { RatingBlocks, RatingInput } from '@/components/ui/rating-blocks';
 import { Badge } from '@/components/ui/badge';
 import { CategoryIcon } from '@/components/ui/category-icon';
+import { CategoryIndex } from '@/components/meetups/category-index';
 import { MeetupCard } from '@/components/meetups/meetup-card';
 import { VouchSummary } from '@/components/meetups/vouch-list';
-import type { MeetupWithHost, Vouch } from '@/types';
+import { FilterSidebar } from '@/components/meetups/filter-sidebar';
+import type { MeetupQuery, MeetupWithHost, Vouch } from '@/types';
 
 function meetup(overrides: Partial<MeetupWithHost> = {}): MeetupWithHost {
   const startsAt = new Date(Date.now() + 86_400_000).toISOString();
@@ -90,6 +93,24 @@ describe('CategoryIcon', () => {
   });
 });
 
+describe('CategoryIndex', () => {
+  it('renders one tile per main category group, linking to the group filter', () => {
+    render(<CategoryIndex variant="cards" />);
+    const link = screen.getByRole('link', { name: /Study & work/ });
+    expect(link).toHaveAttribute('href', '/meetups?group=study');
+  });
+
+  it('sums counts across every category in a group', () => {
+    render(<CategoryIndex variant="cards" counts={{ 'group-study': 3, 'exam-prep': 2 }} />);
+    expect(screen.getByText('5 on now')).toBeInTheDocument();
+  });
+
+  it('omits the count rather than showing a zero when nothing in the group is on', () => {
+    render(<CategoryIndex variant="cards" counts={{}} />);
+    expect(screen.queryByText(/on now/)).not.toBeInTheDocument();
+  });
+});
+
 describe('MeetupCard', () => {
   it('shows the two facts the decision turns on: the fee and the spots left', () => {
     render(<MeetupCard meetup={meetup()} showSave={false} />);
@@ -118,6 +139,24 @@ describe('MeetupCard', () => {
 
     rerender(<MeetupCard meetup={meetup({ distanceKm: 2.4 })} showSave={false} />);
     expect(screen.getByText(/2\.4 km away/)).toBeInTheDocument();
+  });
+
+  it('shows a rating badge only once the meetup has vouches', () => {
+    const { rerender } = render(<MeetupCard meetup={meetup({ vouchCount: 0 })} showSave={false} />);
+    expect(screen.queryByText(/★/)).not.toBeInTheDocument();
+
+    rerender(<MeetupCard meetup={meetup({ vouchCount: 12, rating: 4.8 })} showSave={false} />);
+    expect(screen.getByText('★ 4.8')).toBeInTheDocument();
+  });
+
+  it('leads with the host, first name and hosted count', () => {
+    render(<MeetupCard meetup={meetup()} showSave={false} />);
+    expect(screen.getByText('Kabir · 46 hosted')).toBeInTheDocument();
+  });
+
+  it('renders a cover image', () => {
+    const { container } = render(<MeetupCard meetup={meetup()} showSave={false} />);
+    expect(container.querySelector('[role="img"]')).toBeInTheDocument();
   });
 });
 
@@ -148,5 +187,54 @@ describe('VouchSummary', () => {
   it('renders nothing at all when nobody has been yet', () => {
     const { container } = render(<VouchSummary vouches={[]} />);
     expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe('FilterSidebar', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const baseQuery: MeetupQuery = {
+    term: '',
+    city: '',
+    category: '',
+    group: '',
+    level: 'any',
+    when: 'any',
+    maxFeeCents: undefined,
+    hasSpots: false,
+    sort: 'soonest',
+    page: 1,
+    near: undefined,
+  };
+
+  it('surfaces an active group as an Applied chip, and clears it along with category via "Everything"', async () => {
+    const pushMock = vi.fn();
+    vi.spyOn(navigation, 'useRouter').mockReturnValue({
+      push: pushMock,
+      replace: vi.fn(),
+      refresh: vi.fn(),
+    } as unknown as ReturnType<typeof navigation.useRouter>);
+
+    const user = userEvent.setup();
+    render(<FilterSidebar query={{ ...baseQuery, group: 'study' }} resultCount={12} />);
+
+    // The count badge (`activeFilterCount`) says one filter is on — the Applied
+    // panel must actually show it, not render empty.
+    expect(
+      screen.getByRole('button', { name: /Study & work[\s\S]*remove this filter/ }),
+    ).toBeInTheDocument();
+
+    // The chip list is behind the collapsed "Activity" summary; open it to reach
+    // the "Everything" chip.
+    await user.click(screen.getByRole('button', { name: /Activity/ }));
+    await user.click(screen.getByRole('button', { name: 'Everything' }));
+
+    expect(pushMock).toHaveBeenCalledTimes(1);
+    const [url] = pushMock.mock.calls[0] as [string, unknown];
+    const params = new URL(url, 'http://localhost').searchParams;
+    expect(params.has('category')).toBe(false);
+    expect(params.has('group')).toBe(false);
   });
 });

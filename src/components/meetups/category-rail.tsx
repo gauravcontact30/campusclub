@@ -3,62 +3,10 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { CATEGORIES, tintForCategory } from '@/lib/constants';
+import { CATEGORIES } from '@/lib/constants';
 import { CategoryIcon } from '@/components/ui/category-icon';
 import { categoryAccent } from '@/lib/media/covers';
 import { cn } from '@/lib/utils';
-
-/**
- * The two places this catalogue appears want opposite things from it. The
- * board's own filter band needs a compact, scannable rail with an active
- * state — one more control among several. The hero is the one place on the
- * whole site selling the *range* of the catalogue, so it gets a wrapping
- * mosaic instead: every activity visible at once, each in its own light
- * "sticker" colour, because 24 identical white chips would read as a list to
- * scroll past rather than a catalogue worth exploring.
- */
-export function CategoryRail({
-  active,
-  variant = 'rail',
-  className,
-}: {
-  active?: string;
-  variant?: 'rail' | 'mosaic';
-  className?: string;
-}) {
-  if (variant === 'mosaic') {
-    return (
-      <nav aria-label="Browse by activity" className={className}>
-        <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
-          {CATEGORIES.map((category, i) => {
-            const tint = tintForCategory(i);
-            return (
-              <li key={category.slug}>
-                <Link
-                  href={`/meetups?category=${category.slug}`}
-                  className="group flex h-full flex-col items-center gap-2.5 rounded-2xl px-3 py-4 text-center transition-transform duration-200 hover:-translate-y-0.5"
-                  style={{ backgroundColor: `rgb(var(--tint-${tint}))` }}
-                >
-                  <CategoryIcon
-                    slug={category.slug}
-                    size={22}
-                    className="transition-transform duration-200 group-hover:scale-110"
-                    style={{ color: `rgb(var(--tint-${tint}-ink))` }}
-                  />
-                  <span className="text-xs font-semibold leading-tight" style={{ color: `rgb(var(--tint-${tint}-ink))` }}>
-                    {category.name}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-    );
-  }
-
-  return <ScrollingRail active={active} className={className} />;
-}
 
 /**
  * A single-line pill rail.
@@ -73,7 +21,7 @@ export function CategoryRail({
  * in, so picking a pill and recognising the results it produces are the same
  * act of colour matching.
  */
-function ScrollingRail({ active, className }: { active?: string; className?: string }) {
+export function CategoryRail({ active, className }: { active?: string; className?: string }) {
   const scroller = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({ left: false, right: false });
 

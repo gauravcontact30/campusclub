@@ -1,7 +1,7 @@
 import type { HostSummary, Meetup, MeetupQuery, MeetupWithHost, Paginated, WhenFilter } from '@/types';
 import { isSupabaseConfigured } from '@/lib/env';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { cityBySlug, CITIES } from '@/lib/constants';
+import { categoriesInGroup, categoryGroupById, cityBySlug, CITIES } from '@/lib/constants';
 import { distanceKm, slugify } from '@/lib/utils';
 import mapMeetup from './meetups-mapper';
 import { db, nextId, withAggregates } from './store';
@@ -101,6 +101,13 @@ function sortMeetups(items: Meetup[], sort: MeetupQuery['sort']) {
   }
 }
 
+/** Category takes precedence — a group is only consulted when no specific category is set. */
+function groupSlugs(query: MeetupQuery): string[] | undefined {
+  if (query.category || !query.group) return undefined;
+  const group = categoryGroupById(query.group);
+  return group ? categoriesInGroup(group).map((c) => c.slug) : undefined;
+}
+
 export async function searchMeetups(query: MeetupQuery = {}): Promise<Paginated<MeetupWithHost>> {
   const page = Math.max(1, query.page ?? 1);
   const perPage = query.perPage ?? DEFAULT_PER_PAGE;
@@ -118,6 +125,8 @@ export async function searchMeetups(query: MeetupQuery = {}): Promise<Paginated<
       .lte('starts_at', to.toISOString());
     if (query.city) q = q.ilike('city', query.city.replace(/-/g, ' '));
     if (query.category) q = q.eq('category_slug', query.category);
+    const slugs = groupSlugs(query);
+    if (slugs) q = q.in('category_slug', slugs);
     if (query.level && query.level !== 'any') q = q.eq('level', query.level);
     if (query.maxFeeCents) q = q.lte('join_fee_cents', query.maxFeeCents);
     const { data, error } = await q;
@@ -132,6 +141,10 @@ export async function searchMeetups(query: MeetupQuery = {}): Promise<Paginated<
       })
       .filter((m) => (query.city ? slugify(m.city) === slugify(query.city) : true))
       .filter((m) => (query.category ? m.categorySlug === query.category : true))
+      .filter((m) => {
+        const slugs = groupSlugs(query);
+        return slugs ? slugs.includes(m.categorySlug) : true;
+      })
       .filter((m) => (query.level && query.level !== 'any' ? m.level === query.level : true))
       .filter((m) => (query.maxFeeCents ? m.joinFeeCents <= query.maxFeeCents : true));
   }

@@ -90,7 +90,23 @@ export const hostReplySchema = z.object({
     .max(1200, 'Keep replies under 1200 characters.'),
 });
 
+/**
+ * A directory review. No attendance check, unlike a vouch — anybody who has
+ * been to a shop can say so, and requiring proof of a visit to a chemist would
+ * mean no reviews at all. The floor is a real sentence rather than a rating
+ * with no words, which is the shape spam takes.
+ */
+export const businessReviewSchema = z.object({
+  rating: z.coerce.number().int().min(1, 'Pick a rating.').max(5),
+  body: z
+    .string()
+    .trim()
+    .min(30, 'Say a little more — thirty characters at least.')
+    .max(2000, 'That is longer than we can show.'),
+});
+
 export type SignInInput = z.infer<typeof signInSchema>;
 export type SignUpInput = z.infer<typeof signUpSchema>;
 export type MeetupInput = z.infer<typeof meetupSchema>;
 export type VouchInput = z.infer<typeof vouchSchema>;
+export type BusinessReviewInput = z.infer<typeof businessReviewSchema>;

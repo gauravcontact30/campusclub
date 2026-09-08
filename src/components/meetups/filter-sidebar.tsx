@@ -4,7 +4,17 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { ChevronDown, SlidersHorizontal, X } from 'lucide-react';
 import type { Level, MeetupQuery, MeetupSort, WhenFilter } from '@/types';
-import { CATEGORIES, CITIES, FEE_PRESETS, LEVELS, SORT_OPTIONS, WHEN_OPTIONS, categoryBySlug, cityBySlug } from '@/lib/constants';
+import {
+  CATEGORIES,
+  CITIES,
+  FEE_PRESETS,
+  LEVELS,
+  SORT_OPTIONS,
+  WHEN_OPTIONS,
+  categoryBySlug,
+  categoryGroupById,
+  cityBySlug,
+} from '@/lib/constants';
 import { activeFilterCount, toSearchParams } from '@/lib/query-string';
 import { cn, formatMoney } from '@/lib/utils';
 import { CategoryIcon } from '@/components/ui/category-icon';
@@ -72,6 +82,13 @@ export function FilterSidebar({ query, resultCount }: { query: MeetupQuery; resu
       clear: { category: '' },
     });
   }
+  if (query.group && !query.category) {
+    applied.push({
+      key: 'group',
+      label: categoryGroupById(query.group)?.name ?? query.group,
+      clear: { group: '' },
+    });
+  }
   if (query.city) {
     applied.push({ key: 'city', label: cityBySlug(query.city)?.name ?? query.city, clear: { city: '' } });
   }
@@ -97,6 +114,7 @@ export function FilterSidebar({ query, resultCount }: { query: MeetupQuery; resu
   }
 
   const activeCategory = query.category ? categoryBySlug(query.category) : undefined;
+  const activeGroup = !query.category && query.group ? categoryGroupById(query.group) : undefined;
 
   const panel = (
     <div className="space-y-5">
@@ -148,11 +166,11 @@ export function FilterSidebar({ query, resultCount }: { query: MeetupQuery; resu
           picked rather than the whole catalogue. */}
       <Collapsible
         label="Activity"
-        summary={activeCategory?.name ?? 'Everything'}
+        summary={activeCategory?.name ?? activeGroup?.name ?? 'Everything'}
         defaultOpen={false}
       >
         <ChipRow>
-          <Chip active={!query.category} onClick={() => push({ category: '' })}>
+          <Chip active={!query.category && !query.group} onClick={() => push({ category: '', group: '' })}>
             Everything
           </Chip>
           {CATEGORIES.map((c) => (

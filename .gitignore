@@ -24,6 +24,9 @@ next-env.d.ts
 # personal Claude Code overrides (project settings.json IS committed)
 .claude/settings.local.json
 
+# superpowers brainstorming companion
+/.superpowers/
+
 # vercel / misc
 .vercel
 .DS_Store

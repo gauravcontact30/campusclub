@@ -44,6 +44,7 @@ export const hi: Dictionary = {
   },
   hero: {
     badge: '{cities} शहरों में {count} मीटअप चल रहे हैं',
+    badgeCities: 'भारत के {cities} शहरों में उपलब्ध',
     titleTop: 'अकेले कोई',
     titleBottom: 'नहीं करता।',
     lede:
@@ -52,7 +53,9 @@ export const hi: Dictionary = {
     secondaryCta: 'अपना मीटअप बनाएँ',
     statJoins: '41,200 जॉइन',
     statJoinsSuffix: 'अब तक हो चुके हैं।',
-    categoriesHeading: 'या बस वही चुनिए जो आपको पसंद है।',
+    categoriesHeading: 'जो पसंद है, वह चुनिए।',
+    categoriesLede: 'यहाँ लोग जो भी साथ मिलकर करते हैं — साइलेंट स्टडी रूम से लेकर रविवार के ट्रेक तक।',
+    categoriesLink: 'सब कुछ देखें',
   },
   landingSlider: {
     prev: 'पिछली स्लाइड',
@@ -120,7 +123,7 @@ export const hi: Dictionary = {
     cancelFree: 'शुरू होने से {hours} घंटे पहले तक मुफ़्त कैंसलेशन।',
   },
   cta: {
-    title: 'सबसे मुश्किल है पहली बार जाना।',
+    title: 'पहली बार जाइए।',
     body: 'इस हफ़्ते एक चीज़ चुनिए। सिर्फ़ उसी के पैसे दीजिए। पसंद न आए तो ₹149 और एक शाम गई — और पसंद आ गई तो अपने लोग मिल गए।',
     primary: 'अकाउंट बनाएँ',
     secondary: 'पहले देखिए क्या हो रहा है',
