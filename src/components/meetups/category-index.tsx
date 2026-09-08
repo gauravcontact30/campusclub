@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { CATEGORY_GROUPS, categoriesInGroup, type CategoryGroup } from '@/lib/constants';
 import { CategoryIcon } from '@/components/ui/category-icon';

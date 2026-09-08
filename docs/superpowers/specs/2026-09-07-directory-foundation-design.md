@@ -252,13 +252,12 @@ editorial headlines, pastel blocks, generous rhythm.
 ### Components
 
 New, in `src/components/places/`: `place-row.tsx` (dense result row), `place-filters.tsx`
-(sticky rail), `hours-table.tsx`, `price-band.tsx`, `rating-stars.tsx`. The directory reuses
-`src/components/meetups/meetup-card.tsx` for photo-led business cards and
-`src/components/meetups/category-index.tsx`'s flattened tile grid for category browsing,
-rather than building `place-card.tsx`/`category-tiles.tsx` as separate components — both
-were rebuilt for the site reskin
+(sticky rail), `hours-table.tsx`, `price-band.tsx`, `rating-stars.tsx`. `MeetupCard` and
+`CategoryTiles` — both rebuilt for the site reskin
 ([[docs/superpowers/specs/2026-09-08-site-reskin-design.md]]) before this milestone started
-implementation.
+implementation — are generalized into shared components taking a generic subject (a meetup
+or a business), for photo-led cards and category-tile browsing respectively, rather than
+building `place-card.tsx`/`category-tiles.tsx` as separate components from scratch.
 
 Reused: `src/components/ui/category-icon.tsx`, `src/components/ui/combo-select.tsx` for the
 city picker, `badge`, `button`, `src/components/site/page-header.tsx`.

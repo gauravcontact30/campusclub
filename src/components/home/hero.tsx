@@ -77,18 +77,20 @@ export async function Hero({
 
   return (
     <section className="border-b border-content/10">
-      <div className="container-page relative py-14 sm:py-20">
+      <div className="container-page relative isolate py-14 sm:py-20">
         {/* Two soft, theme-aware blobs — the Timeleft register this hero is
             evolving toward. Fixed to two breakpoints rather than the whole
             page so they never compete with the centred copy on narrow
-            screens, where there is no side margin to place them in. */}
+            screens, where there is no side margin to place them in.
+            `-z-10` (inside the wrapper's `isolate` stacking context) keeps
+            them behind any content regardless of copy length or DOM order. */}
         <span
           aria-hidden
-          className="pointer-events-none absolute right-[6%] top-4 hidden h-14 w-20 rotate-[10deg] rounded-[50%_50%_50%_8%] bg-signal/15 sm:block"
+          className="pointer-events-none absolute right-[6%] top-4 hidden h-14 w-20 -z-10 rotate-[10deg] rounded-[50%_50%_50%_8%] bg-signal/15 sm:block"
         />
         <span
           aria-hidden
-          className="pointer-events-none absolute left-[8%] top-28 hidden h-10 w-10 -rotate-12 rounded-full bg-brand/12 lg:block"
+          className="pointer-events-none absolute left-[8%] top-28 hidden h-10 w-10 -z-10 -rotate-12 rounded-full bg-brand/12 lg:block"
         />
         <div className="mx-auto max-w-3xl text-center">
           <p className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/8 px-4 py-1.5 text-sm font-medium text-brand-700">
