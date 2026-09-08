@@ -138,6 +138,24 @@ describe('MeetupCard', () => {
     rerender(<MeetupCard meetup={meetup({ distanceKm: 2.4 })} showSave={false} />);
     expect(screen.getByText(/2\.4 km away/)).toBeInTheDocument();
   });
+
+  it('shows a rating badge only once the meetup has vouches', () => {
+    const { rerender } = render(<MeetupCard meetup={meetup({ vouchCount: 0 })} showSave={false} />);
+    expect(screen.queryByText(/★/)).not.toBeInTheDocument();
+
+    rerender(<MeetupCard meetup={meetup({ vouchCount: 12, rating: 4.8 })} showSave={false} />);
+    expect(screen.getByText('★ 4.8')).toBeInTheDocument();
+  });
+
+  it('leads with the host, first name and hosted count', () => {
+    render(<MeetupCard meetup={meetup()} showSave={false} />);
+    expect(screen.getByText('Kabir · 46 hosted')).toBeInTheDocument();
+  });
+
+  it('renders a cover image', () => {
+    const { container } = render(<MeetupCard meetup={meetup()} showSave={false} />);
+    expect(container.querySelector('[role="img"]')).toBeInTheDocument();
+  });
 });
 
 describe('VouchSummary', () => {
